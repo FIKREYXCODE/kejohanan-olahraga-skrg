@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Sistem Kejohanan Olahraga Tahunan Sekolah Kebangsaan Ranggu, Tawau, Sabah">
+  <title>Kejohanan Olahraga Tahunan SK Ranggu</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#utama"><img src="assets/skrg.jpeg" alt="Logo SK Ranggu"><span><b>SK RANGGU</b><small>Peti Surat 842, 91008 Tawau, Sabah</small></span></a>
+    <button class="menu" id="menuButton" aria-label="Buka menu" aria-expanded="false">☰</button>
+    <nav id="mainNav"><a href="#utama">Utama</a><a href="#kedudukan">Kedudukan</a><a href="#keputusan">Keputusan</a><a href="#jadual">Jadual</a><button id="adminButton">Admin / Ubah Data</button></nav>
+    <label class="year"><span>Tahun</span><select id="yearSelect"></select></label>
+  </header>
+
+  <main>
+    <section class="hero" id="utama">
+      <div class="hero-copy">
+        <div class="official"><img src="assets/kpm.png" alt="Logo KPM"><span>Kementerian Pendidikan Malaysia<br><b>Sekolah Kebangsaan Ranggu</b></span></div>
+        <p class="eyebrow">KEJOHANAN TAHUNAN • <span id="heroYear">2026</span></p>
+        <h1>Semangat<br><em>Olahraga</em><br>SK Ranggu</h1>
+        <p class="lead">Satu pusat maklumat rasmi untuk peserta, keputusan acara, pemenang dan kedudukan rumah sukan.</p>
+        <div class="actions"><a class="primary" href="#keputusan">Lihat keputusan →</a><button class="secondary" id="heroAdmin">Masukkan maklumat ↗</button></div>
+      </div>
+      <div class="track-card">
+        <span class="live"><i></i> DATA RASMI</span>
+        <div class="year-stamp"><small>TAHUN</small><strong id="stampYear">2026</strong></div>
+        <div class="lane lane-1"></div><div class="lane lane-2"></div><div class="lane lane-3"></div>
+        <div class="track-copy"><small>SEKOLAH KEBANGSAAN RANGGU</small><h2>Berilmu<br>Berbakti</h2><p>Tawau, Sabah</p></div>
+      </div>
+    </section>
+
+    <section class="stats"><div><strong id="eventCount">0</strong><span>Acara direkodkan</span></div><div><strong id="studentCount">0</strong><span>Rekod murid</span></div><div><strong>4</strong><span>Rumah sukan</span></div><div><strong id="winnerCount">0</strong><span>Pemenang acara</span></div></section>
+
+    <section class="section" id="kedudukan">
+      <div class="heading"><div><span class="kicker">KUTIPAN MATA SEMASA</span><h2>Kedudukan rumah sukan</h2></div><p>Kedudukan disusun secara automatik berdasarkan mata yang dimasukkan oleh admin.</p></div>
+      <div class="houses" id="houseCards"></div>
+    </section>
+
+    <section class="results" id="keputusan">
+      <div><span class="kicker yellow">KEPUTUSAN RASMI</span><h2>Pemenang<br>setiap acara</h2><p>Pilih tahun di bahagian atas untuk melihat keputusan kejohanan yang berlainan.</p></div>
+      <div class="result-list" id="winnerList"></div>
+    </section>
+
+    <section class="section white" id="jadual">
+      <div class="heading"><div><span class="kicker">ATUR CARA KEJOHANAN</span><h2>Jadual acara</h2></div><div class="filters"><button class="active" data-filter="Semua">Semua</button><button data-filter="Balapan">Balapan</button><button data-filter="Padang">Padang</button></div></div>
+      <div class="schedule" id="scheduleList"></div>
+    </section>
+
+    <section class="section records" id="senarai">
+      <div class="heading"><div><span class="kicker">REKOD PESERTA</span><h2>Maklumat murid</h2></div><p>Nama murid, acara, rumah sukan, kedudukan dan catatan rasmi.</p></div>
+      <div class="record-table" id="recordTable"></div>
+    </section>
+  </main>
+
+  <dialog id="adminDialog">
+    <button class="close" id="closeDialog" aria-label="Tutup">×</button>
+    <span class="admin-badge">AKSES ADMIN GITHUB</span>
+    <h2>Ubah maklumat kejohanan</h2>
+    <p>Data laman ini berada dalam fail <code>data.json</code>. Tekan butang di bawah, pilih ikon pensel, ubah data, kemudian tekan <b>Commit changes</b>. Hanya pemilik repositori boleh menyimpan perubahan.</p>
+    <ol><li>Log masuk akaun GitHub cikgu.</li><li>Buka fail data dan tekan ikon pensel.</li><li>Ubah nama murid, acara, pemenang atau mata rumah.</li><li>Tekan <b>Commit changes</b>; laman akan dikemas kini.</li></ol>
+    <a class="primary wide" href="https://github.com/FIKREYXCODE/kejohanan-olahraga-skrg/edit/main/data.json" target="_blank" rel="noopener">Buka Editor Data GitHub ↗</a>
+  </dialog>
+
+  <footer><div class="logos"><img src="assets/skrg.jpeg" alt="Logo SK Ranggu"><img src="assets/kpm.png" alt="Logo KPM"></div><div><b>SEKOLAH KEBANGSAAN RANGGU</b><span>Peti Surat 842, 91008 Tawau, Sabah</span><small>Unit Kokurikulum &amp; Sukan</small></div><div class="credit"><span>Dibangunkan oleh</span><b>Cikgu Mohammad Fikrey<br>bin Abdul Gapar</b></div><a href="#utama">Kembali ke atas ↑</a></footer>
+  <script src="app.js"></script>
+</body>
+</html>
