@@ -1,0 +1,23 @@
+{
+  "years": {
+    "2026": {
+      "housePoints": { "Merah": 186, "Biru": 172, "Kuning": 158, "Hijau": 141 },
+      "results": [],
+      "schedule": [
+        { "time": "8:00 pagi", "event": "100m Tahun 4 Perempuan", "category": "Balapan", "status": "Selesai" },
+        { "time": "8:20 pagi", "event": "100m Tahun 4 Lelaki", "category": "Balapan", "status": "Selesai" },
+        { "time": "8:45 pagi", "event": "Lompat Jauh Tahun 5", "category": "Padang", "status": "Sedang berlangsung" },
+        { "time": "9:15 pagi", "event": "200m Tahun 6 Perempuan", "category": "Balapan", "status": "Seterusnya" },
+        { "time": "9:40 pagi", "event": "Lontar Peluru Tahun 6", "category": "Padang", "status": "Akan datang" }
+      ]
+    },
+    "2027": { "housePoints": { "Merah": 0, "Biru": 0, "Kuning": 0, "Hijau": 0 }, "results": [], "schedule": [] },
+    "2028": { "housePoints": { "Merah": 0, "Biru": 0, "Kuning": 0, "Hijau": 0 }, "results": [], "schedule": [] },
+    "2029": { "housePoints": { "Merah": 0, "Biru": 0, "Kuning": 0, "Hijau": 0 }, "results": [], "schedule": [] },
+    "2030": { "housePoints": { "Merah": 0, "Biru": 0, "Kuning": 0, "Hijau": 0 }, "results": [], "schedule": [] }
+  },
+  "contohRekod": {
+    "nota": "Salin objek contoh ini ke dalam senarai results bagi tahun yang dikehendaki, kemudian padam bahagian contohRekod jika mahu.",
+    "record": { "athlete": "Nur Aisyah Binti Ali", "event": "100m Tahun 6 Perempuan", "house": "Merah", "category": "Balapan", "place": 1, "mark": "13.25s" }
+  }
+}
