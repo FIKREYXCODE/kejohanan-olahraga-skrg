@@ -195,3 +195,10 @@
 .brand>img{width:50px;height:62px}
 @media(max-width:1050px){.topbar{height:96px}.topbar nav.open{top:96px}}
 @media(max-width:700px){.topbar{min-height:88px}.brand>img{width:43px;height:55px}.topbar nav.open{top:88px}}
+
+.schedule-day+.schedule-day{border-top:8px solid var(--cream)}
+.schedule-day-title{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 22px;background:#edf3ff;border-bottom:1px solid var(--line)}
+.schedule-day-title small{display:block;color:var(--blue);font-size:8px;font-weight:900;letter-spacing:.13em}
+.schedule-day-title h3{margin:4px 0 0;font-size:24px;letter-spacing:-.04em;text-transform:uppercase}
+.schedule-day-title>span{font-size:11px;font-weight:900;color:var(--navy);background:#fff;padding:9px 12px;border:1px solid #d5e0f0;border-radius:9px}
+@media(max-width:700px){.schedule-day-title{align-items:flex-start;flex-direction:column}.schedule-day-title>span{width:100%}}
