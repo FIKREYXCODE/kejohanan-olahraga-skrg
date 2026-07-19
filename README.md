@@ -2,38 +2,38 @@
 
 Laman rasmi Sistem Kejohanan Olahraga Tahunan Sekolah Kebangsaan Ranggu, Peti Surat 842, 91008 Tawau, Sabah.
 
-## Cara admin mengisi maklumat
+## Aliran pengisian data
 
-1. Buka fail `data.json` dalam repositori ini.
-2. Tekan ikon pensel **Edit this file**.
-3. Cari tahun yang mahu dikemas kini, bermula tahun 2026.
-4. Isi maklumat rumah sukan, peserta, kawad kaki, atur cara dan keputusan.
-5. Tekan **Commit changes**. Laman awam akan dikemas kini secara automatik.
+1. Admin membuka [AppSheet Admin Olahraga SK Ranggu](https://www.appsheet.com/start/dd6cf0f7-86b7-44e6-bfbe-f3a94314ef51?platform=desktop).
+2. Maklumat yang disimpan melalui AppSheet masuk ke Google Sheet rasmi.
+3. Google Apps Script menukarkan data Sheet kepada data website.
+4. Website GitHub Pages membaca data terkini secara automatik.
 
-Lima rumah sukan ialah **Merah, Biru, Kuning, Hijau dan Purple**. Semua data bermula kosong dan hanya akan dipaparkan selepas admin mengisinya.
+Admin tidak perlu menyunting fail GitHub untuk mengemas kini murid, rumah sukan, penyertaan, atur cara atau keputusan.
 
-### Contoh peserta
+## Atur cara tiga hari
 
-Masukkan dalam senarai `participants` bagi rumah berkenaan:
+Setiap rekod Atur Cara mempunyai:
 
-```json
-{ "name": "Nama Murid", "event": "100m Tahun 6", "category": "Balapan" }
-```
+- **Hari Kejohanan:** Hari 1, Hari 2 atau Hari 3
+- **Tarikh**
+- **Hari:** Isnin hingga Ahad
+- **Masa**
+- **Acara, kategori, tempat, status dan catatan**
 
-### Contoh keputusan
+Website awam hanya memaparkan sesuatu rekod jadual selepas Hari Kejohanan, Tarikh, Masa dan Acara telah lengkap. Ini mengelakkan masa draf atau jadual belum rasmi dipaparkan kepada orang ramai.
 
-Masukkan dalam senarai `results` bagi tahun berkenaan. Jadual pingat dikira secara automatik daripada `place` 1, 2 dan 3.
+## Rumah sukan
 
-```json
-{ "athlete": "Nama Murid", "event": "100m Tahun 6", "house": "Merah", "place": 1, "mark": "13.25s" }
-```
+Empat rumah sukan SK Ranggu ialah:
 
-### Contoh atur cara
+- Biru — Tun Hussein Onn
+- Kuning — Tun Abdul Razak
+- Ungu — Tunku Abdul Rahman
+- Merah — Tun Mahathir
 
-```json
-{ "time": "8:00 pagi", "event": "100m Tahun 6", "category": "Balapan", "venue": "Padang SK Ranggu", "status": "Dijadualkan", "note": "Saringan" }
-```
+## Data tahun
 
-Hanya pengguna GitHub yang mempunyai kebenaran menulis pada repositori boleh menyimpan perubahan. Orang ramai hanya boleh melihat laman GitHub Pages.
+Pilihan tahun bermula pada 2026. Tahun baharu boleh ditambah melalui rekod AppSheet dan Google Sheet tanpa mengubah reka bentuk website.
 
 — Dibangunkan oleh Cikgu Mohammad Fikrey bin Abdul Gapar.
