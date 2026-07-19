@@ -162,3 +162,11 @@
 @media(max-width:1360px) and (min-width:1051px){.topbar{grid-template-columns:minmax(370px,1fr) auto auto;gap:14px}.brand-simple small:nth-of-type(3){display:none}.topbar nav{gap:12px}.topbar nav a,.topbar nav button{font-size:9px}}
 @media(max-width:1050px){.topbar{height:96px;grid-template-columns:1fr auto}.topbar nav.open{top:96px}}
 @media(max-width:700px){.topbar{height:auto;min-height:88px;padding:9px 16px}.brand{gap:9px;min-width:0}.brand>img{width:43px;height:55px}.brand-simple{min-width:0}.brand-simple b{font-size:13px}.brand-simple small{display:none}.brand-simple small:first-of-type{display:block;font-size:7px;white-space:normal;max-width:240px}.topbar nav.open{top:88px}}
+
+
+/* Logo sekolah dibesarkan sedikit */
+.topbar{height:104px}
+.brand{gap:13px}
+.brand>img{width:58px;height:74px}
+@media(max-width:1050px){.topbar{height:104px}.topbar nav.open{top:104px}}
+@media(max-width:700px){.topbar{min-height:96px}.brand>img{width:48px;height:62px}.topbar nav.open{top:96px}}
