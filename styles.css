@@ -115,3 +115,6 @@
 
 .official-logos{padding:0;background:transparent;box-shadow:none}
 .official-logos img{mix-blend-mode:multiply;filter:saturate(1.15) brightness(1.08)}
+
+.official-logos{padding:7px 10px;background:rgba(235,243,255,.94);border:1px solid rgba(255,255,255,.42);box-shadow:0 8px 24px rgba(1,24,65,.18)}
+.official-logos img{mix-blend-mode:multiply;filter:none}
