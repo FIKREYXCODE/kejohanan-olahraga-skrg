@@ -1,5 +1,5 @@
-const HOUSE_ORDER=["Merah","Biru","Kuning","Hijau","Purple"];
-const HOUSE_META={Merah:{color:"#df3f47"},Biru:{color:"#246bfd"},Kuning:{color:"#e5ad00"},Hijau:{color:"#16875c"},Purple:{color:"#7c3aed"}};
+const HOUSE_ORDER=["Biru","Kuning","Ungu","Merah"];
+const HOUSE_META={Biru:{color:"#246bfd"},Kuning:{color:"#e5ad00"},Ungu:{color:"#5b3fd0"},Merah:{color:"#df3f47"}};
 const EMPTY_HOUSE={teacher:"",motto:"",slogan:"",captain:"",bannerBearer:"",flagBearer:"",members:[],participants:[],marchingTeam:[]};
 let database={years:{}},year="2026",filter="Semua",activeHouse="Merah";
 const $=id=>document.getElementById(id);
