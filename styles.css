@@ -149,3 +149,16 @@
 @media(max-width:1360px) and (min-width:1051px){.topbar{grid-template-columns:minmax(310px,1fr) auto auto}.brand-full b{font-size:12px}.brand-contact{display:none!important}.topbar nav{gap:12px}.topbar nav a,.topbar nav button{font-size:9px}}
 @media(max-width:1050px){.topbar{height:104px;grid-template-columns:1fr auto}.topbar nav.open{top:104px}}
 @media(max-width:700px){.topbar{height:auto;min-height:92px;padding:10px 16px}.brand{gap:9px}.brand>img{width:43px;height:56px}.brand-full b{font-size:12px;line-height:1.15;white-space:normal;max-width:245px}.brand-agency{font-size:8px}.brand-full small{display:none}.topbar nav.open{top:92px}.official{align-items:center;flex-direction:row}}
+
+
+/* Kembali kepada rupa asal seperti rujukan cikgu */
+.topbar{height:96px;padding:0 4vw;grid-template-columns:minmax(430px,1fr) auto auto;gap:20px}
+.brand{width:max-content;gap:11px}
+.brand>img{width:50px;height:62px}
+.brand-simple{display:block}
+.brand-simple b{display:block;font-size:15px;letter-spacing:.08em}
+.brand-simple small{display:block;margin-top:3px;font-size:7px;line-height:1.2;color:var(--muted);white-space:nowrap}
+.brand-simple small:first-of-type{font-size:8px;font-weight:800;color:#53637b}
+@media(max-width:1360px) and (min-width:1051px){.topbar{grid-template-columns:minmax(370px,1fr) auto auto;gap:14px}.brand-simple small:nth-of-type(3){display:none}.topbar nav{gap:12px}.topbar nav a,.topbar nav button{font-size:9px}}
+@media(max-width:1050px){.topbar{height:96px;grid-template-columns:1fr auto}.topbar nav.open{top:96px}}
+@media(max-width:700px){.topbar{height:auto;min-height:88px;padding:9px 16px}.brand{gap:9px;min-width:0}.brand>img{width:43px;height:55px}.brand-simple{min-width:0}.brand-simple b{font-size:13px}.brand-simple small{display:none}.brand-simple small:first-of-type{display:block;font-size:7px;white-space:normal;max-width:240px}.topbar nav.open{top:88px}}
