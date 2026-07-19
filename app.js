@@ -21,6 +21,7 @@ let database={years:{}},year="2026",filter="Semua";
 const $=id=>document.getElementById(id);
 const safe=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const textOrEmpty=value=>value?safe(value):'<span class="not-set">Belum diisi</span>';
+const officialNameFor=(name,value)=>name==="Ungu"?"Tunku Abdul Rahman":String(value||("Rumah "+name)).replace(/\s*\([^)]*\)\s*$/,"").trim();
 
 async function start(){
   try{database=await loadDatabase();}
@@ -50,7 +51,7 @@ function renderHouseCards(){
   $("houseCards").innerHTML=HOUSE_ORDER.map((name,index)=>{
     const h=house(name),teachers=(h.teacher||"").split(";").map(x=>x.trim()).filter(Boolean);
     const coordinator=(teachers.find(x=>/\(K\)/i.test(x))||teachers[0]||"Belum diisi").replace(/\s*\(K\)\s*/i,"");
-    const official=h.officialName||`Rumah ${name}`;
+    const official=officialNameFor(name,h.officialName);
     const url=`rumah.html?rumah=${encodeURIComponent(name)}&tahun=${encodeURIComponent(year)}`;
     return `<a class="house-card house-card-${index+1}" href="${url}" style="--house:${HOUSE_META[name].color}">
       <div class="house-card-top"><span class="house-number">0${index+1}</span><i aria-hidden="true"></i><span>RUMAH ${safe(name).toUpperCase()}</span></div>
