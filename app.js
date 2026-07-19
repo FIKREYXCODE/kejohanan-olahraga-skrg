@@ -1,5 +1,21 @@
 const HOUSE_ORDER=["Biru","Kuning","Ungu","Merah"];
 const HOUSE_META={Biru:{color:"#246bfd"},Kuning:{color:"#e5ad00"},Ungu:{color:"#5b3fd0"},Merah:{color:"#df3f47"}};
+const DATA_API="https://script.google.com/macros/s/AKfycbx3r8_KKM-jHIpPoL6dEa-IKIXZqfjxWDr3jJQF8AC2QvjL7MUrEGBuoNRkvpG9k6lnhQ/exec";
+async function loadDatabase(){
+  try{
+    const response=await fetch(DATA_API,{cache:"no-store",redirect:"follow"});
+    if(!response.ok)throw Error("API tidak tersedia");
+    const live=await response.json();
+    if(live.error||!live.years)throw Error(live.message||"Data API tidak sah");
+    window.__dataSource="Google Sheet";
+    return live;
+  }catch(error){
+    const fallback=await fetch("data.json",{cache:"no-store"});
+    if(!fallback.ok)throw error;
+    window.__dataSource="Sandaran GitHub";
+    return fallback.json();
+  }
+}
 const EMPTY_HOUSE={teacher:"",motto:"",slogan:"",captain:"",bannerBearer:"",flagBearer:"",members:[],participants:[],marchingTeam:[]};
 let database={years:{}},year="2026",filter="Semua";
 const $=id=>document.getElementById(id);
@@ -7,7 +23,7 @@ const safe=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt
 const textOrEmpty=value=>value?safe(value):'<span class="not-set">Belum diisi</span>';
 
 async function start(){
-  try{database=await fetch("data.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw Error();return r.json()});}
+  try{database=await loadDatabase();}
   catch{document.body.insertAdjacentHTML("afterbegin",'<div class="error">Data tidak dapat dibaca. Sila muat semula halaman.</div>');return;}
   const years=Object.keys(database.years).sort();year=years.includes("2026")?"2026":years[0]||"2026";
   $("yearSelect").innerHTML=years.map(y=>`<option>${safe(y)}</option>`).join("");
