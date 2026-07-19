@@ -187,3 +187,11 @@
 .official img{width:108px;height:80px;padding:5px;border-radius:10px}
 @media(max-width:1050px){.topbar{height:104px}.topbar nav.open{top:104px}}
 @media(max-width:700px){.topbar{min-height:96px}.brand>img{width:48px;height:62px}.topbar nav.open{top:96px}.official img{width:94px;height:70px}}
+
+
+/* Logo sekolah dikembalikan kepada saiz asal */
+.topbar{height:96px}
+.brand{gap:11px}
+.brand>img{width:50px;height:62px}
+@media(max-width:1050px){.topbar{height:96px}.topbar nav.open{top:96px}}
+@media(max-width:700px){.topbar{min-height:88px}.brand>img{width:43px;height:55px}.topbar nav.open{top:88px}}
