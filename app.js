@@ -43,7 +43,7 @@ function render(){
   const d=current(),members=HOUSE_ORDER.reduce((n,name)=>n+(house(name).members||[]).length,0),participants=allParticipants();
   $("heroYear").textContent=$("stampYear").textContent=year;
   $("houseCount").textContent=HOUSE_ORDER.length;$("memberCount").textContent=members;$("participantCount").textContent=participants.length;$("eventCount").textContent=(d.schedule||[]).length;
-  renderHouseCards();renderMedals();renderWinners();renderSchedule();renderParticipants();
+  renderHouseCards();renderMedals();renderWinners();renderSchedule();renderMatchups();renderParticipants();
 }
 
 function renderHouseCards(){
@@ -77,6 +77,30 @@ function renderWinners(){
 function renderSchedule(){
   const rows=(current().schedule||[]).filter(r=>filter==="Semua"||r.category===filter);
   $("scheduleList").innerHTML=rows.length?`<div class="schedule-head"><span>Masa</span><span>Acara / Pertandingan</span><span>Kategori</span><span>Tempat</span><span>Status</span></div>`+rows.map(r=>`<div class="schedule-row"><b>${safe(r.time)}</b><div><strong>${safe(r.event)}</strong><small>${safe(r.note||"")}</small></div><span class="tag">${safe(r.category)}</span><span>${safe(r.venue||"—")}</span><span>${safe(r.status||"Dijadualkan")}</span></div>`).join(""):`<div class="empty light">Atur cara dan pertandingan belum dimasukkan untuk tahun ${safe(year)}.</div>`;
+}
+
+function normalizeEvent(value){return String(value||"").toLowerCase().replace(/[×x]/g,"x").replace(/\s+/g," ").trim()}
+function competitionEvents(){
+  const seen=new Set();
+  return (current().schedule||[]).filter(r=>["Balapan","Padang"].includes(r.category)&&!/^rehat/i.test(r.event||"")).filter(r=>{
+    const key=normalizeEvent(r.event);if(!key||seen.has(key))return false;seen.add(key);return true;
+  });
+}
+function renderMatchups(){
+  const events=competitionEvents();
+  $("matchupGrid").innerHTML=events.length?events.map((event,eventIndex)=>{
+    const lanes=HOUSE_ORDER.map((name,laneIndex)=>{
+      const entries=(house(name).participants||[]).filter(p=>normalizeEvent(p.event)===normalizeEvent(event.event));
+      const participants=entries.length?entries.map(p=>`<b class="match-name">${safe(p.name)}</b>`).join(""):`<span class="match-empty">Belum didaftarkan<small>Isi melalui AppSheet → Penyertaan</small></span>`;
+      return `<div class="lane-row" style="--house:${HOUSE_META[name].color}"><span class="lane-number">${laneIndex+1}</span><span class="lane-house"><i></i>Rumah ${safe(name)}</span><div class="lane-participants">${participants}</div></div>`;
+    }).join("");
+    return `<article class="match-card">
+      <header><div><small>ACARA ${String(eventIndex+1).padStart(2,"0")} • ${safe(event.category)}</small><h3>${safe(event.event)}</h3></div><span>${safe(event.time||"Masa belum ditetapkan")}</span></header>
+      <div class="lane-heading"><span>Lorong</span><span>Rumah</span><span>Peserta bertanding</span></div>
+      <div class="lane-list">${lanes}</div>
+      <footer><span>${safe(event.venue||"Tempat belum ditetapkan")}</span><b>${safe(event.status||"Dijadualkan")}</b></footer>
+    </article>`;
+  }).join(""):`<div class="empty light">Acara pertandingan belum dimasukkan untuk tahun ${safe(year)}.</div>`;
 }
 
 function renderParticipants(){
