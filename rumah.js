@@ -35,10 +35,11 @@ async function start(){
     const h=years[year]?.houses?.[houseName];
     if(!h)throw Error("Rumah tidak ditemui");
     const color=HOUSE_META[houseName].color;
+    const officialName=houseName==="Ungu"?"Tunku Abdul Rahman":String(h.officialName||("Rumah "+houseName)).replace(/\s*\([^)]*\)\s*$/,"").trim();
     document.documentElement.style.setProperty("--house",color);
-    document.title=`${h.officialName||"Rumah "+houseName} | SK Ranggu`;
+    document.title=officialName+" | SK Ranggu";
     document.getElementById("profileYear").textContent=year;
-    document.getElementById("profileOfficial").textContent=h.officialName||`Rumah ${houseName}`;
+    document.getElementById("profileOfficial").textContent=officialName;
     document.getElementById("profileHouse").textContent=`Rumah ${houseName} • Sekolah Kebangsaan Ranggu`;
 
     const teachers=(h.teacher||"").split(";").map(x=>x.trim()).filter(Boolean);
