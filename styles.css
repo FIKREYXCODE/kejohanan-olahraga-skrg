@@ -170,3 +170,11 @@
 .brand>img{width:58px;height:74px}
 @media(max-width:1050px){.topbar{height:104px}.topbar nav.open{top:104px}}
 @media(max-width:700px){.topbar{min-height:96px}.brand>img{width:48px;height:62px}.topbar nav.open{top:96px}}
+
+
+/* Logo sekolah lebih besar dan jelas */
+.topbar{height:118px}
+.brand{gap:15px}
+.brand>img{width:70px;height:88px}
+@media(max-width:1050px){.topbar{height:118px}.topbar nav.open{top:118px}}
+@media(max-width:700px){.topbar{min-height:104px}.brand>img{width:56px;height:72px}.topbar nav.open{top:104px}}
