@@ -1,5 +1,21 @@
 const HOUSE_ORDER=["Biru","Kuning","Ungu","Merah"];
 const HOUSE_META={Biru:{color:"#246bfd"},Kuning:{color:"#e5ad00"},Ungu:{color:"#5b3fd0"},Merah:{color:"#df3f47"}};
+const DATA_API="https://script.google.com/macros/s/AKfycbx3r8_KKM-jHIpPoL6dEa-IKIXZqfjxWDr3jJQF8AC2QvjL7MUrEGBuoNRkvpG9k6lnhQ/exec";
+async function loadDatabase(){
+  try{
+    const response=await fetch(DATA_API,{cache:"no-store",redirect:"follow"});
+    if(!response.ok)throw Error("API tidak tersedia");
+    const live=await response.json();
+    if(live.error||!live.years)throw Error(live.message||"Data API tidak sah");
+    window.__dataSource="Google Sheet";
+    return live;
+  }catch(error){
+    const fallback=await fetch("data.json",{cache:"no-store"});
+    if(!fallback.ok)throw error;
+    window.__dataSource="Sandaran GitHub";
+    return fallback.json();
+  }
+}
 const safe=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const show=value=>value?safe(value):'<span class="not-set">Belum diisi</span>';
 const params=new URLSearchParams(location.search);
@@ -13,7 +29,7 @@ function renderNames(items,empty){
 
 async function start(){
   try{
-    const database=await fetch("data.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw Error();return r.json()});
+    const database=await loadDatabase();
     const years=database.years||{};
     if(!years[year])year=Object.keys(years).sort()[0]||"2026";
     const h=years[year]?.houses?.[houseName];
