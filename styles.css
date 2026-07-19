@@ -134,3 +134,18 @@
 .letterhead-rule{height:5px;margin:0 4vw;background:linear-gradient(90deg,var(--navy) 0 72%,var(--yellow) 72% 86%,#df3f47 86%);border-radius:5px}
 @media(max-width:850px){.school-letterhead{grid-template-columns:70px 1fr}.school-contacts{grid-column:1/-1;min-width:0;border-left:0;border-top:1px solid var(--line);padding:14px 0 0;grid-template-columns:repeat(3,1fr)}.school-contacts div{display:block}.school-contacts span,.school-contacts a{display:block}.school-contacts a{margin-top:3px}}
 @media(max-width:600px){.school-letterhead{padding:20px;grid-template-columns:58px 1fr;gap:14px}.letterhead-logo{width:55px;height:70px}.school-identity h2{font-size:15px;line-height:1.15}.school-identity>strong{font-size:9px}.school-contacts{grid-template-columns:1fr;gap:10px}.letterhead-rule{margin:0 20px}.hero{padding-top:48px}}
+
+
+/* Header rasmi — identiti lengkap tanpa kepala surat berasingan */
+.school-letterhead,.letterhead-rule{display:none!important}
+.topbar{height:104px;grid-template-columns:minmax(390px,1fr) auto auto;gap:18px}
+.brand{width:auto;min-width:0;gap:13px}
+.brand>img{width:58px;height:74px;flex:0 0 auto}
+.brand-full{min-width:0;display:block}
+.brand-full b{display:block;font-size:15px;letter-spacing:.045em;white-space:nowrap}
+.brand-agency{display:block;margin-top:4px;color:var(--blue);font-size:9px;font-weight:800}
+.brand-full small{display:block;margin-top:3px;font-size:8px;color:var(--muted);white-space:nowrap}
+.brand-contact{font-size:7px!important;color:#7a8798!important}
+@media(max-width:1360px) and (min-width:1051px){.topbar{grid-template-columns:minmax(310px,1fr) auto auto}.brand-full b{font-size:12px}.brand-contact{display:none!important}.topbar nav{gap:12px}.topbar nav a,.topbar nav button{font-size:9px}}
+@media(max-width:1050px){.topbar{height:104px;grid-template-columns:1fr auto}.topbar nav.open{top:104px}}
+@media(max-width:700px){.topbar{height:auto;min-height:92px;padding:10px 16px}.brand{gap:9px}.brand>img{width:43px;height:56px}.brand-full b{font-size:12px;line-height:1.15;white-space:normal;max-width:245px}.brand-agency{font-size:8px}.brand-full small{display:none}.topbar nav.open{top:92px}.official{align-items:center;flex-direction:row}}
