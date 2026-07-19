@@ -118,3 +118,19 @@
 
 .official-logos{padding:7px 10px;background:rgba(235,243,255,.94);border:1px solid rgba(255,255,255,.42);box-shadow:0 8px 24px rgba(1,24,65,.18)}
 .official-logos img{mix-blend-mode:multiply;filter:none}
+
+
+/* Kepala surat rasmi sekolah */
+.school-letterhead{max-width:1280px;margin:0 auto;padding:24px 4vw 18px;display:grid;grid-template-columns:78px minmax(360px,1fr) auto;gap:22px;align-items:center;background:#fff}
+.letterhead-logo{width:72px;height:88px;object-fit:contain}
+.school-identity h2{margin:0 0 5px;color:var(--navy);font-size:21px;letter-spacing:.025em}
+.school-identity>strong{display:block;color:var(--blue);font-size:11px;margin-bottom:8px}
+.school-identity address{font-style:normal;font-size:10px;line-height:1.5;color:var(--muted)}
+.school-contacts{min-width:245px;border-left:1px solid var(--line);padding-left:22px;display:grid;gap:8px}
+.school-contacts div{display:grid;grid-template-columns:58px 1fr;gap:8px;align-items:center}
+.school-contacts span{font-size:8px;font-weight:900;color:var(--muted);text-transform:uppercase}
+.school-contacts a{font-size:10px;font-weight:800;color:var(--navy)}
+.school-contacts a:hover{text-decoration:underline;color:var(--blue)}
+.letterhead-rule{height:5px;margin:0 4vw;background:linear-gradient(90deg,var(--navy) 0 72%,var(--yellow) 72% 86%,#df3f47 86%);border-radius:5px}
+@media(max-width:850px){.school-letterhead{grid-template-columns:70px 1fr}.school-contacts{grid-column:1/-1;min-width:0;border-left:0;border-top:1px solid var(--line);padding:14px 0 0;grid-template-columns:repeat(3,1fr)}.school-contacts div{display:block}.school-contacts span,.school-contacts a{display:block}.school-contacts a{margin-top:3px}}
+@media(max-width:600px){.school-letterhead{padding:20px;grid-template-columns:58px 1fr;gap:14px}.letterhead-logo{width:55px;height:70px}.school-identity h2{font-size:15px;line-height:1.15}.school-identity>strong{font-size:9px}.school-contacts{grid-template-columns:1fr;gap:10px}.letterhead-rule{margin:0 20px}.hero{padding-top:48px}}
