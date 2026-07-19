@@ -3,3 +3,65 @@
 @media(max-width:1050px){.topbar{grid-template-columns:1fr auto}.topbar nav{display:none}.topbar nav.open{display:flex;position:absolute;left:0;right:0;top:88px;background:#fff;flex-direction:column;align-items:stretch;padding:25px 5vw;box-shadow:0 20px 40px rgba(0,0,0,.15)}.menu{display:block}.year{display:none}.hero{grid-template-columns:1fr}.track-card{max-width:680px;width:100%}.info-grid{grid-template-columns:repeat(2,1fr)}footer{grid-template-columns:auto 1fr auto}.credit{grid-column:2}}
 @media(max-width:700px){.topbar{height:74px;padding:0 18px}.brand img{width:40px;height:49px}.brand b{font-size:12px}.brand small{display:none}.topbar nav.open{top:74px}.hero{padding:45px 20px 52px}.hero h1{font-size:52px}.actions{align-items:stretch;flex-direction:column}.track-card{height:370px}.year-stamp strong{font-size:38px}.track-copy h2{font-size:39px}.stats{grid-template-columns:repeat(2,1fr);margin:-20px 20px 0}.stats div{padding:17px 14px}.stats div:nth-child(2){border-right:0}.stats div:nth-child(-n+2){border-bottom:1px solid var(--line)}.section,.results{padding:62px 20px}.heading{align-items:flex-start;flex-direction:column;gap:15px}.house-tabs{grid-template-columns:1fr 1fr}.house-profile{padding:20px}.info-grid,.list-grid{grid-template-columns:1fr}.results{grid-template-columns:1fr}.medal-table,.schedule,.record-table{overflow:auto}.medal-head,.medal-row{min-width:650px}.schedule-head,.schedule-row{min-width:760px}.record-head,.record-row{min-width:650px}.admin-grid{grid-template-columns:1fr}footer{display:flex;flex-direction:column;align-items:flex-start}.credit{border-left:0;border-top:1px solid rgba(255,255,255,.16);padding:17px 0 0}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* Kad rumah sukan di halaman utama */
+.house-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.house-card{position:relative;min-height:310px;background:#fff;border:1px solid var(--line);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 12px 36px rgba(10,35,74,.08);transition:transform .22s ease,box-shadow .22s ease}
+.house-card:hover{transform:translateY(-6px);box-shadow:0 22px 52px rgba(10,35,74,.16)}
+.house-card:focus-visible{outline:4px solid color-mix(in srgb,var(--house) 35%,white);outline-offset:4px}
+.house-card-top{height:72px;padding:0 24px;background:var(--house);color:#fff;display:flex;align-items:center;gap:12px;font-size:9px;font-weight:900;letter-spacing:.13em}
+.house-card-top i{width:10px;height:10px;border-radius:50%;background:#fff;box-shadow:0 0 0 5px rgba(255,255,255,.2)}
+.house-number{margin-right:auto;font-size:28px;letter-spacing:-.06em;opacity:.62}
+.house-card-body{padding:28px 28px 24px;flex:1}
+.house-card-body>small{font-size:8px;font-weight:900;color:var(--muted);letter-spacing:.13em}
+.house-card-body h3{font-size:clamp(27px,3vw,42px);line-height:.98;letter-spacing:-.055em;margin:10px 0 28px;text-transform:uppercase;max-width:460px}
+.house-card-meta{display:grid;grid-template-columns:100px 1fr;gap:18px;border-top:1px solid var(--line);padding-top:18px}
+.house-card-meta>span{font-size:9px;color:var(--muted)}
+.house-card-meta>span:first-child b{font-size:26px;color:var(--house);margin-right:4px}
+.house-card-meta small,.house-card-meta span:last-child b{display:block}
+.house-card-meta small{font-size:7px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.house-card-meta span:last-child b{font-size:10px;color:var(--ink)}
+.house-card-link{padding:16px 28px;background:#f7f9fc;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:10px;font-weight:900}
+.house-card-link b{width:31px;height:31px;border-radius:50%;display:grid;place-items:center;background:var(--house);color:#fff;font-size:15px}
+
+/* Halaman khas profil rumah sukan */
+.profile-page{background:#eef3fa}
+.profile-topbar{position:relative;grid-template-columns:1fr auto;background:#fff}
+.back-home{display:inline-flex;align-items:center;gap:8px;padding:11px 15px;border-radius:10px;background:#edf3ff;color:var(--blue);font-size:10px;font-weight:900}
+.profile-main{min-height:70vh}
+.profile-hero{position:relative;overflow:hidden;background:var(--house);color:#fff;padding:74px 7vw 70px}
+.profile-hero:after{content:"";position:absolute;width:430px;height:430px;border:80px solid rgba(255,255,255,.08);border-radius:50%;right:-150px;top:-190px}
+.profile-hero-inner{position:relative;z-index:1;max-width:1050px}
+.profile-kicker{display:flex;align-items:center;gap:9px;font-size:9px;font-weight:900;letter-spacing:.14em}
+.profile-kicker i{width:9px;height:9px;border-radius:50%;background:#fff}
+.profile-hero h1{font-size:clamp(54px,8vw,106px);line-height:.82;letter-spacing:-.075em;text-transform:uppercase;margin:23px 0 16px;max-width:900px}
+.profile-hero p{font-size:15px;margin:0;opacity:.85}
+.profile-summary{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.profile-summary span{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);padding:11px 14px;border-radius:10px;font-size:9px;font-weight:800}
+.profile-content{padding:60px 7vw 90px;display:grid;gap:24px}
+.profile-panel{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 9px 30px rgba(10,35,74,.06)}
+.panel-heading{padding:24px 26px;border-bottom:1px solid var(--line);display:flex;align-items:end;justify-content:space-between;gap:20px}
+.panel-heading small{display:block;color:var(--house);font-size:8px;font-weight:900;letter-spacing:.13em;margin-bottom:6px}
+.panel-heading h2{font-size:27px;letter-spacing:-.04em;margin:0;text-transform:uppercase}
+.panel-heading span{font-size:9px;color:var(--muted)}
+.teacher-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line)}
+.teacher-card{background:#fff;padding:18px 22px;display:grid;grid-template-columns:36px 1fr auto;align-items:center;gap:12px}
+.teacher-card>span{width:31px;height:31px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--house) 12%,white);color:var(--house);font-size:9px;font-weight:900}
+.teacher-card b{font-size:11px;line-height:1.4}
+.coordinator{background:var(--house);color:#fff;padding:5px 7px;border-radius:6px;font-size:7px;font-weight:900}
+.profile-info-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line)}
+.profile-info-grid div{background:#fff;padding:22px}
+.profile-info-grid small,.profile-info-grid b{display:block}
+.profile-info-grid small{font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.profile-info-grid b{font-size:11px;line-height:1.45}
+.profile-lists{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.profile-lists .profile-panel:last-child{grid-column:1/-1}
+.profile-empty{padding:25px;color:var(--muted);font-size:11px}
+.profile-list{margin:0;padding:20px 26px 24px 48px;columns:2}
+.profile-list li{font-size:11px;line-height:1.9;break-inside:avoid}
+.profile-table>div{display:grid;grid-template-columns:1.2fr 1fr .7fr;gap:18px;padding:14px 24px;border-top:1px solid var(--line);font-size:10px}
+.profile-table .profile-table-head{background:var(--navy);color:#fff;border:0;font-size:8px;font-weight:900;text-transform:uppercase}
+.profile-error{margin:60px auto;padding:30px;max-width:700px;background:#fff;border-radius:16px;text-align:center}
+
+@media(max-width:900px){.house-cards{grid-template-columns:1fr}.profile-info-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.house-card{min-height:280px}.house-card-body{padding:24px}.profile-topbar{display:flex}.profile-hero{padding:48px 20px 50px}.profile-content{padding:36px 20px 62px}.teacher-grid,.profile-lists{grid-template-columns:1fr}.profile-info-grid{grid-template-columns:1fr}.profile-lists .profile-panel:last-child{grid-column:auto}.panel-heading{align-items:flex-start;flex-direction:column}.teacher-card{grid-template-columns:34px 1fr}.teacher-card .coordinator{grid-column:2;width:max-content}.profile-list{columns:1}.profile-table{overflow:auto}.profile-table>div{min-width:600px}}
