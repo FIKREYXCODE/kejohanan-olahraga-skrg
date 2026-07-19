@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="Sistem Kejohanan Olahraga Tahunan Sekolah Kebangsaan Ranggu, Tawau, Sabah">
   <title>Kejohanan Olahraga Tahunan SK Ranggu</title>
-  <link rel="stylesheet" href="styles.css?v=20260719c">
+  <link rel="stylesheet" href="styles.css?v=20260719graf1">
 </head>
 <body>
   <header class="topbar">
     <a class="brand" href="#utama"><img src="assets/skrg.jpeg" alt="Logo SK Ranggu"><span><b>SK RANGGU</b><small>Peti Surat 842, 91008 Tawau, Sabah</small></span></a>
     <button class="menu" id="menuButton" aria-label="Buka menu" aria-expanded="false">☰</button>
-    <nav id="mainNav"><a href="#rumah">Rumah Sukan</a><a href="#pingat">Pingat</a><a href="#keputusan">Keputusan</a><a href="#jadual">Atur Cara</a><button id="adminButton">Admin / Isi Data</button></nav>
+    <nav id="mainNav"><a href="#rumah">Rumah Sukan</a><a href="#pingat">Pingat</a><a href="#keputusan">Keputusan</a><a href="#jadual">Atur Cara</a><a href="#graf">Graf Pertandingan</a><button id="adminButton">Admin / Isi Data</button></nav>
     <label class="year"><span>Tahun</span><select id="yearSelect"></select></label>
   </header>
 
@@ -54,6 +54,12 @@
       <div class="schedule" id="scheduleList"></div>
     </section>
 
+    <section class="section matchup-section" id="graf">
+      <div class="heading"><div><span class="kicker">LORONG &amp; PESERTA</span><h2>Graf pertandingan</h2></div><p>Setiap kad menunjukkan acara dan wakil empat rumah sukan. Nama murid muncul secara automatik selepas didaftarkan melalui AppSheet.</p></div>
+      <div class="matchup-legend"><span><i style="--house:#246bfd"></i>Biru</span><span><i style="--house:#e5ad00"></i>Kuning</span><span><i style="--house:#5b3fd0"></i>Ungu</span><span><i style="--house:#df3f47"></i>Merah</span></div>
+      <div class="matchup-grid" id="matchupGrid"></div>
+    </section>
+
     <section class="section records" id="peserta">
       <div class="heading"><div><span class="kicker">BORANG PENYERTAAN</span><h2>Semua peserta</h2></div><p>Senarai peserta mengikut rumah sukan dan acara yang disertai.</p></div>
       <div class="record-table" id="participantTable"></div>
@@ -71,6 +77,6 @@
   </dialog>
 
   <footer><div class="logos"><img src="assets/skrg.jpeg" alt="Logo SK Ranggu"><img src="assets/kpm.png" alt="Logo KPM"></div><div><b>SEKOLAH KEBANGSAAN RANGGU</b><span>Peti Surat 842, 91008 Tawau, Sabah</span><small>Unit Kokurikulum &amp; Sukan</small></div><div class="credit"><span>Dibangunkan oleh</span><b>Cikgu Mohammad Fikrey<br>bin Abdul Gapar</b></div><a href="#utama">Kembali ke atas ↑</a></footer>
-  <script src="app.js?v=20260719live2"></script>
+  <script src="app.js?v=20260719graf1"></script>
 </body>
 </html>
