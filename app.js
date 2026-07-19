@@ -1,7 +1,7 @@
 const HOUSE_ORDER=["Biru","Kuning","Ungu","Merah"];
 const HOUSE_META={Biru:{color:"#246bfd"},Kuning:{color:"#e5ad00"},Ungu:{color:"#5b3fd0"},Merah:{color:"#df3f47"}};
 const DATA_API="https://script.google.com/macros/s/AKfycbx3r8_KKM-jHIpPoL6dEa-IKIXZqfjxWDr3jJQF8AC2QvjL7MUrEGBuoNRkvpG9k6lnhQ/exec";
-const SHOW_SCHEDULE_TIMES=false;
+const SHOW_SCHEDULE_TIMES=true;
 async function loadDatabase(){
   try{
     const response=await fetch(DATA_API,{cache:"no-store",redirect:"follow"});
@@ -39,12 +39,15 @@ async function start(){
 }
 
 function current(){return database.years[year]||{houses:{},schedule:[],results:[]}}
+function scheduleDayNumber(value){const match=String(value||"").match(/\d+/);return match?Number(match[0]):99}
+function isOfficialScheduleEntry(row){return Boolean(String(row?.championshipDay||"").trim()&&String(row?.date||"").trim()&&String(row?.time||"").trim()&&String(row?.event||"").trim())}
+function officialSchedule(){return (current().schedule||[]).filter(isOfficialScheduleEntry).sort((a,b)=>scheduleDayNumber(a.championshipDay)-scheduleDayNumber(b.championshipDay)||String(a.date).localeCompare(String(b.date))||String(a.time).localeCompare(String(b.time)))}
 function house(name){return {...EMPTY_HOUSE,...(current().houses?.[name]||{})}}
 function allParticipants(){return HOUSE_ORDER.flatMap(name=>(house(name).participants||[]).map(p=>({...p,house:name})))}
 function render(){
   const d=current(),members=HOUSE_ORDER.reduce((n,name)=>n+(house(name).members||[]).length,0),participants=allParticipants();
   $("heroYear").textContent=$("stampYear").textContent=year;
-  $("houseCount").textContent=HOUSE_ORDER.length;$("memberCount").textContent=members;$("participantCount").textContent=participants.length;$("eventCount").textContent=(d.schedule||[]).length;
+  $("houseCount").textContent=HOUSE_ORDER.length;$("memberCount").textContent=members;$("participantCount").textContent=participants.length;$("eventCount").textContent=officialSchedule().length;
   renderHouseCards();renderMedals();renderWinners();renderSchedule();renderMatchups();renderParticipants();
 }
 
@@ -77,21 +80,34 @@ function renderWinners(){
 }
 
 function renderSchedule(){
-  const rows=(current().schedule||[]).filter(r=>filter==="Semua"||r.category===filter);
-  $("scheduleList").innerHTML=rows.length?`<div class="schedule-head"><span>Masa</span><span>Acara / Pertandingan</span><span>Kategori</span><span>Tempat</span><span>Status</span></div>`+rows.map(r=>`<div class="schedule-row"><b>${SHOW_SCHEDULE_TIMES&&r.time?safe(r.time):"—"}</b><div><strong>${safe(r.event)}</strong><small>${safe(r.note||"")}</small></div><span class="tag">${safe(r.category)}</span><span>${safe(r.venue||"—")}</span><span>${safe(r.status||"Dijadualkan")}</span></div>`).join(""):`<div class="empty light">Atur cara dan pertandingan belum dimasukkan untuk tahun ${safe(year)}.</div>`;
+  const rows=officialSchedule().filter(r=>filter==="Semua"||r.category===filter);
+  if(!rows.length){
+    $("scheduleList").innerHTML=`<div class="empty light">Jadual rasmi tiga hari belum diterbitkan untuk tahun ${safe(year)}. Tarikh, hari dan masa akan dipaparkan selepas disahkan.</div>`;
+    return;
+  }
+  const grouped=rows.reduce((groups,row)=>{
+    const key=row.championshipDay;
+    (groups[key]||(groups[key]=[])).push(row);
+    return groups;
+  },{});
+  $("scheduleList").innerHTML=Object.keys(grouped).sort((a,b)=>scheduleDayNumber(a)-scheduleDayNumber(b)).map(day=>{
+    const dayRows=grouped[day],first=dayRows[0];
+    const dateLine=[first.weekday,first.date].filter(Boolean).map(safe).join(" • ");
+    return `<section class="schedule-day"><div class="schedule-day-title"><div><small>HARI KEJOHANAN</small><h3>${safe(day)}</h3></div><span>${dateLine}</span></div><div class="schedule-head"><span>Masa</span><span>Acara / Pertandingan</span><span>Kategori</span><span>Tempat</span><span>Status</span></div>${dayRows.map(r=>`<div class="schedule-row"><b>${safe(r.time)}</b><div><strong>${safe(r.event)}</strong><small>${safe(r.note||"")}</small></div><span class="tag">${safe(r.category)}</span><span>${safe(r.venue||"—")}</span><span>${safe(r.status||"Dijadualkan")}</span></div>`).join("")}</section>`;
+  }).join("");
 }
 
 function normalizeEvent(value){return String(value||"").toLowerCase().replace(/[×x]/g,"x").replace(/\s+/g," ").trim()}
 function competitionEvents(){
   const seen=new Set();
-  return (current().schedule||[]).filter(r=>["Balapan","Padang"].includes(r.category)&&!/^rehat/i.test(r.event||"")).filter(r=>{
+  return officialSchedule().filter(r=>["Balapan","Padang"].includes(r.category)&&!/^rehat/i.test(r.event||"")).filter(r=>{
     const key=normalizeEvent(r.event);if(!key||seen.has(key))return false;seen.add(key);return true;
   });
 }
 function renderMatchups(){
   const events=competitionEvents();
   $("matchupGrid").innerHTML=events.length?events.map((event,eventIndex)=>{
-    const timeBadge=SHOW_SCHEDULE_TIMES&&event.time?`<span>${safe(event.time)}</span>`:"";
+    const timeBadge=SHOW_SCHEDULE_TIMES&&event.time?`<span>${safe(event.championshipDay)} • ${safe(event.time)}</span>`:"";
     const lanes=HOUSE_ORDER.map((name,laneIndex)=>{
       const entries=(house(name).participants||[]).filter(p=>normalizeEvent(p.event)===normalizeEvent(event.event));
       const participants=entries.length?entries.map(p=>`<b class="match-name">${safe(p.name)}</b>`).join(""):`<span class="match-empty">Belum didaftarkan<small>Isi melalui AppSheet → Penyertaan</small></span>`;
