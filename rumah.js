@@ -1,5 +1,5 @@
-const HOUSE_ORDER=["Biru","Kuning","Ungu","Merah"];
-const HOUSE_META={Biru:{color:"#246bfd"},Kuning:{color:"#e5ad00"},Ungu:{color:"#5b3fd0"},Merah:{color:"#df3f47"}};
+const HOUSE_ORDER=["Biru","Kuning","Hijau","Ungu","Merah"];
+const HOUSE_META={Biru:{color:"#246bfd"},Kuning:{color:"#e5ad00"},Hijau:{color:"#15965a"},Ungu:{color:"#5b3fd0"},Merah:{color:"#df3f47"}};
 const safe=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const show=value=>value?safe(value):'<span class="not-set">Belum diisi</span>';
 const params=new URLSearchParams(location.search);
