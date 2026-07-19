@@ -2,18 +2,78 @@
   "years": {
     "2026": {
       "houses": {
-        "Merah": { "teacher": "", "motto": "", "slogan": "", "captain": "", "bannerBearer": "", "flagBearer": "", "members": [], "participants": [], "marchingTeam": [] },
-        "Biru": { "teacher": "", "motto": "", "slogan": "", "captain": "", "bannerBearer": "", "flagBearer": "", "members": [], "participants": [], "marchingTeam": [] },
-        "Kuning": { "teacher": "", "motto": "", "slogan": "", "captain": "", "bannerBearer": "", "flagBearer": "", "members": [], "participants": [], "marchingTeam": [] },
-        "Hijau": { "teacher": "", "motto": "", "slogan": "", "captain": "", "bannerBearer": "", "flagBearer": "", "members": [], "participants": [], "marchingTeam": [] },
-        "Purple": { "teacher": "", "motto": "", "slogan": "", "captain": "", "bannerBearer": "", "flagBearer": "", "members": [], "participants": [], "marchingTeam": [] }
+        "Biru": {
+          "officialName": "Tun Hussein Onn",
+          "teacher": "Muhamadian bin Suaibu (K); Hj. Junaid bin Nurpin; Roni bin Bacho; Asmadi bin Lajjakasi; Noze binti Tukijan; Bajam binti Ladung; Siti Rabia binti Ibrahim; Nurul Anisa binti Saparudin; Siti Jawara binti Lukman; Faridah binti Sunu; Rasmawati binti Tause",
+          "motto": "",
+          "slogan": "",
+          "captain": "",
+          "bannerBearer": "",
+          "flagBearer": "",
+          "members": [],
+          "participants": [],
+          "marchingTeam": []
+        },
+        "Kuning": {
+          "officialName": "Tun Abdul Razak",
+          "teacher": "Norlina binti Bagwas (K); Mohd. Ikhwan bin Abdurais; Hasnan bin Mat Zin; Hamsiah binti Hamid; Wafa Farhana binti Abd. Kadir; Evalorenna binti Laminsin; Noor Syafiqah Nadhirah binti; Ruhaya binti Ahmad; Nechi binti Serunai; Yusni binti Wahjudin; Sunarti binti Tappa",
+          "motto": "",
+          "slogan": "",
+          "captain": "",
+          "bannerBearer": "",
+          "flagBearer": "",
+          "members": [],
+          "participants": [],
+          "marchingTeam": []
+        },
+        "Ungu": {
+          "officialName": "Tunku Abdul Rahman",
+          "alternateColorName": "Indigo",
+          "teacher": "Halim bin Bidi (K); Ag. Ku Kemaindra Pg. Mohd. Taib; Mohd. Fikrey bin Abd. Gapar; Jainah binti Sulaiman; Siti Naurin Fadzilah binti Jalal; Ani binti Patola; Mariana binti Kassim; Rosminah bte Sapar; Marini binti Ladi; Ainatun Nadhirah bt. Dharmawi; Salsabilah binti Shahruddin",
+          "motto": "",
+          "slogan": "",
+          "captain": "",
+          "bannerBearer": "",
+          "flagBearer": "",
+          "members": [],
+          "participants": [],
+          "marchingTeam": []
+        },
+        "Merah": {
+          "officialName": "Tun Mahathir",
+          "teacher": "Hjh. Masturah binti Tuda (K); Tanjang Ture; Zamrie bin Omar Ali; Hj. Wan Muhamad Yusuf; Sabriah @ Habibah binti Abdul Sabar; Rini Daud; Darmawati binti Lokkong; S. Lili binti Ladi; Nur Faezah binti Bantalani; Rabiatul Aidawiyah binti Abdullah",
+          "motto": "",
+          "slogan": "",
+          "captain": "",
+          "bannerBearer": "",
+          "flagBearer": "",
+          "members": [],
+          "participants": [],
+          "marchingTeam": []
+        }
       },
       "schedule": [],
       "results": []
     },
-    "2027": { "houses": {}, "schedule": [], "results": [] },
-    "2028": { "houses": {}, "schedule": [], "results": [] },
-    "2029": { "houses": {}, "schedule": [], "results": [] },
-    "2030": { "houses": {}, "schedule": [], "results": [] }
+    "2027": {
+      "houses": {},
+      "schedule": [],
+      "results": []
+    },
+    "2028": {
+      "houses": {},
+      "schedule": [],
+      "results": []
+    },
+    "2029": {
+      "houses": {},
+      "schedule": [],
+      "results": []
+    },
+    "2030": {
+      "houses": {},
+      "schedule": [],
+      "results": []
+    }
   }
 }
