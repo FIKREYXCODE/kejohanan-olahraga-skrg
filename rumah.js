@@ -7,12 +7,12 @@ async function loadDatabase(){
     if(!response.ok)throw Error("API tidak tersedia");
     const live=await response.json();
     if(live.error||!live.years)throw Error(live.message||"Data API tidak sah");
-    window.__dataSource="Google Sheet";
+    window.__dataSource="Google Sheet";document.documentElement.dataset.dataSource="google-sheet";
     return live;
   }catch(error){
     const fallback=await fetch("data.json",{cache:"no-store"});
     if(!fallback.ok)throw error;
-    window.__dataSource="Sandaran GitHub";
+    window.__dataSource="Sandaran GitHub";document.documentElement.dataset.dataSource="github-fallback";
     return fallback.json();
   }
 }
