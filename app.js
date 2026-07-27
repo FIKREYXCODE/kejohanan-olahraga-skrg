@@ -48,7 +48,7 @@ function render(){
   const d=current(),members=HOUSE_ORDER.reduce((n,name)=>n+(house(name).members||[]).length,0),participants=allParticipants();
   $("heroYear").textContent=$("stampYear").textContent=year;
   $("houseCount").textContent=HOUSE_ORDER.length;$("memberCount").textContent=members;$("participantCount").textContent=participants.length;$("eventCount").textContent=officialSchedule().length;
-  renderHouseCards();renderMedals();renderWinners();renderSchedule();renderMatchups();renderParticipants();
+  renderHouseCards();renderMedals();renderAwards();renderWinners();renderSchedule();renderMatchups();renderParticipants();
 }
 
 function renderHouseCards(){
@@ -71,7 +71,43 @@ function medalRows(){
 }
 function renderMedals(){
   const rows=medalRows(),hasResults=rows.some(r=>r.total>0);
-  $("medalTable").innerHTML=`<div class="medal-head"><span>Kedudukan</span><span>Rumah</span><span>🥇 Emas</span><span>🥈 Perak</span><span>🥉 Gangsa</span><span>Jumlah</span></div>${rows.map((r,i)=>`<div class="medal-row"><b>${hasResults?i+1:'—'}</b><strong style="--house:${HOUSE_META[r.name].color}"><i></i>Rumah ${r.name}</strong><span>${r.gold}</span><span>${r.silver}</span><span>${r.bronze}</span><b>${r.total}</b></div>`).join("")}${!hasResults?'<p class="table-note">Belum ada pingat direkodkan untuk tahun ini.</p>':''}`;
+  $("medalTable").innerHTML=`<div class="medal-head"><span>Kedudukan</span><span>Rumah</span><span>🥇 Emas</span><span>🥈 Perak</span><span>🥉 Gangsa</span><span>Jumlah</span></div>${rows.map((r,i)=>`<div class="medal-row ${hasResults&&i===0?'champion-row':''}"><b>${hasResults?i+1:'—'}</b><strong style="--house:${HOUSE_META[r.name].color}"><i></i>Rumah ${r.name}${hasResults&&i===0?'<em>🏆 JUARA RUMAH</em>':''}</strong><span>${r.gold}</span><span>${r.silver}</span><span>${r.bronze}</span><b>${r.total}</b></div>`).join("")}${!hasResults?'<p class="table-note">Belum ada pingat direkodkan untuk tahun ini.</p>':''}`;
+}
+
+function resultGender(row){
+  const value=String(row.gender||"").toLowerCase();
+  if(value.includes("perempuan")||value.includes("wanita")||value.includes("puteri"))return "Perempuan";
+  if(value.includes("lelaki")||value.includes("putera"))return "Lelaki";
+  const event=String(row.event||"").toLowerCase();
+  if(/perempuan|wanita|puteri/.test(event))return "Perempuan";
+  if(/lelaki|putera/.test(event))return "Lelaki";
+  return "";
+}
+function athleteLeaders(gender){
+  const standings=new Map();
+  (current().results||[]).filter(r=>[1,2,3].includes(Number(r.place))&&resultGender(r)===gender).forEach(r=>{
+    const key=String(r.athleteId||"").trim()||`${r.house}|${r.athlete}`;
+    if(!standings.has(key))standings.set(key,{name:r.athlete,house:r.house,gold:0,silver:0,bronze:0});
+    const athlete=standings.get(key);
+    if(Number(r.place)===1)athlete.gold++;
+    if(Number(r.place)===2)athlete.silver++;
+    if(Number(r.place)===3)athlete.bronze++;
+  });
+  const rows=[...standings.values()].sort((a,b)=>b.gold-a.gold||b.silver-a.silver||b.bronze-a.bronze||HOUSE_ORDER.indexOf(a.house)-HOUSE_ORDER.indexOf(b.house)||String(a.name).localeCompare(String(b.name)));
+  if(!rows.length)return[];
+  const best=rows[0];
+  return rows.filter(r=>r.gold===best.gold&&r.silver===best.silver&&r.bronze===best.bronze);
+}
+function renderAwards(){
+  const awards=[
+    {title:"Olahragawan",gender:"Lelaki",icon:"♂"},
+    {title:"Olahragawati",gender:"Perempuan",icon:"♀"}
+  ];
+  $("awardCards").innerHTML=awards.map(item=>{
+    const leaders=athleteLeaders(item.gender);
+    if(!leaders.length)return `<article class="award-card empty-award"><span>${item.icon}</span><div><small>${item.title.toUpperCase()}</small><strong>Belum ditentukan</strong><p>Keputusan ${item.gender.toLowerCase()} belum lengkap.</p></div></article>`;
+    return leaders.map((winner,index)=>`<article class="award-card" style="--house:${HOUSE_META[winner.house]?.color||'#0b46a5'}"><span>${item.icon}</span><div><small>${safe(item.title.toUpperCase())}${leaders.length>1?' • SERI':''}</small><strong>${safe(winner.name)}</strong><p>Rumah ${safe(winner.house)} • 🥇 ${winner.gold} &nbsp; 🥈 ${winner.silver} &nbsp; 🥉 ${winner.bronze}</p></div></article>`).join("");
+  }).join("");
 }
 
 function renderWinners(){
