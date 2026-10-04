@@ -41,6 +41,7 @@ async function start(){
     document.getElementById("profileYear").textContent=year;
     document.getElementById("profileOfficial").textContent=officialName;
     document.getElementById("profileHouse").textContent=`Rumah ${houseName} • Sekolah Kebangsaan Ranggu`;
+    document.getElementById("profileLogoText").textContent={Biru:"THO",Kuning:"TAR",Ungu:"TuAR",Merah:"TM"}[houseName];
 
     const teachers=(h.teacher||"").split(";").map(x=>x.trim()).filter(Boolean);
     document.getElementById("teacherCount").textContent=`${teachers.length} guru`;
@@ -67,7 +68,7 @@ async function start(){
     document.getElementById("marchingList").innerHTML=renderNames(marching,"Belum ada barisan kawad kaki didaftarkan.");
     document.getElementById("participantList").innerHTML=participants.length?`<div class="profile-table"><div class="profile-table-head"><span>Nama murid</span><span>Acara</span><span>Kategori</span></div>${participants.map(p=>`<div><b>${safe(p.name)}</b><span>${safe(p.event)}</span><span>${safe(p.category||"—")}</span></div>`).join("")}</div>`:'<p class="profile-empty">Belum ada peserta acara didaftarkan.</p>';
   }catch(error){
-    document.getElementById("profileMain").innerHTML='<div class="profile-error"><h2>Profil belum tersedia</h2><p>Maklumat rumah sukan tidak dapat dibaca buat masa ini.</p><a class="primary" href="index.html#rumah">Kembali ke rumah sukan</a></div>';
+    document.getElementById("profileMain").innerHTML='<div class="profile-error"><h2>Profil belum tersedia</h2><p>Maklumat rumah sukan tidak dapat dibaca buat masa ini.</p><a class="primary" href="rumah-sukan.html">Kembali ke rumah sukan</a></div>';
   }
 }
 start();

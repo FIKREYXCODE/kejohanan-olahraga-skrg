@@ -32,6 +32,7 @@
 .profile-hero{position:relative;overflow:hidden;background:var(--house);color:#fff;padding:74px 7vw 70px}
 .profile-hero:after{content:"";position:absolute;width:430px;height:430px;border:80px solid rgba(255,255,255,.08);border-radius:50%;right:-150px;top:-190px}
 .profile-hero-inner{position:relative;z-index:1;max-width:1050px}
+.profile-temp-logo{width:112px;height:128px;margin-bottom:26px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.75);clip-path:polygon(50% 0,92% 12%,86% 73%,50% 100%,14% 73%,8% 12%);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;filter:drop-shadow(0 10px 10px rgba(0,0,0,.18))}.profile-temp-logo span{font-size:25px;font-weight:900;border-top:2px solid #fff;border-bottom:2px solid #fff;padding:5px 0}.profile-temp-logo small{font-size:5px;font-weight:900;letter-spacing:.12em;margin-top:8px}
 .profile-kicker{display:flex;align-items:center;gap:9px;font-size:9px;font-weight:900;letter-spacing:.14em}
 .profile-kicker i{width:9px;height:9px;border-radius:50%;background:#fff}
 .profile-hero h1{font-size:clamp(54px,8vw,106px);line-height:.82;letter-spacing:-.075em;text-transform:uppercase;margin:23px 0 16px;max-width:900px}
