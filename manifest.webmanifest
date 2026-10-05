@@ -1,15 +1,24 @@
 {
-  "name": "SK Ranggu SportsSync",
-  "short_name": "SportsSync SKR",
+  "id": "./",
+  "name": "KOT 26 • SK Ranggu",
+  "short_name": "KOT 26",
   "description": "Sistem pengurusan Kejohanan Olahraga Tahunan Sekolah Kebangsaan Ranggu, Tawau",
-  "start_url": "./index.html",
+  "lang": "ms-MY",
+  "start_url": "./index.html?source=pwa",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#f4f7fb",
+  "background_color": "#062e69",
   "theme_color": "#062e69",
   "icons": [
-    {"src":"assets/icon-192.jpg","sizes":"192x192","type":"image/jpeg","purpose":"any"},
-    {"src":"assets/icon-512.jpg","sizes":"512x512","type":"image/jpeg","purpose":"any maskable"}
+    {"src":"assets/pwa/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"assets/pwa/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"},
+    {"src":"assets/pwa/maskable-192.png","sizes":"192x192","type":"image/png","purpose":"maskable"},
+    {"src":"assets/pwa/maskable-512.png","sizes":"512x512","type":"image/png","purpose":"maskable"}
+  ],
+  "shortcuts": [
+    {"name":"Papan Markah","short_name":"Pingat","url":"./pingat.html","icons":[{"src":"assets/pwa/icon-192.png","sizes":"192x192","type":"image/png"}]},
+    {"name":"Portal Guru","short_name":"Guru","url":"./guru.html","icons":[{"src":"assets/pwa/icon-192.png","sizes":"192x192","type":"image/png"}]},
+    {"name":"Atur Cara","short_name":"Jadual","url":"./aturcara.html","icons":[{"src":"assets/pwa/icon-192.png","sizes":"192x192","type":"image/png"}]}
   ]
 }
