@@ -31,6 +31,9 @@ function doPost(e) {
     if (action === "saveEntry") return jsonResponse(saveEntry_(body));
     if (action === "deleteEntry") return jsonResponse(deleteEntry_(body));
     if (action === "saveHouseProfile") return jsonResponse(saveHouseProfile_(body));
+    if (action === "saveResult") return jsonResponse(saveResult_(body));
+    if (action === "deleteResult") return jsonResponse(deleteResult_(body));
+    if (action === "saveAthletePhoto") return jsonResponse(saveAthletePhoto_(body));
     if (action === "adminUsers") return jsonResponse(adminUsers_(body));
     if (action === "saveUser") return jsonResponse(saveUser_(body));
     if (action === "saveSettings") return jsonResponse(saveSettings_(body));
@@ -82,7 +85,7 @@ function emptyHouse(officialName) {
 function ensureYear(data, year) {
   year = String(year || "2026").trim();
   if (!data.years[year]) {
-    data.years[year] = { houses: {}, events: [], schedule: [], results: [], committee: [] };
+    data.years[year] = { houses: {}, events: [], schedule: [], results: [], athletePhotos: {}, committee: [] };
     HOUSE_ORDER.forEach(name => data.years[year].houses[name] = emptyHouse(""));
   }
   return data.years[year];
@@ -214,7 +217,20 @@ function buildPublicData() {
       athlete: row["Nama Murid"] || pupilInfo["Nama Murid"] || "",
       gender: pupilInfo["Jantina"] || "",
       house: row["Rumah"] || pupilInfo["Rumah"] || "",
-      mark: row["Catatan"] || ""
+      mark: row["Catatan"] || "",
+      value: Number(String(row["Nilai"] || "").replace(",", ".")) || 0,
+      unit: row["Unit"] || "",
+      status: row["Status"] || "Rasmi"
+    });
+  });
+
+  const photoRows = rowsFrom("Foto Atlet");
+  Object.keys(output.years).forEach(year => {
+    const yearData = output.years[year];
+    const leaders = awardLeaders_(yearData.results || []);
+    [leaders.Lelaki, leaders.Perempuan].filter(Boolean).forEach(leader => {
+      const photo = photoRows.find(row => String(row["Tahun"] || "") === year && String(row["ID Murid"] || "") === leader.athleteId);
+      if (photo && photo["Foto"]) yearData.athletePhotos[leader.athleteId] = photo["Foto"];
     });
   });
 
@@ -386,11 +402,15 @@ function teacherData_(body) {
   const eventRows = rowsFrom("Acara").filter(row => String(row["Tahun"] || "") === year && row["ID Acara"]);
   const eventById = Object.fromEntries(eventRows.map(row => [String(row["ID Acara"]), row]));
   const houseUsers = users_().users.filter(user => user.house === requestedHouse);
+  const canJudge = canJudge_(session);
+  const allEntries = canJudge ? rowsFrom("Penyertaan").filter(row => String(row["Tahun"] || "") === year && !/batal/i.test(String(row["Status"] || ""))) : [];
+  const allResults = canJudge ? resultRows_(year, eventById) : [];
   return {
     ok: true,
     user: session,
     house: requestedHouse,
     isAdmin,
+    canJudge,
     houses: HOUSE_ORDER,
     settings: publicData.settings || {},
     profile: yearData.houses[requestedHouse] || {},
@@ -410,8 +430,71 @@ function teacherData_(body) {
       ic: isAdmin ? user.ic : ""
     })),
     events: eventRows.map(row => ({ id: row["ID Acara"] || "", name: row["Nama Acara"] || "", discipline: row["Kategori"] || "", stage: row["Peringkat"] || "", categoryCode: row["Kod Kategori"] || "", cohort: row["Kumpulan Tahun"] || "", gender: row["Jantina"] || "", type: row["Jenis Acara"] || "", note: row["Catatan"] || "" })),
+    judgeEntries: allEntries.map(row => ({ id: row["ID Penyertaan"] || "", pupilId: row["ID Murid"] || "", name: row["Nama Murid"] || "", house: row["Rumah"] || "", eventId: row["Acara"] || "" })),
+    officialResults: allResults,
+    awardLeaders: awardLeaders_(allResults),
     rules: { individualPerPupil: 2, groupPerPupil: 1, individualPerHouseEvent: 2, relayRunnersPerHouseEvent: 4 }
   };
+}
+
+function canJudge_(session) {
+  return /admin|pengadil|juri|teknikal/i.test(String(session && session.role || ""));
+}
+
+function requireJudge_(session) {
+  if (!canJudge_(session)) throw new Error("Hanya pengadil, petugas teknikal atau pentadbir boleh merekod keputusan.");
+}
+
+function resultRows_(year, eventById) {
+  const pupils = rowsFrom("Murid");
+  const pupilById = Object.fromEntries(pupils.map(row => [String(row["ID Murid"] || ""), row]));
+  return rowsFrom("Keputusan").filter(row => String(row["Tahun"] || "") === String(year)).map(row => {
+    const eventId = String(row["Acara"] || ""), athleteId = String(row["ID Murid"] || "");
+    const event = eventById[eventId] || {}, pupil = pupilById[athleteId] || {};
+    return {
+      id: row["ID Keputusan"] || "",
+      eventId,
+      event: event["Nama Acara"] || eventId,
+      discipline: event["Kategori"] || "",
+      type: eventKind_(event["Jenis Acara"] || event["Nama Acara"]),
+      category: event["Kumpulan Tahun"] || row["Kategori"] || "",
+      gender: normalizeGender_(event["Jantina"] || pupil["Jantina"]),
+      athleteId,
+      athlete: row["Nama Murid"] || pupil["Nama Murid"] || "",
+      house: row["Rumah"] || pupil["Rumah"] || "",
+      value: Number(String(row["Nilai"] || "").replace(",", ".")) || 0,
+      unit: row["Unit"] || "",
+      mark: row["Catatan"] || "",
+      place: Number(row["Kedudukan"]) || 0,
+      status: row["Status"] || "Rasmi",
+      recordedBy: row["Dicatat Oleh"] || ""
+    };
+  });
+}
+
+function resultPoints_(place) {
+  return ({ 1: 7, 2: 5, 3: 3, 4: 1 })[Number(place)] || 0;
+}
+
+function awardLeaders_(results) {
+  const grouped = {};
+  (results || []).filter(row => row.athleteId && eventKind_(row.type || row.event) === "Individu" && [1, 2, 3, 4].includes(Number(row.place))).forEach(row => {
+    const gender = normalizeGender_(row.gender || row.eventGender);
+    if (!gender) return;
+    const key = gender + "|" + row.athleteId;
+    if (!grouped[key]) grouped[key] = { athleteId: row.athleteId, name: row.athlete || "", house: row.house || "", gender, gold: 0, silver: 0, bronze: 0, fourth: 0, points: 0 };
+    const item = grouped[key], place = Number(row.place);
+    if (place === 1) item.gold++;
+    if (place === 2) item.silver++;
+    if (place === 3) item.bronze++;
+    if (place === 4) item.fourth++;
+    item.points += resultPoints_(place);
+  });
+  const output = { Lelaki: null, Perempuan: null };
+  Object.keys(output).forEach(gender => {
+    output[gender] = Object.values(grouped).filter(item => item.gender === gender).sort((a, b) => b.points - a.points || b.gold - a.gold || b.silver - a.silver || b.bronze - a.bronze || a.name.localeCompare(b.name))[0] || null;
+  });
+  return output;
 }
 
 function maskIc_(value) {
@@ -543,6 +626,105 @@ function deleteEntry_(body) {
   spreadsheet_().getSheetByName("Penyertaan").deleteRow(entry.__row);
   audit_(session, "PADAM PENYERTAAN", id, String(entry["Nama Murid"] || entry["ID Murid"] || ""));
   return { ok: true, message: "Penyertaan telah dipadam." };
+}
+
+function resultMode_(event) {
+  const text = [event["Kategori"], event["Nama Acara"], event["Catatan"]].join(" ");
+  return /lompat|lontar|baling|rejam|padang/i.test(text) ? "higher" : "lower";
+}
+
+function suggestedUnit_(event) {
+  return resultMode_(event) === "higher" ? "meter" : "saat";
+}
+
+function formatMark_(value, unit) {
+  const number = Number(value);
+  const digits = unit === "saat" ? 2 : 2;
+  const label = unit === "saat" ? "s" : unit === "sentimeter" ? "cm" : "m";
+  return number.toFixed(digits) + " " + label;
+}
+
+function rankResultRows_(rows, mode) {
+  const direction = mode === "higher" ? -1 : 1;
+  const sorted = rows.slice().sort((a, b) => direction * (Number(a.value) - Number(b.value)));
+  let lastValue = null, rank = 0;
+  return sorted.map((row, index) => {
+    const value = Number(row.value);
+    if (lastValue === null || value !== lastValue) rank = index + 1;
+    lastValue = value;
+    return { ...row, rank };
+  });
+}
+
+function rerankEvent_(year, eventId, event) {
+  const context = dataSheet_("Keputusan", ["ID Keputusan", "Tahun", "Acara", "Kategori", "Kedudukan", "ID Murid", "Nama Murid", "Rumah", "Catatan", "Nilai", "Unit", "Status", "Dicatat Oleh", "Tarikh Catat"]);
+  const rows = rowsFrom("Keputusan").filter(row => String(row["Tahun"] || "") === year && String(row["Acara"] || "") === eventId && Number(String(row["Nilai"] || "").replace(",", ".")) > 0);
+  rankResultRows_(rows.map(row => ({ row, value: Number(String(row["Nilai"]).replace(",", ".")) })), resultMode_(event)).forEach(item => {
+    writeRecord_(context, item.row.__row, { "Kedudukan": item.rank, "Catatan": formatMark_(item.value, item.row["Unit"] || suggestedUnit_(event)) });
+  });
+}
+
+function saveResult_(body) {
+  const session = requireSession_(body.token); requireJudge_(session);
+  if (session.mustChange) throw new Error("Tukar kata laluan sementara sebelum merekod keputusan.");
+  const year = String(body.year || "2026").trim(), eventId = String(body.eventId || "").trim();
+  const value = Number(String(body.value || "").replace(",", "."));
+  const unit = String(body.unit || "").trim().toLowerCase();
+  if (!eventId || !(value > 0)) throw new Error("Pilih acara dan masukkan catatan angka yang sah.");
+  if (!["saat", "meter", "sentimeter"].includes(unit)) throw new Error("Unit catatan tidak sah.");
+  const event = rowsFrom("Acara").find(row => String(row["Tahun"] || "") === year && String(row["ID Acara"] || "") === eventId);
+  if (!event) throw new Error("Acara tidak dijumpai untuk tahun ini.");
+  const mode = resultMode_(event);
+  if (mode === "lower" && unit !== "saat") throw new Error("Acara balapan mesti direkodkan dalam unit saat.");
+  if (mode === "higher" && !["meter", "sentimeter"].includes(unit)) throw new Error("Acara padang mesti direkodkan dalam meter atau sentimeter.");
+  const normalizedValue = unit === "sentimeter" ? value / 100 : value;
+  const normalizedUnit = unit === "sentimeter" ? "meter" : unit;
+  const kind = eventKind_(event["Jenis Acara"] || event["Nama Acara"]), entries = rowsFrom("Penyertaan").filter(row => String(row["Tahun"] || "") === year && String(row["Acara"] || "") === eventId && !/batal/i.test(String(row["Status"] || "")));
+  let athleteId = String(body.athleteId || "").trim(), athlete = "", house = String(body.house || "").trim();
+  if (kind === "Berkumpulan") {
+    if (!HOUSE_ORDER.includes(house) || !entries.some(row => String(row["Rumah"] || "") === house)) throw new Error("Pilih pasukan rumah yang berdaftar untuk acara relay ini.");
+    athleteId = ""; athlete = "Pasukan Rumah " + house;
+  } else {
+    const entry = entries.find(row => String(row["ID Murid"] || "") === athleteId);
+    if (!entry) throw new Error("Peserta tidak didaftarkan untuk acara ini.");
+    athlete = entry["Nama Murid"] || ""; house = entry["Rumah"] || "";
+  }
+  const rows = rowsFrom("Keputusan");
+  const existing = rows.find(row => String(row["Tahun"] || "") === year && String(row["Acara"] || "") === eventId && (kind === "Berkumpulan" ? String(row["Rumah"] || "") === house : String(row["ID Murid"] || "") === athleteId));
+  const id = existing ? String(existing["ID Keputusan"] || "") : nextId_("K" + year.slice(-2));
+  const context = dataSheet_("Keputusan", ["ID Keputusan", "Tahun", "Acara", "Kategori", "Kedudukan", "ID Murid", "Nama Murid", "Rumah", "Catatan", "Nilai", "Unit", "Status", "Dicatat Oleh", "Tarikh Catat"]);
+  writeRecord_(context, existing && existing.__row, { "ID Keputusan": id, "Tahun": year, "Acara": eventId, "Kategori": event["Kumpulan Tahun"] || "", "ID Murid": athleteId, "Nama Murid": athlete, "Rumah": house, "Catatan": formatMark_(normalizedValue, normalizedUnit), "Nilai": normalizedValue, "Unit": normalizedUnit, "Status": "Rasmi", "Dicatat Oleh": session.name || session.id, "Tarikh Catat": new Date() });
+  rerankEvent_(year, eventId, event);
+  audit_(session, existing ? "KEMAS KINI KEPUTUSAN" : "CATAT KEPUTUSAN", id, (event["Nama Acara"] || eventId) + " • " + athlete + " • " + formatMark_(normalizedValue, normalizedUnit));
+  return { ok: true, id, message: "Catatan disimpan. Kedudukan dan mata telah dikira semula secara automatik." };
+}
+
+function deleteResult_(body) {
+  const session = requireSession_(body.token); requireJudge_(session);
+  const id = String(body.id || "").trim(), row = rowsFrom("Keputusan").find(item => String(item["ID Keputusan"] || "") === id);
+  if (!row) throw new Error("Rekod keputusan tidak dijumpai.");
+  const year = String(row["Tahun"] || ""), eventId = String(row["Acara"] || "");
+  const event = rowsFrom("Acara").find(item => String(item["Tahun"] || "") === year && String(item["ID Acara"] || "") === eventId) || {};
+  spreadsheet_().getSheetByName("Keputusan").deleteRow(row.__row);
+  rerankEvent_(year, eventId, event);
+  audit_(session, "PADAM KEPUTUSAN", id, String(row["Nama Murid"] || row["Rumah"] || ""));
+  return { ok: true, message: "Keputusan dipadam dan kedudukan dikira semula." };
+}
+
+function saveAthletePhoto_(body) {
+  const session = requireSession_(body.token); requireJudge_(session);
+  if (String(body.consent || "").toUpperCase() !== "YA") throw new Error("Sahkan kebenaran paparan foto murid sebelum memuat naik.");
+  const year = String(body.year || "2026"), athleteId = String(body.athleteId || "").trim();
+  const photo = String(body.photo || "");
+  if (!/^data:image\/(jpeg|png|webp);base64,/i.test(photo)) throw new Error("Pilih fail gambar JPG, PNG atau WebP yang sah.");
+  if (photo.length > 48000) throw new Error("Saiz gambar masih terlalu besar. Pilih gambar lain.");
+  const pupil = rowsFrom("Murid").find(row => String(row["Tahun"] || "") === year && String(row["ID Murid"] || "") === athleteId);
+  if (!pupil) throw new Error("Rekod atlet tidak dijumpai.");
+  const context = dataSheet_("Foto Atlet", ["Tahun", "ID Murid", "Nama Murid", "Rumah", "Foto", "Dikemaskini Oleh", "Tarikh Kemaskini"]);
+  const existing = rowsFrom("Foto Atlet").find(row => String(row["Tahun"] || "") === year && String(row["ID Murid"] || "") === athleteId);
+  writeRecord_(context, existing && existing.__row, { "Tahun": year, "ID Murid": athleteId, "Nama Murid": pupil["Nama Murid"] || "", "Rumah": pupil["Rumah"] || "", "Foto": photo, "Dikemaskini Oleh": session.name || session.id, "Tarikh Kemaskini": new Date() });
+  audit_(session, "MUAT NAIK FOTO ATLET", athleteId, String(pupil["Nama Murid"] || ""));
+  return { ok: true, message: "Gambar atlet berjaya disimpan untuk paparan awam." };
 }
 
 function saveHouseProfile_(body) {
