@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Portal catatan rasmi pengadil Kejohanan Olahraga SK Ranggu">
+  <title>Portal Pengadil | SK Ranggu</title>
+  <link rel="stylesheet" href="portal.css?v=20261005judge1">
+  <link rel="stylesheet" href="guru.css?v=20261005judge1">
+</head>
+<body class="judge-page">
+  <div class="credit-strip"><span>CATATAN RASMI KEJOHANAN</span><span>Dibangunkan oleh <b>Cikgu Mohammad Fikrey bin Abdul Gapar</b></span></div>
+  <header class="site-bar teacher-bar">
+    <a class="school-brand" href="index.html"><img class="logo-kpm" src="assets/kpm.png" alt="Logo KPM"><img class="logo-school" src="assets/skrg.jpeg" alt="Logo SK Ranggu"><span><b>PORTAL PENGADIL SK RANGGU</b><small>Masa, jarak, kedudukan dan statistik rasmi</small></span></a>
+    <div class="bar-tools"><a class="teacher-login" href="guru.html">Portal Guru</a><a class="admin-link" href="index.html">Laman Utama</a></div>
+  </header>
+  <main class="judge-shell">
+    <section class="judge-intro" id="judgeIntro">
+      <div><span class="hero-pill">⏱ AKSES TERKAWAL • KOT 26</span><h1>Catat tepat.<br><em>Kira automatik.</em></h1><p>Setiap kod hanya membuka acara yang ditugaskan kepada pengadil. Masa terendah menang bagi balapan; ukuran tertinggi menang bagi acara padang.</p><div class="judge-benefits"><article><b>01</b><span>Skop acara khusus</span></article><article><b>02</b><span>Rekod petugas</span></article><article><b>03</b><span>Kedudukan automatik</span></article></div></div>
+      <form class="judge-login-card" id="judgeLoginForm"><small>PORTAL RASMI PENGADIL</small><h2>Masukkan kod akses</h2><p>Kod diberi oleh Admin Sistem mengikut acara atau tugasan.</p><label><span>KOD AKSES PENGADIL</span><input id="judgeCode" autocomplete="one-time-code" placeholder="Contoh: PG26-AB12-CD34" required></label><div class="form-message" id="judgeLoginMessage" role="status"></div><button class="auth-submit" type="submit">Buka ruang catatan <span>→</span></button><em>Jangan kongsi kod dengan petugas lain.</em></form>
+    </section>
+    <section class="judge-workspace" id="judgeWorkspace" hidden>
+      <header><div><small>SESI PENGADIL AKTIF</small><h1 id="judgeName">Pengadil</h1><p id="judgeScope">Skop acara</p></div><div><label>Tahun <select id="judgeYear"><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option></select></label><button id="judgeLogout" type="button">Log keluar</button></div></header>
+      <div class="judge-summary"><article><span>🎯</span><b id="judgeEventCount">0</b><small>Acara ditugaskan</small></article><article><span>👟</span><b id="judgeEntryCount">0</b><small>Peserta tersedia</small></article><article><span>✅</span><b id="judgeResultCount">0</b><small>Catatan disimpan</small></article></div>
+      <section class="judge-events"><div class="panel-toolbar"><div><small>ACARA DI BAWAH TUGASAN ANDA</small><h3>Pilih acara untuk memasukkan bacaan</h3></div><button class="workspace-action" id="newJudgeResult" type="button">+ Catat keputusan</button></div><div class="judge-event-grid" id="judgeEventGrid"></div></section>
+      <section class="judge-results"><div class="panel-toolbar"><div><small>KEDUDUKAN LANGSUNG</small><h3>Keputusan yang dijana automatik</h3></div><select id="judgeResultFilter"><option value="">Semua acara</option></select></div><div class="secure-table" id="judgeResultRows"></div></section>
+    </section>
+  </main>
+  <dialog id="judgeResultDialog" class="auth-dialog editor-dialog"><form id="judgeResultForm"><button class="dialog-close" type="button" data-close>×</button><span class="kicker blue">CATATAN RASMI</span><h2>Masukkan bacaan pengadil</h2><label><span>Acara</span><select id="judgeEvent" required></select></label><label><span>Peserta / pasukan</span><select id="judgeContestant" required></select></label><div class="result-measure-grid"><label><span id="judgeValueLabel">Bacaan</span><input id="judgeValue" type="number" min="0.01" step="0.01" inputmode="decimal" required></label><label><span>Unit rasmi</span><select id="judgeUnit" required><option value="saat">Saat</option><option value="meter">Meter</option></select></label></div><div class="eligibility-note" id="judgeGuidance">Pilih acara untuk melihat kaedah pengiraan.</div><div class="form-message" id="judgeResultMessage" role="status"></div><button class="auth-submit" type="submit">Simpan &amp; jana kedudukan</button></form></dialog>
+  <footer class="site-footer compact-footer"><p><b>SEKOLAH KEBANGSAAN RANGGU TAWAU</b><span>Peti Surat 842, 91008 Tawau, Sabah, Malaysia</span></p><p><small>Sistem Kejohanan Olahraga Tahunan</small><b>KOT 26 • Statistik Rasmi</b></p></footer>
+  <script src="pengadil.js?v=20261005judge1"></script>
+</body>
+</html>

@@ -2,6 +2,7 @@ const SPREADSHEET_ID = "1zaqUc03nV4ur8gEPVMlIdJ_Ao2y9DugFrKAhYRpktrA";
 const HOUSE_ORDER = ["Biru", "Kuning", "Ungu", "Merah"];
 const AUTH_SHEET = "Pengguna";
 const AUDIT_SHEET = "Log Aktiviti";
+const JUDGE_SHEET = "Akses Pengadil";
 const SESSION_HOURS = 8;
 const HASH_ROUNDS = 2500;
 const AUTH_BASE_HEADERS = ["ID Guru", "Nama Guru", "Rumah", "Peranan", "Aktif", "No. Kad Pengenalan"];
@@ -23,10 +24,12 @@ function doPost(e) {
     const action = String(body.action || "");
     if (action === "login") return jsonResponse(login_(body));
     if (action === "adminLogin") return jsonResponse(adminLogin_(body));
+    if (action === "judgeLogin") return jsonResponse(judgeLogin_(body));
     if (action === "lookupTeacher") return jsonResponse(lookupTeacher_(body));
     if (action === "changePassword") return jsonResponse(changePassword_(body));
     if (action === "logout") return jsonResponse(logout_(body));
     if (action === "teacherData") return jsonResponse(teacherData_(body));
+    if (action === "judgeData") return jsonResponse(judgeData_(body));
     if (action === "resetPassword") return jsonResponse(resetPassword_(body));
     if (action === "savePupil") return jsonResponse(savePupil_(body));
     if (action === "saveEntry") return jsonResponse(saveEntry_(body));
@@ -40,6 +43,8 @@ function doPost(e) {
     if (action === "adminUsers") return jsonResponse(adminUsers_(body));
     if (action === "saveUser") return jsonResponse(saveUser_(body));
     if (action === "saveSettings") return jsonResponse(saveSettings_(body));
+    if (action === "saveJudgeAccess") return jsonResponse(saveJudgeAccess_(body));
+    if (action === "seedJudgeAccess") return jsonResponse(seedJudgeAccess_(body));
     throw new Error("Tindakan API tidak dikenali.");
   } catch (error) {
     return jsonResponse({ error: true, message: error.message });
@@ -374,6 +379,76 @@ function adminLogin_(body) {
   return { ok: true, token, mustChange: false, user: publicUser_(user, true) };
 }
 
+function judgeAccessContext_() {
+  const headers = ["ID Pengadil", "Nama Pengadil", "Peranan", "Skop Acara", "Kod Akses", "Aktif", "Kemaskini Terakhir"];
+  return dataSheet_(JUDGE_SHEET, headers);
+}
+
+function judgeAccessRows_() {
+  judgeAccessContext_();
+  return rowsFrom(JUDGE_SHEET).map(row => ({
+    row: row.__row,
+    id: String(row["ID Pengadil"] || "").trim(),
+    name: String(row["Nama Pengadil"] || "").trim(),
+    role: String(row["Peranan"] || "Pengadil").trim(),
+    scope: String(row["Skop Acara"] || "SEMUA").trim(),
+    code: String(row["Kod Akses"] || "").trim(),
+    active: !/^(TIDAK|NO|FALSE|0)$/i.test(String(row["Aktif"] || "YA"))
+  })).filter(row => row.id && row.code);
+}
+
+function judgeCode_() {
+  return "PG26-" + Utilities.getUuid().replace(/-/g, "").slice(0, 4).toUpperCase() + "-" + Utilities.getUuid().replace(/-/g, "").slice(0, 4).toUpperCase();
+}
+
+function judgeLogin_(body) {
+  const code = String(body.code || "").trim().toUpperCase();
+  if (!code) throw new Error("Masukkan kod akses pengadil.");
+  enforceRateLimit_("judge-" + code);
+  const judge = judgeAccessRows_().find(row => row.active && secureEqual_(row.code.toUpperCase(), code));
+  if (!judge) { recordFailedAttempt_("judge-" + code); return { error: true, message: "Kod akses pengadil tidak sah atau telah dinyahaktifkan." }; }
+  clearRateLimit_("judge-" + code);
+  const user = { id: judge.id, name: judge.name, house: "", role: judge.role, isJudge: true, judgeScope: judge.scope };
+  const token = createSession_(user, false, false);
+  audit_(user, "LOG MASUK PENGADIL", judge.scope, "Portal Pengadil");
+  return { ok: true, token, user: { ...publicUser_(user, false), isJudge: true, judgeScope: judge.scope } };
+}
+
+function eventAllowedForJudge_(session, event) {
+  if (isSystemAdmin_(session)) return true;
+  if (!session || !session.isJudge) return false;
+  const scope = String(session.judgeScope || "SEMUA").trim().toUpperCase();
+  if (!scope || scope === "SEMUA") return true;
+  const id = String(event["ID Acara"] || "").toUpperCase();
+  const name = String(event["Nama Acara"] || "").toUpperCase();
+  const discipline = String(event["Kategori"] || "").toUpperCase();
+  const kind = eventKind_(event["Jenis Acara"] || name).toUpperCase();
+  return scope.split(/[,;|]/).map(x => x.trim()).filter(Boolean).some(item => {
+    if (item === "RELAY") return kind === "BERKUMPULAN" || /4\s*[×X]/.test(name);
+    if (item === "BALAPAN") return resultMode_(event) === "lower";
+    if (item === "PADANG") return resultMode_(event) === "higher";
+    return id === item || name.includes(item) || discipline.includes(item);
+  });
+}
+
+function judgeData_(body) {
+  const session = requireSession_(body.token);
+  requireJudge_(session);
+  const year = String(body.year || "2026");
+  const eventRows = rowsFrom("Acara").filter(row => String(row["Tahun"] || "") === year && row["ID Acara"] && eventAllowedForJudge_(session, row));
+  const eventById = Object.fromEntries(eventRows.map(row => [String(row["ID Acara"]), row]));
+  const allowedIds = new Set(Object.keys(eventById));
+  const entries = rowsFrom("Penyertaan").filter(row => String(row["Tahun"] || "") === year && allowedIds.has(String(row["Acara"] || "")) && !/batal/i.test(String(row["Status"] || "")));
+  return {
+    ok: true,
+    user: session,
+    year,
+    events: eventRows.map(row => ({ id: row["ID Acara"] || "", name: row["Nama Acara"] || "", discipline: row["Kategori"] || "", cohort: row["Kumpulan Tahun"] || "", gender: row["Jantina"] || "", type: row["Jenis Acara"] || "", unit: suggestedUnit_(row), mode: resultMode_(row) })),
+    entries: entries.map(row => ({ id: row["ID Penyertaan"] || "", pupilId: row["ID Murid"] || "", name: row["Nama Murid"] || "", house: row["Rumah"] || "", eventId: row["Acara"] || "" })),
+    results: resultRows_(year, eventById).filter(row => allowedIds.has(row.eventId))
+  };
+}
+
 function normalizeIc_(value) { return String(value || "").replace(/\D/g, ""); }
 
 function lookupTeacher_(body) {
@@ -464,6 +539,7 @@ function teacherData_(body) {
     judgeEntries: allEntries.map(row => ({ id: row["ID Penyertaan"] || "", pupilId: row["ID Murid"] || "", name: row["Nama Murid"] || "", house: row["Rumah"] || "", eventId: row["Acara"] || "" })),
     officialResults: allResults,
     awardLeaders: awardLeaders_(allResults),
+    judgeAccess: isAdmin ? judgeAccessRows_().map(row => ({ id: row.id, name: row.name, role: row.role, scope: row.scope, code: row.code, active: row.active })) : [],
     auditLogs: isAdmin ? auditRows_(250) : [],
     rules: { individualPerPupil: 2, groupPerPupil: 1, individualPerHouseEvent: 2, relayRunnersPerHouseEvent: 4 }
   };
@@ -483,7 +559,7 @@ function auditRows_(limit) {
 }
 
 function canJudge_(session) {
-  return isSystemAdmin_(session) || /pengadil|juri|teknikal/i.test(String(session && session.role || ""));
+  return isSystemAdmin_(session) || Boolean(session && session.isJudge) || /pengadil|juri|teknikal/i.test(String(session && session.role || ""));
 }
 
 function requireJudge_(session) {
@@ -733,6 +809,7 @@ function saveResult_(body) {
   if (!["saat", "meter", "sentimeter"].includes(unit)) throw new Error("Unit catatan tidak sah.");
   const event = rowsFrom("Acara").find(row => String(row["Tahun"] || "") === year && String(row["ID Acara"] || "") === eventId);
   if (!event) throw new Error("Acara tidak dijumpai untuk tahun ini.");
+  if (!eventAllowedForJudge_(session, event)) throw new Error("Kod akses ini tidak dibenarkan merekod acara tersebut.");
   const mode = resultMode_(event);
   if (mode === "lower" && unit !== "saat") throw new Error("Acara balapan mesti direkodkan dalam unit saat.");
   if (mode === "higher" && !["meter", "sentimeter"].includes(unit)) throw new Error("Acara padang mesti direkodkan dalam meter atau sentimeter.");
@@ -764,6 +841,7 @@ function deleteResult_(body) {
   if (!row) throw new Error("Rekod keputusan tidak dijumpai.");
   const year = String(row["Tahun"] || ""), eventId = String(row["Acara"] || "");
   const event = rowsFrom("Acara").find(item => String(item["Tahun"] || "") === year && String(item["ID Acara"] || "") === eventId) || {};
+  if (!eventAllowedForJudge_(session, event)) throw new Error("Kod akses ini tidak dibenarkan mengubah acara tersebut.");
   spreadsheet_().getSheetByName("Keputusan").deleteRow(row.__row);
   rerankEvent_(year, eventId, event);
   audit_(session, "PADAM KEPUTUSAN", id, String(row["Nama Murid"] || row["Rumah"] || ""));
@@ -886,6 +964,38 @@ function saveSettings_(body) {
   return { ok: true, message: "Tetapan paparan berjaya disimpan." };
 }
 
+function saveJudgeAccess_(body) {
+  const session = requireSession_(body.token); requireAdmin_(session);
+  const id = String(body.id || "").trim().toUpperCase() || nextId_("J26");
+  const name = String(body.name || "").trim().toUpperCase();
+  const role = String(body.role || "Pengadil").trim();
+  const scope = String(body.scope || "SEMUA").trim().toUpperCase();
+  const active = String(body.active || "YA").toUpperCase() === "TIDAK" ? "TIDAK" : "YA";
+  if (!name || !scope) throw new Error("Nama pengadil dan skop acara wajib diisi.");
+  const context = judgeAccessContext_();
+  const existing = judgeAccessRows_().find(row => row.id === id);
+  const code = (!existing || String(body.reset || "").toUpperCase() === "YA") ? judgeCode_() : existing.code;
+  writeRecord_(context, existing && existing.row, { "ID Pengadil": id, "Nama Pengadil": name, "Peranan": role, "Skop Acara": scope, "Kod Akses": code, "Aktif": active, "Kemaskini Terakhir": new Date() });
+  audit_(session, existing ? "KEMAS KINI AKSES PENGADIL" : "TAMBAH AKSES PENGADIL", id, name + " • " + scope);
+  return { ok: true, id, code, message: existing ? "Akses pengadil berjaya dikemas kini." : "Kod akses pengadil berjaya dijana." };
+}
+
+function seedJudgeAccess_(body) {
+  const session = requireSession_(body.token); requireAdmin_(session);
+  if (judgeAccessRows_().length) return { ok: true, judges: judgeAccessRows_(), message: "Kod pengadil sudah tersedia." };
+  const presets = [
+    ["J26-BAL-01", "PENGADIL BALAPAN 1", "Pengadil Balapan", "BALAPAN"],
+    ["J26-REL-01", "PENGADIL RELAY 1", "Pengadil Relay", "RELAY"],
+    ["J26-LJ-01", "PENGADIL LOMPAT JAUH", "Pengadil Padang", "LOMPAT JAUH"],
+    ["J26-LT-01", "PENGADIL LOMPAT TINGGI", "Pengadil Padang", "LOMPAT TINGGI"],
+    ["J26-LP-01", "PENGADIL LONTAR PELURU", "Pengadil Padang", "LONTAR PELURU"]
+  ];
+  const context = judgeAccessContext_();
+  presets.forEach(item => writeRecord_(context, null, { "ID Pengadil": item[0], "Nama Pengadil": item[1], "Peranan": item[2], "Skop Acara": item[3], "Kod Akses": judgeCode_(), "Aktif": "YA", "Kemaskini Terakhir": new Date() }));
+  audit_(session, "JANA KOD PENGADIL", "Portal Pengadil", presets.length + " kod permulaan dijana");
+  return { ok: true, judges: judgeAccessRows_(), message: "Lima kod pengadil permulaan berjaya dijana." };
+}
+
 function upsertSetting_(context, rows, key, value) {
   const current = rows.find(row => String(row["Kunci"] || row["Tetapan"] || "") === key);
   writeRecord_(context, current && current.__row, { "Kunci": key, "Nilai": value });
@@ -904,7 +1014,7 @@ function logout_(body) {
 
 function publicUser_(user, isSystemAdmin) {
   const role = isSystemAdmin ? "Admin Sistem" : (/^admin/i.test(String(user.role || "")) ? "Guru Rumah" : user.role);
-  return { id: user.id, name: user.name, house: user.house, role, isSystemAdmin: Boolean(isSystemAdmin) };
+  return { id: user.id, name: user.name, house: user.house, role, isSystemAdmin: Boolean(isSystemAdmin), isJudge: Boolean(user.isJudge), judgeScope: String(user.judgeScope || "") };
 }
 
 function createSession_(user, mustChange, isSystemAdmin) {
