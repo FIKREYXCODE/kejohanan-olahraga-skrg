@@ -4,12 +4,12 @@ Laman rasmi Sistem Kejohanan Olahraga Tahunan Sekolah Kebangsaan Ranggu, Peti Su
 
 ## Aliran pengisian data
 
-1. Admin membuka [AppSheet Admin Olahraga SK Ranggu](https://www.appsheet.com/start/dd6cf0f7-86b7-44e6-bfbe-f3a94314ef51?platform=desktop).
+1. Admin Sistem membuka portal akses khas Sistem Olahraga SK Ranggu.
 2. Maklumat yang disimpan melalui AppSheet masuk ke Google Sheet rasmi.
 3. Google Apps Script menukarkan data Sheet kepada data website.
 4. Website GitHub Pages membaca data terkini secara automatik.
 
-Admin tidak perlu menyunting fail GitHub untuk mengemas kini murid, rumah sukan, penyertaan, atur cara atau keputusan.
+Admin Sistem tidak perlu menyunting fail GitHub untuk mengemas kini murid, rumah sukan, penyertaan, atur cara atau keputusan.
 
 ## Atur cara tiga hari
 

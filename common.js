@@ -24,7 +24,7 @@ function resultGender(row){const t=(String(row.gender||"")+" "+String(row.event|
 function resultPoints(place){return({1:7,2:5,3:3,4:1})[Number(place)]||0}
 function individualResult(row){return row.athleteId&&!/berkumpul|relay|4\s*[×x]/i.test(`${row.entryType||""} ${row.event||""}`)}
 function leaders(d,gender){const m=new Map();(d.results||[]).filter(r=>[1,2,3,4].includes(Number(r.place))&&resultGender(r)===gender&&individualResult(r)).forEach(r=>{const k=r.athleteId;if(!m.has(k))m.set(k,{athleteId:k,name:r.athlete,house:r.house,gold:0,silver:0,bronze:0,fourth:0,points:0,photo:d.athletePhotos?.[k]||""});const a=m.get(k),place=+r.place;if(place===1)a.gold++;if(place===2)a.silver++;if(place===3)a.bronze++;if(place===4)a.fourth++;a.points+=resultPoints(place)});return[...m.values()].sort((a,b)=>b.points-a.points||b.gold-a.gold||b.silver-a.silver||b.bronze-a.bronze||String(a.name).localeCompare(String(b.name)))}
-function setupAdmin(){document.querySelectorAll("[data-admin]").forEach(b=>{if(b.dataset.ready)return;b.dataset.ready="1";b.addEventListener("click",()=>{const d=$("adminDialog");if(d)d.showModal();else window.open(APP_URL,"_blank")})});const d=$("adminDialog");if(d&&!d.dataset.ready){d.dataset.ready="1";d.querySelector(".dialog-close").onclick=()=>d.close();d.addEventListener("click",e=>{if(e.target===d)d.close()})}}
+function setupAdmin(){document.querySelectorAll("[data-admin]").forEach(b=>{if(b.dataset.ready)return;b.dataset.ready="1";b.addEventListener("click",()=>{const d=$("adminDialog");if(d)d.showModal();else location.href="guru.html"})});const d=$("adminDialog");if(d&&!d.dataset.ready){d.dataset.ready="1";d.querySelector(".dialog-close").onclick=()=>d.close();d.addEventListener("click",e=>{if(e.target===d)d.close()})}}
 function setupRefresh(){document.querySelectorAll(".sync-button").forEach(button=>{if(button.dataset.ready)return;button.dataset.ready="1";button.addEventListener("click",()=>{button.disabled=true;button.textContent="↻ Menyegerak…";const url=new URL(location.href);url.searchParams.set("segar",Date.now());location.href=url.toString()})})}
 let deferredInstallPrompt=null;
 function setupPWAInstall(){
@@ -90,7 +90,7 @@ function renderSchedule(d,year){const rows=officialSchedule(d);$("scheduleRows")
 function renderCalendar(d,year){
   const rows=officialSchedule(d),grid=$("calendarGrid"),status=$("calendarStatus");if(!grid)return;
   if(!rows.length){
-    if(status)status.innerHTML=`<b>Tarikh kejohanan ${safe(year)} belum disahkan</b><span>Kalendar akan dijana automatik selepas Hari Kejohanan, tarikh dan masa dilengkapkan oleh pentadbir.</span>`;
+    if(status)status.innerHTML=`<b>Tarikh kejohanan ${safe(year)} belum disahkan</b><span>Kalendar akan dijana automatik selepas Hari Kejohanan, tarikh dan masa dilengkapkan oleh Admin Sistem.</span>`;
     grid.innerHTML=`<article class="calendar-empty"><span>📅</span><div><h2>Belum ada takwim rasmi</h2><p>Tiada tarikh contoh dipaparkan. Senarai acara sudah tersedia dan boleh diurus melalui Portal Guru atau AppSheet sementara menunggu tarikh rasmi.</p><a href="acara.html">Lihat senarai acara</a></div></article>`;return;
   }
   const groups=new Map();rows.forEach(row=>{const key=[row.championshipDay,row.weekday,row.date].join("|");if(!groups.has(key))groups.set(key,[]);groups.get(key).push(row)});
@@ -123,6 +123,6 @@ function renderMedals(d){
   if($("eventStatistics")){const groups=new Map();(d.results||[]).forEach(row=>{const key=row.eventId||row.event;if(!groups.has(key))groups.set(key,{event:row.event,category:row.cohort||row.category||"",gender:row.eventGender||resultGender(row),rows:[]});groups.get(key).rows.push(row)});$("eventStatistics").innerHTML=groups.size?[...groups.values()].sort((a,b)=>String(a.event).localeCompare(String(b.event))).map(group=>{const winner=group.rows.find(row=>Number(row.place)===1)||group.rows.slice().sort((a,b)=>Number(a.place)-Number(b.place))[0]||{};return `<article><div><small>${safe(group.category)} • ${safe(group.gender)}</small><b>${safe(group.event)}</b><span>${group.rows.length} catatan rasmi</span></div><strong>🏆 ${safe(winner.athlete||`Pasukan Rumah ${winner.house||"—"}`)}</strong><em>${safe(winner.mark||"Belum lengkap")}</em></article>`}).join(""):'<div class="secure-empty">Belum ada statistik keputusan untuk dipaparkan.</div>'}
 }
 setupPWAInstall();
-import("./navigation.js?v=20261005nav1").catch(()=>{});
+import("./navigation.js?v=20261005system1").catch(()=>{});
 if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 start().catch(()=>document.body.insertAdjacentHTML("afterbegin",'<div class="notice">Data tidak dapat dibaca. Sila muat semula halaman.</div>'));

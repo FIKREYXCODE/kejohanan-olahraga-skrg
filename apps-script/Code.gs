@@ -22,6 +22,7 @@ function doPost(e) {
     const body = parseBody_(e);
     const action = String(body.action || "");
     if (action === "login") return jsonResponse(login_(body));
+    if (action === "adminLogin") return jsonResponse(adminLogin_(body));
     if (action === "lookupTeacher") return jsonResponse(lookupTeacher_(body));
     if (action === "changePassword") return jsonResponse(changePassword_(body));
     if (action === "logout") return jsonResponse(logout_(body));
@@ -267,7 +268,11 @@ function settings_() {
     const key = String(row["Kunci"] || row["Tetapan"] || "").trim();
     if (key) values[key] = row["Nilai"] || "";
   });
-  return { bannerUrl: values["Banner URL"] || "" };
+  return {
+    bannerUrl: values["Banner URL"] || "",
+    tickerText: values["News Ticker"] || "",
+    tickerActive: String(values["News Ticker Aktif"] || "TIDAK").toUpperCase() === "YA"
+  };
 }
 
 function authSheet_() {
@@ -337,7 +342,8 @@ function login_(body) {
   if (ic.length !== 12 || !password) throw new Error("Masukkan nombor kad pengenalan 12 digit dan kata laluan.");
   enforceRateLimit_(ic);
   const context = users_();
-  const user = context.users.find(item => item.ic === ic);
+  const matches = context.users.filter(item => item.ic === ic);
+  const user = matches.find(item => item.active && HOUSE_ORDER.includes(item.house)) || matches.find(item => item.active);
   if (!user || !user.active) return failedLogin_(ic);
   let valid = false;
   let mustChange = user.mustChange;
@@ -349,9 +355,23 @@ function login_(body) {
   }
   if (!valid) return failedLogin_(ic);
   clearRateLimit_(ic);
-  const token = createSession_(user, mustChange);
+  const token = createSession_(user, mustChange, false);
   audit_(user, "LOG MASUK", "Portal Guru", "Log masuk berjaya");
-  return { ok: true, token, mustChange, user: publicUser_(user) };
+  return { ok: true, token, mustChange, user: publicUser_(user, false) };
+}
+
+function adminLogin_(body) {
+  const code = String(body.code || "");
+  if (!code) throw new Error("Masukkan kod akses Admin Sistem.");
+  enforceRateLimit_("admin-system");
+  const configured = PropertiesService.getScriptProperties().getProperty("ADMIN_ACCESS_CODE");
+  if (!configured) throw new Error("Kod akses Admin Sistem belum ditetapkan.");
+  if (!secureEqual_(digest_(code), digest_(configured))) return failedLogin_("admin-system");
+  clearRateLimit_("admin-system");
+  const user = { id: "SYS-ADMIN", name: "Admin Sistem", house: "", role: "Admin Sistem" };
+  const token = createSession_(user, false, true);
+  audit_(user, "LOG MASUK", "Admin Sistem", "Akses khas Admin Sistem berjaya");
+  return { ok: true, token, mustChange: false, user: publicUser_(user, true) };
 }
 
 function normalizeIc_(value) { return String(value || "").replace(/\D/g, ""); }
@@ -360,7 +380,8 @@ function lookupTeacher_(body) {
   const ic = normalizeIc_(body.ic);
   if (ic.length !== 12) throw new Error("Masukkan nombor kad pengenalan 12 digit.");
   enforceRateLimit_(ic);
-  const user = users_().users.find(item => item.ic === ic && item.active);
+  const matches = users_().users.filter(item => item.ic === ic && item.active);
+  const user = matches.find(item => HOUSE_ORDER.includes(item.house)) || matches[0];
   if (!user) return failedLogin_(ic);
   return { ok: true, name: user.name, house: user.house };
 }
@@ -387,7 +408,7 @@ function changePassword_(body) {
 
 function resetPassword_(body) {
   const session = requireSession_(body.token);
-  if (!/^admin/i.test(session.role)) throw new Error("Hanya admin boleh menetapkan semula kata laluan.");
+  requireAdmin_(session);
   const targetId = String(body.id || "").trim().toUpperCase();
   const targetIc = normalizeIc_(body.ic);
   const context = users_();
@@ -403,7 +424,7 @@ function teacherData_(body) {
   if (session.mustChange) throw new Error("Tukar kata laluan sementara sebelum membuka data rumah sukan.");
   const year = String(body.year || "2026");
   const requestedHouse = String(body.house || session.house || "");
-  const isAdmin = /^admin/i.test(session.role);
+  const isAdmin = isSystemAdmin_(session);
   if (!isAdmin && requestedHouse !== session.house) throw new Error("Akses hanya dibenarkan untuk rumah sukan sendiri.");
   const publicData = buildPublicData();
   const yearData = publicData.years[year] || { houses: {} };
@@ -462,11 +483,11 @@ function auditRows_(limit) {
 }
 
 function canJudge_(session) {
-  return /admin|pengadil|juri|teknikal/i.test(String(session && session.role || ""));
+  return isSystemAdmin_(session) || /pengadil|juri|teknikal/i.test(String(session && session.role || ""));
 }
 
 function requireJudge_(session) {
-  if (!canJudge_(session)) throw new Error("Hanya pengadil, petugas teknikal atau pentadbir boleh merekod keputusan.");
+  if (!canJudge_(session)) throw new Error("Hanya pengadil, petugas teknikal atau Admin Sistem boleh merekod keputusan.");
 }
 
 function resultRows_(year, eventById) {
@@ -549,13 +570,17 @@ function writeRecord_(context, rowNumber, values) {
 }
 
 function requireAdmin_(session) {
-  if (!/^admin/i.test(String(session.role || ""))) throw new Error("Tindakan ini hanya dibenarkan untuk pentadbir.");
+  if (!isSystemAdmin_(session)) throw new Error("Tindakan ini hanya dibenarkan untuk Admin Sistem.");
+}
+
+function isSystemAdmin_(session) {
+  return Boolean(session && session.isSystemAdmin === true);
 }
 
 function authorizeHouse_(session, house) {
   house = String(house || "").trim();
   if (!HOUSE_ORDER.includes(house)) throw new Error("Pilih rumah sukan yang sah.");
-  if (!/^admin/i.test(String(session.role || "")) && house !== session.house) throw new Error("Akses hanya dibenarkan untuk rumah sukan sendiri.");
+  if (!isSystemAdmin_(session) && house !== session.house) throw new Error("Akses hanya dibenarkan untuk rumah sukan sendiri.");
   return house;
 }
 
@@ -656,7 +681,7 @@ function deleteEntry_(body) {
   );
   if (hasResult) throw new Error("Penyertaan tidak boleh dibatalkan kerana keputusan rasmi sudah direkodkan. Padam keputusan tersebut dahulu.");
   const context = dataSheet_("Penyertaan", ["ID Penyertaan", "Tahun", "Acara", "Kategori", "ID Murid", "Nama Murid", "Rumah", "Status", "Catatan"]);
-  const detail = "Dibatalkan oleh " + (session.name || session.id || "Admin") + " pada " + Utilities.formatDate(new Date(), Session.getScriptTimeZone() || "Asia/Kuching", "dd/MM/yyyy HH:mm");
+  const detail = "Dibatalkan oleh " + (session.name || session.id || "Admin Sistem") + " pada " + Utilities.formatDate(new Date(), Session.getScriptTimeZone() || "Asia/Kuching", "dd/MM/yyyy HH:mm");
   writeRecord_(context, entry.__row, { "Status": "Dibatalkan", "Catatan": detail });
   audit_(session, "BATAL PENYERTAAN", id, String(entry["Nama Murid"] || entry["ID Murid"] || "") + " • " + String(entry["Acara"] || "") + " • Rumah " + String(entry["Rumah"] || ""));
   return { ok: true, message: "Penyertaan atlet ini telah dibatalkan. Kuota acara kini tersedia semula." };
@@ -849,12 +874,21 @@ function saveUser_(body) {
 function saveSettings_(body) {
   const session = requireSession_(body.token); requireAdmin_(session);
   const bannerUrl = String(body.bannerUrl || "").trim();
+  const tickerText = String(body.tickerText || "").trim().slice(0, 500);
+  const tickerActive = String(body.tickerActive || "TIDAK").toUpperCase() === "YA" ? "YA" : "TIDAK";
   if (bannerUrl && !/^https:\/\//i.test(bannerUrl)) throw new Error("Gunakan pautan gambar HTTPS yang sah.");
   const context = dataSheet_("Tetapan", ["Kunci", "Nilai"]);
-  const current = rowsFrom("Tetapan").find(row => String(row["Kunci"] || row["Tetapan"] || "") === "Banner URL");
-  writeRecord_(context, current && current.__row, { "Kunci": "Banner URL", "Nilai": bannerUrl });
-  audit_(session, "KEMAS KINI TETAPAN", "Banner URL", bannerUrl ? "Pautan banner dikemas kini" : "Banner khas dibuang");
+  const rows = rowsFrom("Tetapan");
+  upsertSetting_(context, rows, "Banner URL", bannerUrl);
+  upsertSetting_(context, rows, "News Ticker", tickerText);
+  upsertSetting_(context, rows, "News Ticker Aktif", tickerActive);
+  audit_(session, "KEMAS KINI TETAPAN", "Paparan Sistem", "Banner dan news ticker dikemas kini");
   return { ok: true, message: "Tetapan paparan berjaya disimpan." };
+}
+
+function upsertSetting_(context, rows, key, value) {
+  const current = rows.find(row => String(row["Kunci"] || row["Tetapan"] || "") === key);
+  writeRecord_(context, current && current.__row, { "Kunci": key, "Nilai": value });
 }
 
 function sessionInfo_(token) {
@@ -868,13 +902,14 @@ function logout_(body) {
   return { ok: true };
 }
 
-function publicUser_(user) {
-  return { id: user.id, name: user.name, house: user.house, role: user.role };
+function publicUser_(user, isSystemAdmin) {
+  const role = isSystemAdmin ? "Admin Sistem" : (/^admin/i.test(String(user.role || "")) ? "Guru Rumah" : user.role);
+  return { id: user.id, name: user.name, house: user.house, role, isSystemAdmin: Boolean(isSystemAdmin) };
 }
 
-function createSession_(user, mustChange) {
+function createSession_(user, mustChange, isSystemAdmin) {
   const token = Utilities.getUuid().replace(/-/g, "") + Utilities.getUuid().replace(/-/g, "");
-  const data = { ...publicUser_(user), mustChange: Boolean(mustChange), expires: Date.now() + SESSION_HOURS * 60 * 60 * 1000 };
+  const data = { ...publicUser_(user, isSystemAdmin), mustChange: Boolean(mustChange), expires: Date.now() + SESSION_HOURS * 60 * 60 * 1000 };
   PropertiesService.getScriptProperties().setProperty(sessionKey_(token), JSON.stringify(data));
   return token;
 }
@@ -900,7 +935,7 @@ function sessionKey_(token) {
 
 function temporaryPassword_() {
   const value = PropertiesService.getScriptProperties().getProperty("TEMP_PASSWORD");
-  if (!value) throw new Error("Kata laluan sementara belum ditetapkan oleh pentadbir.");
+  if (!value) throw new Error("Kata laluan sementara belum ditetapkan oleh Admin Sistem.");
   return value;
 }
 

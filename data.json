@@ -74,5 +74,10 @@
       "schedule": [],
       "results": []
     }
+  },
+  "settings": {
+    "bannerUrl": "",
+    "tickerText": "",
+    "tickerActive": false
   }
 }
