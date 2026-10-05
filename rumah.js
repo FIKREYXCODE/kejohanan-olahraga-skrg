@@ -59,14 +59,16 @@ async function start(){
     document.getElementById("profileFlag").innerHTML=show(h.flagBearer);
 
     const members=h.members||[],marching=h.marchingTeam||[],participants=h.participants||[];
-    document.getElementById("memberCountProfile").textContent=`${members.length} ahli rumah`;
-    document.getElementById("participantCountProfile").textContent=`${participants.length} penyertaan`;
-    document.getElementById("memberLabel").textContent=`${members.length} ahli`;
-    document.getElementById("marchingLabel").textContent=`${marching.length} orang`;
-    document.getElementById("participantLabel").textContent=`${participants.length} penyertaan`;
-    document.getElementById("memberList").innerHTML=renderNames(members,"Belum ada ahli rumah didaftarkan.");
-    document.getElementById("marchingList").innerHTML=renderNames(marching,"Belum ada barisan kawad kaki didaftarkan.");
-    document.getElementById("participantList").innerHTML=participants.length?`<div class="profile-table"><div class="profile-table-head"><span>Nama murid</span><span>Acara</span><span>Kategori</span></div>${participants.map(p=>`<div><b>${safe(p.name)}</b><span>${safe(p.event)}</span><span>${safe(p.category||"—")}</span></div>`).join("")}</div>`:'<p class="profile-empty">Belum ada peserta acara didaftarkan.</p>';
+    const memberCount=Number(h.memberCount??members.length),participantCount=Number(h.participantCount??participants.length);
+    document.getElementById("memberCountProfile").textContent=`${memberCount} ahli rumah`;
+    document.getElementById("participantCountProfile").textContent=`${participantCount} penyertaan`;
+    document.getElementById("memberLabel").textContent=`${memberCount} ahli`;
+    document.getElementById("marchingLabel").textContent=marching.length?`${marching.length} orang`:"Akses guru";
+    document.getElementById("participantLabel").textContent=`${participantCount} penyertaan`;
+    const protectedPanel='<div class="profile-protected"><span>🔐</span><div><b>Maklumat murid dilindungi</b><p>Nama murid dan penyertaan hanya boleh dilihat oleh guru rumah ini selepas log masuk.</p></div><a href="guru.html">Log masuk guru →</a></div>';
+    document.getElementById("memberList").innerHTML=members.length?renderNames(members,"Belum ada ahli rumah didaftarkan."):protectedPanel;
+    document.getElementById("marchingList").innerHTML=marching.length?renderNames(marching,"Belum ada barisan kawad kaki didaftarkan."):protectedPanel;
+    document.getElementById("participantList").innerHTML=participants.length?`<div class="profile-table"><div class="profile-table-head"><span>Nama murid</span><span>Acara</span><span>Kategori</span></div>${participants.map(p=>`<div><b>${safe(p.name)}</b><span>${safe(p.event)}</span><span>${safe(p.category||"—")}</span></div>`).join("")}</div>`:protectedPanel;
   }catch(error){
     document.getElementById("profileMain").innerHTML='<div class="profile-error"><h2>Profil belum tersedia</h2><p>Maklumat rumah sukan tidak dapat dibaca buat masa ini.</p><a class="primary" href="rumah-sukan.html">Kembali ke rumah sukan</a></div>';
   }

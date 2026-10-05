@@ -3,38 +3,91 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Portal log masuk guru rumah sukan Sekolah Kebangsaan Ranggu">
+  <meta name="description" content="Portal guru rumah sukan Sekolah Kebangsaan Ranggu">
   <title>Portal Guru | SK Ranggu</title>
-  <link rel="stylesheet" href="portal.css?v=20261004guru1">
+  <link rel="stylesheet" href="portal.css?v=20261005auth1">
+  <link rel="stylesheet" href="guru.css?v=20261005auth1">
 </head>
-<body data-page="teacher">
+<body class="teacher-auth-page">
   <div class="credit-strip">Dibangunkan oleh <b>Cikgu Mohammad Fikrey bin Abdul Gapar</b></div>
   <header class="site-bar teacher-bar">
-    <a class="school-brand" href="index.html"><img src="assets/skrg.jpeg" alt="Logo SK Ranggu"><img class="kpm-small" src="assets/kpm.png" alt="Logo KPM"><span><b>PORTAL GURU SK RANGGU</b><small>Pengurusan rumah sukan dan penyertaan atlet</small></span></a>
-    <div class="bar-tools"><button class="sync-button" type="button">↻ Segarkan Data</button><label>Tahun <select id="yearSelect"></select></label><a class="admin-link" href="index.html">← Laman Utama</a></div>
+    <a class="school-brand" href="index.html">
+      <img src="assets/skrg.jpeg" alt="Logo SK Ranggu">
+      <img class="kpm-small" src="assets/kpm.png" alt="Logo KPM">
+      <span><b>PORTAL GURU SK RANGGU</b><small>Pengurusan rumah sukan dan penyertaan atlet</small></span>
+    </a>
+    <div class="bar-tools"><a class="admin-link" href="index.html">← Laman Utama</a></div>
   </header>
-  <main class="teacher-main">
-    <section class="teacher-hero">
-      <div>
-        <span class="hero-pill">🔐 AKSES GURU • AKAUN GOOGLE</span>
-        <h1>Satu pasukan.<br><em>Satu akses yang jelas.</em></h1>
-        <p>Guru boleh melihat data semasa, menyemak ahli rumah dan membuka AppSheet menggunakan akaun Google yang telah didaftarkan oleh pentadbir.</p>
-        <div class="teacher-hero-actions"><a class="button teacher-google" href="https://www.appsheet.com/start/dd6cf0f7-86b7-44e6-bfbe-f3a94314ef51?platform=desktop" target="_blank" rel="noopener">G&nbsp; Log masuk dengan Google ↗</a><a class="ghost-button" href="#pilih-rumah">Pilih rumah sukan ↓</a></div>
+
+  <main class="auth-shell">
+    <section class="auth-intro">
+      <span class="hero-pill">🔐 AKSES TERKAWAL • 2026</span>
+      <h1>Satu pasukan.<br><em>Satu ruang kerja.</em></h1>
+      <p>Setiap guru menggunakan ID Guru sendiri. Selepas log masuk, cikgu hanya boleh melihat dan mengurus data rumah sukan yang telah ditetapkan.</p>
+      <div class="auth-feature-grid">
+        <article><b>01</b><span><strong>Data segerak</strong><small>Perubahan tersimpan di Google Sheet dan boleh dilihat oleh guru lain.</small></span></article>
+        <article><b>02</b><span><strong>Akses ikut rumah</strong><small>Biru, Kuning, Ungu atau Merah—tanpa bercampur data.</small></span></article>
+        <article><b>03</b><span><strong>Jejak perubahan</strong><small>Log audit merekod siapa yang log masuk dan membuat perubahan.</small></span></article>
       </div>
-      <aside class="access-status"><span>STATUS SISTEM</span><b><i></i> Data Google Sheet disambungkan</b><strong id="teacherMemberTotal">0</strong><small>murid rasmi bagi tahun <span id="teacherYear">2026</span></small></aside>
     </section>
-    <section class="teacher-content" id="pilih-rumah">
-      <div class="section-title"><div><span class="kicker blue">PILIH PASUKAN</span><h2>Portal Rumah Sukan</h2></div><p>Lihat profil awam atau masuk ke ruang pengurusan.</p></div>
-      <div class="teacher-house-grid" id="teacherHouseGrid"><div class="loading-card">Sedang memuat data rasmi…</div></div>
-      <div class="access-guide">
-        <section><span>01</span><div><b>Log masuk akaun Google</b><p>Gunakan e-mel yang telah dimasukkan oleh pentadbir. Akaun yang tidak didaftarkan tidak diberi akses mengubah data.</p></div></section>
-        <section><span>02</span><div><b>Urus rumah sendiri</b><p>Guru rumah hanya mengurus ahli dan penyertaan rumah sendiri. Paparan keputusan dan papan mata kekal boleh dilihat.</p></div></section>
-        <section><span>03</span><div><b>Segerakkan perubahan</b><p>Tekan Sync dalam AppSheet. Website akan membaca data baharu daripada Google Sheet secara automatik.</p></div></section>
+
+    <section class="auth-card" id="loginCard">
+      <div class="auth-card-heading"><span>PORTAL RASMI GURU</span><h2>Log masuk</h2><p>Gunakan ID Guru yang diberikan oleh pentadbir.</p></div>
+      <form id="loginForm" autocomplete="on">
+        <label><span>ID Guru</span><input id="teacherId" name="username" autocomplete="username" placeholder="Contoh: U26-B-01" required></label>
+        <label><span>Kata laluan</span><div class="password-field"><input id="teacherPassword" name="password" type="password" autocomplete="current-password" placeholder="Masukkan kata laluan" required><button type="button" data-toggle-password="teacherPassword" aria-label="Tunjukkan kata laluan">Lihat</button></div></label>
+        <p class="temporary-note"><b>Log masuk kali pertama?</b> Gunakan kata laluan sementara yang diberikan oleh pentadbir. Sistem akan meminta cikgu mencipta kata laluan sendiri.</p>
+        <div class="form-message" id="loginMessage" role="status"></div>
+        <button class="auth-submit" type="submit">Masuk ke Portal Guru <span>→</span></button>
+      </form>
+      <button class="forgot-link" id="forgotButton" type="button">Lupa kata laluan? Hubungi admin untuk reset.</button>
+    </section>
+
+    <section class="teacher-workspace" id="teacherWorkspace" hidden>
+      <header class="workspace-head">
+        <div><span class="workspace-avatar" id="workspaceInitials">GR</span><p><small>SELAMAT DATANG</small><b id="workspaceName">Nama Guru</b><em id="workspaceIdentity">ID Guru</em></p></div>
+        <div><span class="session-pill">● SESI AKTIF</span><button id="logoutButton" type="button">Log keluar</button></div>
+      </header>
+      <div class="workspace-house" id="workspaceHouse">
+        <div><small>RUMAH SUKAN</small><h2 id="houseTitle">Rumah Sukan</h2><p id="houseMotto">Maklumat rasmi rumah sukan.</p></div>
+        <label>Tahun <select id="workspaceYear"><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option></select></label>
       </div>
-      <div class="security-note"><div><span>🛡️</span><p><b>Keselamatan akses guru</b><small>Setiap akaun perlu dipadankan dengan e-mel dan rumah sukan oleh pentadbir. Kata laluan tidak disimpan dalam website awam.</small></p></div><a href="https://www.appsheet.com/start/dd6cf0f7-86b7-44e6-bfbe-f3a94314ef51?platform=desktop" target="_blank" rel="noopener">Buka AppSheet ↗</a></div>
+      <div class="workspace-stats">
+        <article><span>👥</span><p><b id="workspacePupilCount">0</b><small>Ahli rumah</small></p></article>
+        <article><span>🏃</span><p><b id="workspaceEntryCount">0</b><small>Penyertaan</small></p></article>
+        <article><span>🛡️</span><p><b id="workspaceRole">Guru</b><small>Hak akses</small></p></article>
+      </div>
+      <nav class="workspace-tabs" aria-label="Menu portal guru">
+        <button class="active" type="button" data-workspace-tab="pupils">Senarai Murid</button>
+        <button type="button" data-workspace-tab="entries">Penyertaan Acara</button>
+        <button type="button" data-workspace-tab="profile">Maklumat Rumah</button>
+      </nav>
+      <section class="workspace-panel" id="pupilsPanel"><div class="panel-toolbar"><div><small>PANGKALAN AHLI</small><h3>Senarai murid rumah sukan</h3></div><input id="pupilSearch" type="search" placeholder="Cari nama atau kelas…"></div><div class="secure-table" id="pupilRows"></div></section>
+      <section class="workspace-panel" id="entriesPanel" hidden><div class="panel-toolbar"><div><small>PENYERTAAN</small><h3>Acara yang didaftarkan</h3></div></div><div class="secure-table" id="entryRows"></div></section>
+      <section class="workspace-panel" id="profilePanel" hidden><div class="panel-toolbar"><div><small>IDENTITI PASUKAN</small><h3>Maklumat rumah sukan</h3></div></div><div class="profile-secure-grid" id="profileDetails"></div></section>
     </section>
   </main>
+
+  <dialog id="changePasswordDialog" class="auth-dialog">
+    <form id="changePasswordForm">
+      <button class="dialog-close" type="button" data-close-dialog>×</button>
+      <span class="kicker blue">KESELAMATAN AKAUN</span><h2>Cipta kata laluan sendiri</h2>
+      <p>Kata laluan sementara hanya boleh digunakan untuk kemasukan pertama.</p>
+      <label><span>Kata laluan semasa</span><input id="currentPassword" type="password" autocomplete="current-password" required></label>
+      <label><span>Kata laluan baharu</span><input id="newPassword" type="password" minlength="8" autocomplete="new-password" required></label>
+      <label><span>Ulang kata laluan baharu</span><input id="confirmPassword" type="password" minlength="8" autocomplete="new-password" required></label>
+      <div class="form-message" id="passwordMessage" role="status"></div>
+      <button class="auth-submit" type="submit">Simpan kata laluan baharu</button>
+    </form>
+  </dialog>
+
+  <dialog id="adminHelpDialog" class="auth-dialog">
+    <button class="dialog-close" type="button" data-close-dialog>×</button>
+    <span class="kicker blue">BANTUAN LOG MASUK</span><h2>Reset oleh pentadbir</h2>
+    <p>Maklumkan ID Guru kepada Cikgu Mohammad Fikrey bin Abdul Gapar. Pentadbir boleh menetapkan akaun kembali kepada kata laluan sementara rasmi.</p>
+  </dialog>
+
   <footer class="site-footer"><div><img src="assets/skrg.jpeg" alt="Logo SK Ranggu"><img src="assets/kpm.png" alt="Logo KPM"></div><p><b>SEKOLAH KEBANGSAAN RANGGU TAWAU</b><span>Peti Surat 842, 91008 Tawau, Sabah, Malaysia</span></p><p><small>Dibangunkan oleh</small><b>Cikgu Mohammad Fikrey bin Abdul Gapar</b></p></footer>
-  <script src="common.js?v=20261004guru1"></script>
+  <script src="guru-auth.js?v=20261005auth1"></script>
 </body>
 </html>
