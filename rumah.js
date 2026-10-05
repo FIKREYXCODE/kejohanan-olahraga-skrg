@@ -67,10 +67,11 @@ async function start(){
     document.getElementById("memberLabel").textContent=`${memberCount} ahli`;
     document.getElementById("marchingLabel").textContent=marching.length?`${marching.length} orang`:"Akses guru";
     document.getElementById("participantLabel").textContent=`${participantCount} penyertaan`;
-    const protectedPanel='<div class="profile-protected"><span>🔐</span><div><b>Maklumat murid dilindungi</b><p>Nama murid dan penyertaan hanya boleh dilihat oleh guru rumah ini selepas log masuk.</p></div><a href="guru.html">Log masuk guru →</a></div>';
-    document.getElementById("memberList").innerHTML=members.length?renderNames(members,"Belum ada ahli rumah didaftarkan."):protectedPanel;
-    document.getElementById("marchingList").innerHTML=marching.length?renderNames(marching,"Belum ada barisan kawad kaki didaftarkan."):protectedPanel;
-    document.getElementById("participantList").innerHTML=participants.length?`<div class="profile-table"><div class="profile-table-head"><span>Nama murid</span><span>Acara</span><span>Kategori</span></div>${participants.map(p=>`<div><b>${safe(p.name)}</b><span>${safe(p.event)}</span><span>${safe(p.category||"—")}</span></div>`).join("")}</div>`:protectedPanel;
+    [["memberCover",h.memberImage],["marchingCover",h.marchingImage],["participantCover",h.participantImage]].forEach(([id,image])=>{if(image){const cover=document.getElementById(id);cover.classList.add("has-cover-image");cover.style.setProperty("--cover-image",`url(${JSON.stringify(image)})`)}});
+    const protectedPanel=(icon,title,copy)=>`<div class="profile-protected"><span class="protected-icon">${icon}</span><div><small>AKSES TERKAWAL</small><b>${title}</b><p>${copy}</p></div><a href="guru.html"><span>Log masuk Portal Guru</span><b>→</b></a></div>`;
+    document.getElementById("memberList").innerHTML=members.length?renderNames(members,"Belum ada ahli rumah didaftarkan."):protectedPanel("🛡️","Senarai murid dilindungi","Nama dan kelas ahli rumah hanya boleh dilihat oleh guru Rumah "+houseName+" selepas log masuk.");
+    document.getElementById("marchingList").innerHTML=marching.length?renderNames(marching,"Belum ada barisan kawad kaki didaftarkan."):protectedPanel("🥁","Barisan kawad dilindungi","Senarai ahli perbarisan disimpan dalam ruang kerja guru rumah yang selamat.");
+    document.getElementById("participantList").innerHTML=participants.length?`<div class="profile-table"><div class="profile-table-head"><span>Nama murid</span><span>Acara</span><span>Kategori</span></div>${participants.map(p=>`<div><b>${safe(p.name)}</b><span>${safe(p.event)}</span><span>${safe(p.category||"—")}</span></div>`).join("")}</div>`:protectedPanel("🏁","Penyertaan atlet dilindungi","Nama peserta dan pilihan acara hanya diterbitkan mengikut aturan kejohanan.");
   }catch(error){
     document.getElementById("profileMain").innerHTML='<div class="profile-error"><h2>Profil belum tersedia</h2><p>Maklumat rumah sukan tidak dapat dibaca buat masa ini.</p><a class="primary" href="rumah-sukan.html">Kembali ke rumah sukan</a></div>';
   }

@@ -32,6 +32,7 @@ function doPost(e) {
     if (action === "deleteEntry") return jsonResponse(deleteEntry_(body));
     if (action === "saveHouseProfile") return jsonResponse(saveHouseProfile_(body));
     if (action === "saveHouseLogo") return jsonResponse(saveHouseLogo_(body));
+    if (action === "saveHouseMedia") return jsonResponse(saveHouseMedia_(body));
     if (action === "saveResult") return jsonResponse(saveResult_(body));
     if (action === "deleteResult") return jsonResponse(deleteResult_(body));
     if (action === "saveAthletePhoto") return jsonResponse(saveAthletePhoto_(body));
@@ -79,6 +80,9 @@ function emptyHouse(officialName) {
     bannerBearer: "",
     flagBearer: "",
     logo: "",
+    memberImage: "",
+    marchingImage: "",
+    participantImage: "",
     memberCount: 0,
     participantCount: 0
   };
@@ -125,7 +129,10 @@ function buildPublicData() {
       captain: row["Ketua Rumah"] || "",
       bannerBearer: row["Pemegang Sepanduk"] || "",
       flagBearer: row["Pemegang Bendera"] || "",
-      logo: row["Logo Rumah"] || ""
+      logo: row["Logo Rumah"] || "",
+      memberImage: row["Gambar Ahli"] || "",
+      marchingImage: row["Gambar Kawad"] || "",
+      participantImage: row["Gambar Peserta"] || ""
     };
   });
 
@@ -781,6 +788,27 @@ function saveHouseLogo_(body) {
   writeRecord_(context, existing && existing.__row, { "Tahun": year, "Rumah": house, "Logo Rumah": logo });
   audit_(session, logo ? "MUAT NAIK LOGO RUMAH" : "BUANG LOGO RUMAH", house, "Logo Rumah " + house + " tahun " + year);
   return { ok: true, message: logo ? "Logo Rumah " + house + " berjaya disimpan." : "Logo Rumah " + house + " berjaya dibuang." };
+}
+
+function saveHouseMedia_(body) {
+  const session = requireSession_(body.token);
+  if (session.mustChange) throw new Error("Tukar kata laluan sementara sebelum mengubah data.");
+  const year = String(body.year || "2026").trim();
+  const house = authorizeHouse_(session, body.house || session.house);
+  const slot = String(body.slot || "").trim();
+  const columns = { members: "Gambar Ahli", marching: "Gambar Kawad", participants: "Gambar Peserta" };
+  const labels = { members: "Senarai Ahli", marching: "Barisan Kawad", participants: "Peserta dan Acara" };
+  if (!columns[slot]) throw new Error("Bahagian gambar tidak sah.");
+  const image = String(body.image || "");
+  if (image && !/^data:image\/(jpeg|png|webp);base64,/i.test(image)) throw new Error("Pilih fail gambar JPG, PNG atau WebP yang sah.");
+  if (image.length > 48000) throw new Error("Saiz gambar masih terlalu besar. Pilih gambar lain.");
+  const rows = rowsFrom("Rumah");
+  const existing = rows.find(row => String(row["Tahun"] || "") === year && String(row["Rumah"] || "") === house);
+  const context = dataSheet_("Rumah", ["Tahun", "Rumah", "Guru Rumah", "Moto", "Slogan", "Ketua Rumah", "Pemegang Sepanduk", "Pemegang Bendera", "Logo Rumah", "Gambar Ahli", "Gambar Kawad", "Gambar Peserta"]);
+  const values = { "Tahun": year, "Rumah": house }; values[columns[slot]] = image;
+  writeRecord_(context, existing && existing.__row, values);
+  audit_(session, image ? "MUAT NAIK GAMBAR RUMAH" : "BUANG GAMBAR RUMAH", house, labels[slot] + " • tahun " + year);
+  return { ok: true, message: image ? "Gambar " + labels[slot] + " berjaya disimpan." : "Gambar " + labels[slot] + " berjaya dibuang." };
 }
 
 function adminUsers_(body) {

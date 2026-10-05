@@ -14,7 +14,7 @@
   <link rel="icon" type="image/png" href="assets/pwa/favicon-64.png">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/pwa/apple-touch-icon.png">
   <link rel="stylesheet" href="portal.css?v=20261005nav1">
-  <link rel="stylesheet" href="guru.css?v=20261005logo1">
+  <link rel="stylesheet" href="guru.css?v=20261005media1">
 </head>
 <body class="teacher-auth-page">
   <div class="credit-strip">Dibangunkan oleh <b>Cikgu Mohammad Fikrey bin Abdul Gapar</b></div>
@@ -102,6 +102,7 @@
 
   <dialog id="photoDialog" class="auth-dialog editor-dialog"><form id="photoForm"><button class="dialog-close" type="button" data-close-dialog>×</button><span class="kicker blue">GAMBAR ATLET TERBAIK</span><h2 id="photoAthleteName">Muat naik gambar</h2><input id="photoAthleteId" type="hidden"><label><span>Fail gambar</span><input id="athletePhoto" type="file" accept="image/jpeg,image/png,image/webp" required></label><label class="photo-consent"><input id="photoConsent" type="checkbox" required><span>Saya mengesahkan bahawa kebenaran penjaga/sekolah untuk memaparkan gambar murid kepada orang ramai telah diperoleh.</span></label><div class="photo-preview" id="photoPreview">Pratonton gambar akan muncul di sini.</div><div class="form-message" id="photoMessage" role="status"></div><button class="auth-submit" type="submit">Simpan gambar untuk dashboard</button></form></dialog>
   <dialog id="houseLogoDialog" class="auth-dialog editor-dialog"><form id="houseLogoForm"><button class="dialog-close" type="button" data-close-dialog>×</button><span class="kicker blue">IDENTITI RUMAH SUKAN</span><h2>Muat naik logo rumah</h2><p class="dialog-note">Logo ini akan dipaparkan pada kad Rumah Sukan dan profil pasukan. PNG berlatar telus memberi hasil paling kemas.</p><label><span>Fail logo</span><input id="houseLogoFile" type="file" accept="image/jpeg,image/png,image/webp" required></label><div class="house-logo-preview" id="houseLogoPreview"><div class="logo-placeholder">Pilih logo berbentuk segi empat.</div></div><div class="form-message" id="houseLogoMessage" role="status"></div><button class="auth-submit" type="submit">Simpan logo rumah</button></form></dialog>
+  <dialog id="houseMediaDialog" class="auth-dialog editor-dialog"><form id="houseMediaForm"><button class="dialog-close" type="button" data-close-dialog>×</button><span class="kicker blue">GAMBAR PROFIL RUMAH</span><h2 id="houseMediaTitle">Gambar bahagian</h2><p class="dialog-note">Gunakan gambar landskap pasukan sendiri. Sistem akan memotong dan mengecilkannya secara automatik untuk paparan web.</p><label><span>Fail gambar</span><input id="houseMediaFile" type="file" accept="image/jpeg,image/png,image/webp" required></label><div class="house-logo-preview house-media-preview" id="houseMediaPreview"><div class="logo-placeholder">Pilih gambar landskap yang cerah dan jelas.</div></div><div class="form-message" id="houseMediaMessage" role="status"></div><button class="auth-submit" type="submit">Simpan gambar header</button></form></dialog>
 
   <dialog id="profileDialog" class="auth-dialog editor-dialog"><form id="profileForm"><button class="dialog-close" type="button" data-close-dialog>×</button><span class="kicker blue">IDENTITI RUMAH</span><h2>Edit maklumat rumah</h2><label><span>Moto</span><input id="profileMotto"></label><label><span>Slogan</span><input id="profileSlogan"></label><label><span>Ketua rumah sukan</span><input id="profileCaptain"></label><label><span>Pemegang sepanduk</span><input id="profileBannerBearer"></label><label><span>Pemegang bendera</span><input id="profileFlagBearer"></label><div class="form-message" id="profileMessage" role="status"></div><button class="auth-submit" type="submit">Simpan maklumat rumah</button></form></dialog>
 
@@ -131,6 +132,6 @@
     <section class="footer-details"><div><small>HUBUNGI</small><b>011-6574 9440</b><span>xba3037@gmail.com</span></div><div><small>PORTAL RASMI</small><b>jpnsabah.moe.gov.my</b><span>Kod Sekolah: XBA3037</span></div><div><small>TARIKH &amp; MASA</small><time id="footerClock">Memuat waktu…</time><span>Asia/Kuching</span></div></section>
     <section class="footer-credit"><span>Dibangunkan oleh</span><b>Cikgu Mohammad Fikrey bin Abdul Gapar</b><small>Sistem Kejohanan Olahraga Tahunan</small></section>
   </footer>
-  <script src="guru-auth.js?v=20261005logo1"></script>
+  <script src="guru-auth.js?v=20261005media1"></script>
 </body>
 </html>
