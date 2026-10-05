@@ -408,19 +408,23 @@ function judgeCode_() {
 
 function judgeLogin_(body) {
   const code = String(body.code || "").trim().toUpperCase();
-  const identityType = String(body.identityType || "").trim().toUpperCase();
   if (!code) throw new Error("Masukkan kod akses pengadil.");
-  if (!["WARGA", "AWAM"].includes(identityType)) throw new Error("Pilih sama ada Warga Sekolah atau Petugas Awam.");
   enforceRateLimit_("judge-" + code);
   const judge = judgeAccessRows_().find(row => row.active && secureEqual_(row.code.toUpperCase(), code));
   if (!judge) { recordFailedAttempt_("judge-" + code); return { error: true, message: "Kod akses pengadil tidak sah atau telah dinyahaktifkan." }; }
   let actor = { id: "AWAM", name: "PETUGAS AWAM", house: "", schoolRole: "Petugas Awam" };
-  if (identityType === "WARGA") {
-    const ic = normalizeIc_(body.ic);
-    if (ic.length !== 12) throw new Error("Masukkan nombor kad pengenalan 12 digit warga sekolah.");
-    const staff = users_().users.find(item => item.active && item.ic === ic);
-    if (!staff) throw new Error("Nombor kad pengenalan tidak dijumpai dalam senarai guru atau AKP aktif.");
-    actor = { id: staff.id, name: staff.name, house: staff.house || "", schoolRole: staff.role || "Warga Sekolah" };
+  let identityType = "AWAM";
+  const teacherToken = String(body.teacherToken || "").trim();
+  if (teacherToken) {
+    try {
+      const staffSession = requireSession_(teacherToken);
+      if (!staffSession.isSystemAdmin && staffSession.id && staffSession.name) {
+        actor = { id: staffSession.id, name: staffSession.name, house: staffSession.house || "", schoolRole: staffSession.role || "Warga Sekolah" };
+        identityType = "WARGA";
+      }
+    } catch (_) {
+      // Sesi guru yang tamat tidak menghalang tugas pengadil; petugas direkodkan sebagai awam.
+    }
   }
   clearRateLimit_("judge-" + code);
   const user = { id: actor.id, name: actor.name, house: actor.house, role: judge.role, schoolRole: actor.schoolRole, identityType, judgeLabel: judge.name, judgeAccessId: judge.id, isJudge: true, judgeScope: judge.scope };
