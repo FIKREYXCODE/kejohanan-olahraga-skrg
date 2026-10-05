@@ -11,14 +11,15 @@
     ["jawatankuasa.html","👥 Jawatankuasa",["jawatankuasa.html"]],
     ["organisasi-sekolah.html","🏛 Organisasi Sekolah",["organisasi-sekolah.html"]],
     ["cetak.html","🖨 Cetakan",["cetak.html"]],
-    ["guru.html","🔐 Log Masuk",["guru.html"]]
+    ["guru.html","🔐 Guru",["guru.html"]],
+    ["pengadil.html","⏱ Pengadil",["pengadil.html"]]
   ];
   const page=location.pathname.split("/").pop()||"index.html",header=document.querySelector("header.site-bar,header.topbar");
   if(!header||document.body.classList.contains("teacher-auth-page"))return;
   let nav=document.querySelector(".dashboard-nav");
   if(!nav){nav=document.createElement("nav");nav.className="dashboard-nav";nav.setAttribute("aria-label","Menu utama kejohanan")}
   const selectedYear=new URLSearchParams(location.search).get("tahun")||"2026";
-  nav.innerHTML=items.map(([href,label,matches])=>{const active=matches.includes(page);const url=new URL(href,location.href);if(href!=="guru.html")url.searchParams.set("tahun",selectedYear);return`<a${active?' class="active" aria-current="page"':href==="guru.html"?' class="nav-login"':""} href="${url.pathname.split("/").pop()}${url.search}">${label}</a>`}).join("");
+  nav.innerHTML=items.map(([href,label,matches])=>{const active=matches.includes(page);const url=new URL(href,location.href);if(!["guru.html","pengadil.html"].includes(href))url.searchParams.set("tahun",selectedYear);const loginClass=["guru.html","pengadil.html"].includes(href);return`<a${active?' class="active" aria-current="page"':loginClass?' class="nav-login"':""} href="${url.pathname.split("/").pop()}${url.search}">${label}</a>`}).join("");
   let shell=document.querySelector(".global-nav-shell");if(!shell){shell=document.createElement("div");shell.className="global-nav-shell";header.insertAdjacentElement("afterend",shell)}shell.append(nav);
   const renderTicker=settings=>{
     const text=String(settings?.tickerText||"").trim();
