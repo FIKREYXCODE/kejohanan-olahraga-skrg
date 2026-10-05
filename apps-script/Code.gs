@@ -27,6 +27,13 @@ function doPost(e) {
     if (action === "logout") return jsonResponse(logout_(body));
     if (action === "teacherData") return jsonResponse(teacherData_(body));
     if (action === "resetPassword") return jsonResponse(resetPassword_(body));
+    if (action === "savePupil") return jsonResponse(savePupil_(body));
+    if (action === "saveEntry") return jsonResponse(saveEntry_(body));
+    if (action === "deleteEntry") return jsonResponse(deleteEntry_(body));
+    if (action === "saveHouseProfile") return jsonResponse(saveHouseProfile_(body));
+    if (action === "adminUsers") return jsonResponse(adminUsers_(body));
+    if (action === "saveUser") return jsonResponse(saveUser_(body));
+    if (action === "saveSettings") return jsonResponse(saveSettings_(body));
     throw new Error("Tindakan API tidak dikenali.");
   } catch (error) {
     return jsonResponse({ error: true, message: error.message });
@@ -91,11 +98,13 @@ function parseTeacherBlock(value) {
 
 /** Paparan awam: tiada kata laluan, e-mel, ID guru atau senarai nama murid. */
 function buildPublicData() {
-  const output = { years: {} };
+  const output = { years: {}, settings: settings_() };
   const pupils = rowsFrom("Murid");
   const pupilById = Object.fromEntries(pupils.map(row => [String(row["ID Murid"] || "").trim(), row]));
   const events = rowsFrom("Acara");
   const eventById = Object.fromEntries(events.map(row => [String(row["ID Acara"] || "").trim(), row]));
+  const entries = rowsFrom("Penyertaan");
+  const schedules = rowsFrom("Atur Cara");
   ["2026", "2027", "2028", "2029", "2030"].forEach(year => ensureYear(output, year));
 
   rowsFrom("Rumah").forEach(row => {
@@ -136,13 +145,13 @@ function buildPublicData() {
     });
   });
 
-  rowsFrom("Penyertaan").forEach(row => {
+  entries.forEach(row => {
     const yearData = ensureYear(output, row["Tahun"]);
     const house = String(row["Rumah"] || "").trim();
     if (yearData.houses[house]) yearData.houses[house].participantCount++;
   });
 
-  rowsFrom("Atur Cara").forEach(row => {
+  schedules.forEach(row => {
     const yearData = ensureYear(output, row["Tahun"]);
     if (!row["Acara"]) return;
     yearData.schedule.push({
@@ -155,6 +164,32 @@ function buildPublicData() {
       venue: row["Tempat"] || "",
       status: row["Status"] || "",
       note: row["Catatan"] || ""
+    });
+  });
+
+  const publishedByYear = {};
+  schedules.forEach(row => {
+    const year = String(row["Tahun"] || "2026");
+    if (!row["Tarikh"] || !row["Masa"] || !row["Acara"]) return;
+    if (!publishedByYear[year]) publishedByYear[year] = new Set();
+    publishedByYear[year].add(String(row["Acara"] || "").trim());
+  });
+  entries.forEach(row => {
+    const year = String(row["Tahun"] || "2026");
+    const eventId = String(row["Acara"] || "").trim();
+    const eventInfo = eventById[eventId] || {};
+    const eventName = String(eventInfo["Nama Acara"] || eventId).trim();
+    const published = publishedByYear[year] || new Set();
+    if (!published.has(eventId) && !published.has(eventName)) return;
+    const pupil = pupilById[String(row["ID Murid"] || "").trim()] || {};
+    ensureYear(output, year).publishedEntries = ensureYear(output, year).publishedEntries || [];
+    ensureYear(output, year).publishedEntries.push({
+      eventId,
+      event: eventName,
+      name: row["Nama Murid"] || pupil["Nama Murid"] || "",
+      house: row["Rumah"] || pupil["Rumah"] || "",
+      lane: row["Lorong"] || "",
+      status: row["Status"] || "Disahkan"
     });
   });
 
@@ -198,6 +233,15 @@ function buildPublicData() {
     });
   });
   return output;
+}
+
+function settings_() {
+  const values = {};
+  rowsFrom("Tetapan").forEach(row => {
+    const key = String(row["Kunci"] || row["Tetapan"] || "").trim();
+    if (key) values[key] = row["Nilai"] || "";
+  });
+  return { bannerUrl: values["Banner URL"] || "" };
 }
 
 function authSheet_() {
@@ -339,14 +383,209 @@ function teacherData_(body) {
   const yearData = publicData.years[year] || { houses: {} };
   const pupils = rowsFrom("Murid").filter(row => String(row["Tahun"] || "") === year && (isAdmin ? (!requestedHouse || row["Rumah"] === requestedHouse) : row["Rumah"] === session.house));
   const entries = rowsFrom("Penyertaan").filter(row => String(row["Tahun"] || "") === year && (isAdmin ? (!requestedHouse || row["Rumah"] === requestedHouse) : row["Rumah"] === session.house));
+  const eventRows = rowsFrom("Acara").filter(row => String(row["Tahun"] || "") === year && row["ID Acara"]);
+  const eventById = Object.fromEntries(eventRows.map(row => [String(row["ID Acara"]), row]));
   return {
     ok: true,
     user: session,
     house: requestedHouse,
+    isAdmin,
+    houses: HOUSE_ORDER,
+    settings: publicData.settings || {},
     profile: yearData.houses[requestedHouse] || {},
     pupils: pupils.map(row => ({ id: row["ID Murid"] || "", name: row["Nama Murid"] || "", class: row["Kelas"] || row["Tahun/Kelas"] || "", gender: row["Jantina"] || "", house: row["Rumah"] || "" })),
-    entries: entries.map(row => ({ id: row["ID Penyertaan"] || "", pupilId: row["ID Murid"] || "", name: row["Nama Murid"] || "", event: row["Acara"] || "", category: row["Kategori"] || "", status: row["Status"] || "" }))
+    entries: entries.map(row => {
+      const event = eventById[String(row["Acara"] || "")] || {};
+      return { id: row["ID Penyertaan"] || "", pupilId: row["ID Murid"] || "", name: row["Nama Murid"] || "", eventId: row["Acara"] || "", event: event["Nama Acara"] || row["Acara"] || "", category: event["Kumpulan Tahun"] || row["Kategori"] || "", type: event["Jenis Acara"] || "", status: row["Status"] || "Aktif" };
+    }),
+    events: eventRows.map(row => ({ id: row["ID Acara"] || "", name: row["Nama Acara"] || "", discipline: row["Kategori"] || "", stage: row["Peringkat"] || "", categoryCode: row["Kod Kategori"] || "", cohort: row["Kumpulan Tahun"] || "", gender: row["Jantina"] || "", type: row["Jenis Acara"] || "", note: row["Catatan"] || "" })),
+    rules: { individualPerPupil: 2, groupPerPupil: 1, individualPerHouseEvent: 2, relayRunnersPerHouseEvent: 4 }
   };
+}
+
+function dataSheet_(name, requiredHeaders) {
+  const ss = spreadsheet_();
+  let sheet = ss.getSheetByName(name);
+  if (!sheet) sheet = ss.insertSheet(name);
+  const width = Math.max(sheet.getLastColumn(), 1);
+  let headers = sheet.getRange(1, 1, 1, width).getDisplayValues()[0].map(String).filter(Boolean);
+  if (!headers.length) headers = requiredHeaders.slice();
+  requiredHeaders.forEach(header => { if (!headers.includes(header)) headers.push(header); });
+  sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+  return { sheet, headers };
+}
+
+function writeRecord_(context, rowNumber, values) {
+  const current = rowNumber ? context.sheet.getRange(rowNumber, 1, 1, context.headers.length).getValues()[0] : Array(context.headers.length).fill("");
+  Object.keys(values).forEach(key => {
+    const index = context.headers.indexOf(key);
+    if (index >= 0) current[index] = values[key];
+  });
+  if (rowNumber) context.sheet.getRange(rowNumber, 1, 1, current.length).setValues([current]);
+  else context.sheet.appendRow(current);
+}
+
+function requireAdmin_(session) {
+  if (!/^admin/i.test(String(session.role || ""))) throw new Error("Tindakan ini hanya dibenarkan untuk pentadbir.");
+}
+
+function authorizeHouse_(session, house) {
+  house = String(house || "").trim();
+  if (!HOUSE_ORDER.includes(house)) throw new Error("Pilih rumah sukan yang sah.");
+  if (!/^admin/i.test(String(session.role || "")) && house !== session.house) throw new Error("Akses hanya dibenarkan untuk rumah sukan sendiri.");
+  return house;
+}
+
+function nextId_(prefix) {
+  return prefix + "-" + Utilities.getUuid().replace(/-/g, "").slice(0, 10).toUpperCase();
+}
+
+function savePupil_(body) {
+  const session = requireSession_(body.token);
+  if (session.mustChange) throw new Error("Tukar kata laluan sementara sebelum mengubah data.");
+  const year = String(body.year || "2026").trim();
+  const house = authorizeHouse_(session, body.house || session.house);
+  const id = String(body.id || "").trim() || nextId_("M" + year.slice(-2));
+  const name = String(body.name || "").trim().toUpperCase();
+  const pupilClass = String(body.class || "").trim().toUpperCase();
+  const gender = normalizeGender_(body.gender);
+  if (!name || !pupilClass || !gender) throw new Error("Nama, kelas/tahun dan jantina murid wajib diisi.");
+  const rows = rowsFrom("Murid");
+  const existing = rows.find(row => String(row["ID Murid"] || "") === id);
+  if (existing) authorizeHouse_(session, existing["Rumah"]);
+  const context = dataSheet_("Murid", ["ID Murid", "Tahun", "Nama Murid", "Kelas", "Jantina", "Rumah"]);
+  writeRecord_(context, existing && existing.__row, { "ID Murid": id, "Tahun": year, "Nama Murid": name, "Kelas": pupilClass, "Jantina": gender, "Rumah": house });
+  audit_(session, existing ? "KEMAS KINI MURID" : "TAMBAH MURID", id, name + " • Rumah " + house);
+  return { ok: true, id, message: "Maklumat murid berjaya disimpan." };
+}
+
+function normalizeGender_(value) {
+  const text = String(value || "").trim().toUpperCase();
+  if (/^(L|LELAKI|M|MALE)$/.test(text)) return "Lelaki";
+  if (/^(P|PEREMPUAN|F|FEMALE)$/.test(text)) return "Perempuan";
+  return "";
+}
+
+function classYear_(value) {
+  const text = String(value || "").toUpperCase();
+  if (/PRA/.test(text)) return 0;
+  const match = text.match(/(?:TAHUN\s*)?([1-6])/);
+  return match ? Number(match[1]) : -1;
+}
+
+function cohortAllows_(cohort, pupilClass) {
+  const year = classYear_(pupilClass), text = String(cohort || "").toUpperCase();
+  if (/PRA/.test(text)) return year === 0;
+  const allowed = (text.match(/[1-6]/g) || []).map(Number);
+  return allowed.includes(year);
+}
+
+function eventKind_(value) {
+  return /BERKUMPUL|RELAY|4\s*[×X]/i.test(String(value || "")) ? "Berkumpulan" : "Individu";
+}
+
+function saveEntry_(body) {
+  const session = requireSession_(body.token);
+  if (session.mustChange) throw new Error("Tukar kata laluan sementara sebelum mendaftarkan peserta.");
+  const year = String(body.year || "2026").trim();
+  const house = authorizeHouse_(session, body.house || session.house);
+  const pupilId = String(body.pupilId || "").trim();
+  const eventId = String(body.eventId || "").trim();
+  const pupil = rowsFrom("Murid").find(row => String(row["ID Murid"] || "") === pupilId && String(row["Tahun"] || "") === year);
+  if (!pupil || String(pupil["Rumah"] || "") !== house) throw new Error("Murid tidak ditemui dalam rumah sukan ini.");
+  const event = rowsFrom("Acara").find(row => String(row["ID Acara"] || "") === eventId && String(row["Tahun"] || "") === year);
+  if (!event) throw new Error("Acara tidak dijumpai untuk tahun yang dipilih.");
+  const pupilGender = normalizeGender_(pupil["Jantina"]), eventGender = normalizeGender_(event["Jantina"]);
+  if (eventGender && pupilGender !== eventGender) throw new Error("Jantina murid tidak sepadan dengan kategori acara.");
+  if (!cohortAllows_(event["Kumpulan Tahun"], pupil["Kelas"] || pupil["Tahun/Kelas"])) throw new Error("Kelas/tahun murid tidak layak untuk kategori acara ini.");
+  const type = eventKind_(event["Jenis Acara"] || event["Nama Acara"]);
+  const entries = rowsFrom("Penyertaan").filter(row => String(row["Tahun"] || "") === year && !/batal/i.test(String(row["Status"] || "")));
+  if (entries.some(row => String(row["ID Murid"] || "") === pupilId && String(row["Acara"] || "") === eventId)) throw new Error("Murid ini sudah didaftarkan dalam acara yang sama.");
+  const pupilEntries = entries.filter(row => String(row["ID Murid"] || "") === pupilId);
+  const eventMap = Object.fromEntries(rowsFrom("Acara").map(row => [String(row["ID Acara"] || ""), row]));
+  const individualCount = pupilEntries.filter(row => eventKind_((eventMap[String(row["Acara"] || "")] || {})["Jenis Acara"] || row["Acara"]) === "Individu").length;
+  const groupCount = pupilEntries.filter(row => eventKind_((eventMap[String(row["Acara"] || "")] || {})["Jenis Acara"] || row["Acara"]) === "Berkumpulan").length;
+  if (type === "Individu" && individualCount >= 2) throw new Error("Pendaftaran ditolak: murid sudah mencapai maksimum 2 acara individu.");
+  if (type === "Berkumpulan" && groupCount >= 1) throw new Error("Pendaftaran ditolak: murid sudah menyertai 1 acara berkumpulan.");
+  const sameHouseEvent = entries.filter(row => String(row["Rumah"] || "") === house && String(row["Acara"] || "") === eventId);
+  const quota = type === "Individu" ? 2 : 4;
+  if (sameHouseEvent.length >= quota) throw new Error(type === "Individu" ? "Pendaftaran ditolak: kuota 2 peserta rumah bagi acara individu sudah penuh." : "Pendaftaran ditolak: satu pasukan relay (4 pelari) bagi rumah ini sudah lengkap.");
+  const id = nextId_("P" + year.slice(-2));
+  const context = dataSheet_("Penyertaan", ["ID Penyertaan", "Tahun", "Acara", "Kategori", "ID Murid", "Nama Murid", "Rumah", "Status", "Catatan"]);
+  writeRecord_(context, null, { "ID Penyertaan": id, "Tahun": year, "Acara": eventId, "Kategori": event["Kumpulan Tahun"] || "", "ID Murid": pupilId, "Nama Murid": pupil["Nama Murid"] || "", "Rumah": house, "Status": "Aktif", "Catatan": "Didaftar melalui Portal Guru" });
+  audit_(session, "DAFTAR PENYERTAAN", id, (pupil["Nama Murid"] || pupilId) + " • " + (event["Nama Acara"] || eventId));
+  return { ok: true, id, message: "Penyertaan berjaya didaftarkan." };
+}
+
+function deleteEntry_(body) {
+  const session = requireSession_(body.token);
+  if (session.mustChange) throw new Error("Tukar kata laluan sementara sebelum mengubah data.");
+  const id = String(body.id || "").trim();
+  const entry = rowsFrom("Penyertaan").find(row => String(row["ID Penyertaan"] || "") === id);
+  if (!entry) throw new Error("Rekod penyertaan tidak dijumpai.");
+  authorizeHouse_(session, entry["Rumah"]);
+  spreadsheet_().getSheetByName("Penyertaan").deleteRow(entry.__row);
+  audit_(session, "PADAM PENYERTAAN", id, String(entry["Nama Murid"] || entry["ID Murid"] || ""));
+  return { ok: true, message: "Penyertaan telah dipadam." };
+}
+
+function saveHouseProfile_(body) {
+  const session = requireSession_(body.token);
+  if (session.mustChange) throw new Error("Tukar kata laluan sementara sebelum mengubah data.");
+  const year = String(body.year || "2026").trim();
+  const house = authorizeHouse_(session, body.house || session.house);
+  const rows = rowsFrom("Rumah");
+  const existing = rows.find(row => String(row["Tahun"] || "") === year && String(row["Rumah"] || "") === house);
+  const context = dataSheet_("Rumah", ["Tahun", "Rumah", "Guru Rumah", "Moto", "Slogan", "Ketua Rumah", "Pemegang Sepanduk", "Pemegang Bendera"]);
+  writeRecord_(context, existing && existing.__row, { "Tahun": year, "Rumah": house, "Moto": String(body.motto || "").trim(), "Slogan": String(body.slogan || "").trim(), "Ketua Rumah": String(body.captain || "").trim(), "Pemegang Sepanduk": String(body.bannerBearer || "").trim(), "Pemegang Bendera": String(body.flagBearer || "").trim() });
+  audit_(session, "KEMAS KINI RUMAH", house, "Profil Rumah " + house + " tahun " + year);
+  return { ok: true, message: "Maklumat rumah sukan berjaya disimpan." };
+}
+
+function adminUsers_(body) {
+  const session = requireSession_(body.token); requireAdmin_(session);
+  const users = users_().users.map(user => ({ id: user.id, ic: user.ic, name: user.name, house: user.house, role: user.role, active: user.active, mustChange: user.mustChange }));
+  return { ok: true, users, houses: HOUSE_ORDER };
+}
+
+function saveUser_(body) {
+  const session = requireSession_(body.token); requireAdmin_(session);
+  const id = String(body.id || "").trim().toUpperCase();
+  const ic = normalizeIc_(body.ic);
+  const name = String(body.name || "").trim().toUpperCase();
+  const house = String(body.house || "").trim();
+  const role = String(body.role || "Guru").trim();
+  const active = String(body.active || "YA").toUpperCase() === "TIDAK" ? "TIDAK" : "YA";
+  if (!id || !name || ic.length !== 12) throw new Error("ID guru, nama dan nombor kad pengenalan 12 digit wajib diisi.");
+  if (house && !HOUSE_ORDER.includes(house)) throw new Error("Rumah sukan tidak sah.");
+  const context = users_();
+  const existing = context.users.find(user => user.id.toUpperCase() === id);
+  const sameIc = context.users.find(user => user.ic === ic && user.id.toUpperCase() !== id);
+  if (sameIc) throw new Error("Nombor kad pengenalan sudah digunakan oleh akaun lain.");
+  if (existing) {
+    const values = { id, ic, name, house, role, active: active === "YA" };
+    const updates = {};
+    Object.keys(values).forEach(key => { if (context.index[key] >= 0) updates[key] = key === "active" ? active : values[key]; });
+    updateAuth_(context, existing, updates);
+  } else {
+    const row = Array(context.headers.length).fill("");
+    const put = (header, value) => { const index = context.headers.indexOf(header); if (index >= 0) row[index] = value; };
+    put("ID Guru", id); put("Nama Guru", name); put("Rumah", house); put("Peranan", role); put("Aktif", active); put("No. Kad Pengenalan", ic); put("Wajib Tukar", "YA"); put("Kemaskini Terakhir", new Date());
+    context.sheet.appendRow(row);
+  }
+  audit_(session, existing ? "KEMAS KINI AKAUN" : "TAMBAH AKAUN", id, name + " • " + (house ? "Rumah " + house : role));
+  return { ok: true, message: "Tetapan guru berjaya disimpan." };
+}
+
+function saveSettings_(body) {
+  const session = requireSession_(body.token); requireAdmin_(session);
+  const bannerUrl = String(body.bannerUrl || "").trim();
+  if (bannerUrl && !/^https:\/\//i.test(bannerUrl)) throw new Error("Gunakan pautan gambar HTTPS yang sah.");
+  const context = dataSheet_("Tetapan", ["Kunci", "Nilai"]);
+  const current = rowsFrom("Tetapan").find(row => String(row["Kunci"] || row["Tetapan"] || "") === "Banner URL");
+  writeRecord_(context, current && current.__row, { "Kunci": "Banner URL", "Nilai": bannerUrl });
+  audit_(session, "KEMAS KINI TETAPAN", "Banner URL", bannerUrl ? "Pautan banner dikemas kini" : "Banner khas dibuang");
+  return { ok: true, message: "Tetapan paparan berjaya disimpan." };
 }
 
 function sessionInfo_(token) {

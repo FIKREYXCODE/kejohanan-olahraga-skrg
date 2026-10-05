@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="Portal guru rumah sukan Sekolah Kebangsaan Ranggu">
   <title>Portal Guru | SK Ranggu</title>
-  <link rel="stylesheet" href="portal.css?v=20261005power1">
-  <link rel="stylesheet" href="guru.css?v=20261005ic1">
+  <link rel="stylesheet" href="portal.css?v=20261005guru2">
+  <link rel="stylesheet" href="guru.css?v=20261005guru2">
 </head>
 <body class="teacher-auth-page">
   <div class="credit-strip">Dibangunkan oleh <b>Cikgu Mohammad Fikrey bin Abdul Gapar</b></div>
   <header class="site-bar teacher-bar">
     <a class="school-brand" href="index.html">
-      <img src="assets/skrg.jpeg" alt="Logo SK Ranggu">
-      <img class="kpm-small" src="assets/kpm.png" alt="Logo KPM">
+      <img class="logo-kpm" src="assets/kpm.png" alt="Logo KPM">
+      <img class="logo-school" src="assets/skrg.jpeg" alt="Logo SK Ranggu">
       <span><b>PORTAL GURU SK RANGGU</b><small>Pengurusan rumah sukan dan penyertaan atlet</small></span>
     </a>
     <div class="bar-tools"><a class="admin-link" href="index.html">← Laman Utama</a></div>
@@ -50,8 +50,8 @@
         <div><span class="session-pill">● SESI AKTIF</span><button id="logoutButton" type="button">Log keluar</button></div>
       </header>
       <div class="workspace-house" id="workspaceHouse">
-        <div><small>RUMAH SUKAN</small><h2 id="houseTitle">Rumah Sukan</h2><p id="houseMotto">Maklumat rasmi rumah sukan.</p></div>
-        <label>Tahun <select id="workspaceYear"><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option></select></label>
+        <div><small>RUANG KERJA TERKAWAL</small><h2 id="houseTitle">Rumah Sukan</h2><p id="houseMotto">Maklumat rasmi rumah sukan.</p></div>
+        <div class="workspace-selectors"><label id="adminHouseField" hidden>Rumah <select id="workspaceHouseSelect"><option value="Biru">Biru</option><option value="Kuning">Kuning</option><option value="Ungu">Ungu</option><option value="Merah">Merah</option></select></label><label>Tahun <select id="workspaceYear"><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option></select></label></div>
       </div>
       <div class="workspace-stats">
         <article><span>👥</span><p><b id="workspacePupilCount">0</b><small>Ahli rumah</small></p></article>
@@ -62,12 +62,26 @@
         <button class="active" type="button" data-workspace-tab="pupils">Senarai Murid</button>
         <button type="button" data-workspace-tab="entries">Penyertaan Acara</button>
         <button type="button" data-workspace-tab="profile">Maklumat Rumah</button>
+        <button type="button" data-workspace-tab="rules">Syarat Penyertaan</button>
+        <button type="button" data-workspace-tab="users" data-admin-only hidden>Tetapan Guru</button>
+        <button type="button" data-workspace-tab="settings" data-admin-only hidden>Tetapan Sistem</button>
       </nav>
-      <section class="workspace-panel" id="pupilsPanel"><div class="panel-toolbar"><div><small>PANGKALAN AHLI</small><h3>Senarai murid rumah sukan</h3></div><input id="pupilSearch" type="search" placeholder="Cari nama atau kelas…"></div><div class="secure-table" id="pupilRows"></div></section>
-      <section class="workspace-panel" id="entriesPanel" hidden><div class="panel-toolbar"><div><small>PENYERTAAN</small><h3>Acara yang didaftarkan</h3></div></div><div class="secure-table" id="entryRows"></div></section>
-      <section class="workspace-panel" id="profilePanel" hidden><div class="panel-toolbar"><div><small>IDENTITI PASUKAN</small><h3>Maklumat rumah sukan</h3></div></div><div class="profile-secure-grid" id="profileDetails"></div></section>
-    </section>
+      <section class="workspace-panel" id="pupilsPanel"><div class="panel-toolbar"><div><small>PANGKALAN AHLI</small><h3>Senarai murid rumah sukan</h3></div><div class="panel-actions"><input id="pupilSearch" type="search" placeholder="Cari nama atau kelas…"><button class="workspace-action" id="addPupilButton" type="button">+ Tambah murid</button></div></div><div class="secure-table" id="pupilRows"></div></section>
+      <section class="workspace-panel" id="entriesPanel" hidden><div class="panel-toolbar"><div><small>PENYERTAAN</small><h3>Pendaftaran acara</h3></div><button class="workspace-action" id="addEntryButton" type="button">+ Daftar peserta</button></div><div class="limit-strip"><span><b>2</b> acara individu maksimum</span><span><b>1</b> acara berkumpulan maksimum</span><span><b>2</b> peserta individu setiap rumah/acara</span><span><b>4</b> pelari setiap pasukan relay</span></div><div class="secure-table" id="entryRows"></div></section>
+      <section class="workspace-panel" id="profilePanel" hidden><div class="panel-toolbar"><div><small>IDENTITI PASUKAN</small><h3>Maklumat rumah sukan</h3></div><button class="workspace-action" id="editProfileButton" type="button">Edit maklumat</button></div><div class="profile-secure-grid" id="profileDetails"></div></section>
+      <section class="workspace-panel" id="rulesPanel" hidden><div class="rules-board"><article><b>01</b><h3>Had murid</h3><p>Setiap murid boleh menyertai maksimum dua acara individu dan satu acara berkumpulan.</p></article><article><b>02</b><h3>Kuota rumah</h3><p>Setiap rumah boleh mendaftarkan dua peserta bagi satu acara individu dan empat pelari bagi satu acara relay.</p></article><article><b>03</b><h3>Kelayakan automatik</h3><p>Sistem menyemak jantina serta kategori Prasekolah, Tahun 1, Tahun 2 &amp; 3, Tahun 4 &amp; 5 dan Tahun 6.</p></article><article><b>04</b><h3>Pendaftaran ditolak</h3><p>Nama bertindih, kuota penuh atau kategori tidak sepadan akan ditolak sebelum data disimpan.</p></article></div></section>
+      <section class="workspace-panel" id="usersPanel" hidden><div class="panel-toolbar"><div><small>PENTADBIR</small><h3>Tetapan akses guru</h3></div><button class="workspace-action" id="addUserButton" type="button">+ Daftar guru</button></div><div class="secure-table" id="userRows"></div></section>
+      <section class="workspace-panel" id="settingsPanel" hidden><div class="panel-toolbar"><div><small>PENTADBIR</small><h3>Tetapan paparan sistem</h3></div></div><form class="settings-form" id="settingsForm"><label><span>Pautan gambar banner</span><input id="bannerUrl" type="url" placeholder="https://..."><small>Gunakan pautan gambar HTTPS. Jika dikosongkan, tema biru rasmi akan digunakan.</small></label><button class="workspace-action" type="submit">Simpan tetapan</button><div class="form-message" id="settingsMessage" role="status"></div></form><a class="committee-shortcut" href="jawatankuasa.html"><b>Carta organisasi &amp; jawatankuasa</b><span>Lihat jawatan, nama, gambar dan bidang tugas yang diurus melalui AppSheet.</span></a></section>
+      </section>
   </main>
+
+  <dialog id="pupilDialog" class="auth-dialog editor-dialog"><form id="pupilForm"><button class="dialog-close" type="button" data-close-dialog>×</button><span class="kicker blue">DATA AHLI RUMAH</span><h2 id="pupilDialogTitle">Tambah murid</h2><input id="pupilId" type="hidden"><label><span>Nama penuh</span><input id="pupilName" required></label><label><span>Kelas / Tahun</span><input id="pupilClass" placeholder="Contoh: Tahun 3 Amanah" required></label><label><span>Jantina</span><select id="pupilGender" required><option value="">Pilih jantina</option><option value="Lelaki">Lelaki</option><option value="Perempuan">Perempuan</option></select></label><div class="form-message" id="pupilMessage" role="status"></div><button class="auth-submit" type="submit">Simpan maklumat murid</button></form></dialog>
+
+  <dialog id="entryDialog" class="auth-dialog editor-dialog"><form id="entryForm"><button class="dialog-close" type="button" data-close-dialog>×</button><span class="kicker blue">PENDAFTARAN PESERTA</span><h2>Daftar acara</h2><label><span>Murid</span><select id="entryPupil" required></select></label><label><span>Acara yang layak</span><select id="entryEvent" required></select></label><div class="eligibility-note" id="entryEligibility">Pilih murid untuk memaparkan acara yang sepadan dengan kategori dan jantina.</div><div class="form-message" id="entryMessage" role="status"></div><button class="auth-submit" type="submit">Daftar penyertaan</button></form></dialog>
+
+  <dialog id="profileDialog" class="auth-dialog editor-dialog"><form id="profileForm"><button class="dialog-close" type="button" data-close-dialog>×</button><span class="kicker blue">IDENTITI RUMAH</span><h2>Edit maklumat rumah</h2><label><span>Moto</span><input id="profileMotto"></label><label><span>Slogan</span><input id="profileSlogan"></label><label><span>Ketua rumah sukan</span><input id="profileCaptain"></label><label><span>Pemegang sepanduk</span><input id="profileBannerBearer"></label><label><span>Pemegang bendera</span><input id="profileFlagBearer"></label><div class="form-message" id="profileMessage" role="status"></div><button class="auth-submit" type="submit">Simpan maklumat rumah</button></form></dialog>
+
+  <dialog id="userDialog" class="auth-dialog editor-dialog"><form id="userForm"><button class="dialog-close" type="button" data-close-dialog>×</button><span class="kicker blue">TETAPAN PENTADBIR</span><h2>Daftar / edit guru</h2><label><span>ID Guru</span><input id="userId" required></label><label><span>Nombor Kad Pengenalan</span><input id="userIc" inputmode="numeric" maxlength="14" required></label><label><span>Nama penuh</span><input id="userName" required></label><label><span>Rumah sukan</span><select id="userHouse"><option value="">Pentadbir / Tiada rumah</option><option>Biru</option><option>Kuning</option><option>Ungu</option><option>Merah</option></select></label><label><span>Peranan</span><select id="userRole"><option>Guru Rumah</option><option>Ketua Rumah</option><option>Admin</option><option>Admin Utama</option></select></label><label><span>Status</span><select id="userActive"><option value="YA">Aktif</option><option value="TIDAK">Tidak aktif</option></select></label><div class="form-message" id="userMessage" role="status"></div><button class="auth-submit" type="submit">Simpan tetapan guru</button><button class="reset-user-password" id="resetUserPassword" type="button" hidden>Reset kata laluan sementara</button></form></dialog>
 
   <dialog id="changePasswordDialog" class="auth-dialog">
     <form id="changePasswordForm">
@@ -88,7 +102,7 @@
     <p>Maklumkan nama dan nombor kad pengenalan kepada Cikgu Mohammad Fikrey bin Abdul Gapar. Pentadbir boleh menetapkan akaun kembali kepada kata laluan sementara rasmi.</p>
   </dialog>
 
-  <footer class="site-footer"><div><img src="assets/skrg.jpeg" alt="Logo SK Ranggu"><img src="assets/kpm.png" alt="Logo KPM"></div><p><b>SEKOLAH KEBANGSAAN RANGGU TAWAU</b><span>Peti Surat 842, 91008 Tawau, Sabah, Malaysia</span></p><p><small>Dibangunkan oleh</small><b>Cikgu Mohammad Fikrey bin Abdul Gapar</b></p></footer>
-  <script src="guru-auth.js?v=20261005house3"></script>
+  <footer class="site-footer"><div><img src="assets/kpm.png" alt="Logo KPM"><img src="assets/skrg.jpeg" alt="Logo SK Ranggu"></div><p><b>SEKOLAH KEBANGSAAN RANGGU TAWAU</b><span>Peti Surat 842, 91008 Tawau, Sabah, Malaysia</span></p><p><small>Dibangunkan oleh</small><b>Cikgu Mohammad Fikrey bin Abdul Gapar</b></p></footer>
+  <script src="guru-auth.js?v=20261005guru2"></script>
 </body>
 </html>

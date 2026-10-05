@@ -3,79 +3,88 @@ const SESSION_KEY="skrg_teacher_session";
 const HOUSE_COLORS={Biru:"#246bfd",Kuning:"#e5ad00",Ungu:"#6b3de0",Merah:"#e5484d"};
 const $=id=>document.getElementById(id);
 const safe=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let session=null,workspaceData=null;
+let session=null,workspaceData=null,adminUsers=[];
 
 async function api(payload){
   const response=await fetch(AUTH_API,{method:"POST",headers:{"content-type":"application/x-www-form-urlencoded;charset=UTF-8"},body:new URLSearchParams(payload),redirect:"follow",cache:"no-store"});
   if(!response.ok)throw Error("Pelayan data tidak dapat dihubungi.");
-  const data=await response.json();
-  if(data.error)throw Error(data.message||"Permintaan tidak berjaya.");
-  return data;
+  const data=await response.json();if(data.error)throw Error(data.message||"Permintaan tidak berjaya.");return data;
 }
-
 function message(target,text,type="error"){target.textContent=text;target.className=`form-message ${type}`}
 function clearMessage(target){target.textContent="";target.className="form-message"}
 function initials(name){return String(name||"Guru").split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase()}
 function normalizedIc(){return $("teacherIc").value.replace(/\D/g,"")}
+function isAdmin(){return /^admin/i.test(session?.user?.role||"")}
+function currentHouse(){return isAdmin()?$("workspaceHouseSelect").value:session?.user?.house||""}
+function currentYear(){return $("workspaceYear").value}
+function setBusy(button,busy,label){button.disabled=busy;button.dataset.label=button.dataset.label||button.textContent;button.textContent=busy?label:button.dataset.label}
 
 async function previewTeacher(){
-  const ic=normalizedIc(),preview=$("teacherPreview");preview.hidden=true;clearMessage($("loginMessage"));
-  if(ic.length!==12)return;
-  try{const result=await api({action:"lookupTeacher",ic});$("teacherPreviewName").textContent=result.name;$("teacherPreviewHouse").textContent=result.house?`Rumah ${result.house}`:"Pentadbir";preview.hidden=false}
-  catch(error){message($("loginMessage"),error.message)}
+  const ic=normalizedIc(),preview=$("teacherPreview");preview.hidden=true;clearMessage($("loginMessage"));if(ic.length!==12)return;
+  try{const result=await api({action:"lookupTeacher",ic});$("teacherPreviewName").textContent=result.name;$("teacherPreviewHouse").textContent=result.house?`Rumah ${result.house}`:"Pentadbir";preview.hidden=false}catch(error){message($("loginMessage"),error.message)}
 }
-
 async function login(event){
-  event.preventDefault();const button=event.submitter;clearMessage($("loginMessage"));button.disabled=true;button.innerHTML="Menyemak…";
-  try{
-    const result=await api({action:"login",ic:normalizedIc(),password:$("teacherPassword").value});
-    session={token:result.token,user:result.user,mustChange:Boolean(result.mustChange)};sessionStorage.setItem(SESSION_KEY,JSON.stringify(session));
-    if(result.mustChange){$("currentPassword").value=$("teacherPassword").value;$("changePasswordDialog").showModal();return}
-    await openWorkspace();
-  }catch(error){message($("loginMessage"),error.message)}finally{button.disabled=false;button.innerHTML='Masuk ke Portal Guru <span>→</span>'}
+  event.preventDefault();const button=event.submitter;clearMessage($("loginMessage"));setBusy(button,true,"Menyemak…");
+  try{const result=await api({action:"login",ic:normalizedIc(),password:$("teacherPassword").value});session={token:result.token,user:result.user,mustChange:Boolean(result.mustChange)};sessionStorage.setItem(SESSION_KEY,JSON.stringify(session));if(result.mustChange){$("currentPassword").value=$("teacherPassword").value;$("changePasswordDialog").showModal();return}await openWorkspace()}catch(error){message($("loginMessage"),error.message)}finally{setBusy(button,false)}
 }
-
 async function changePassword(event){
-  event.preventDefault();clearMessage($("passwordMessage"));const button=event.submitter;
-  if($("newPassword").value!==$("confirmPassword").value){message($("passwordMessage"),"Ulangan kata laluan baharu tidak sama.");return}
-  button.disabled=true;button.textContent="Menyimpan…";
-  try{
-    await api({action:"changePassword",token:session.token,currentPassword:$("currentPassword").value,newPassword:$("newPassword").value});
-    session.mustChange=false;sessionStorage.setItem(SESSION_KEY,JSON.stringify(session));message($("passwordMessage"),"Kata laluan berjaya disimpan.","success");setTimeout(async()=>{$("changePasswordDialog").close();await openWorkspace()},650);
-  }catch(error){message($("passwordMessage"),error.message)}finally{button.disabled=false;button.textContent="Simpan kata laluan baharu"}
+  event.preventDefault();clearMessage($("passwordMessage"));const button=event.submitter;if($("newPassword").value!==$("confirmPassword").value){message($("passwordMessage"),"Ulangan kata laluan baharu tidak sama.");return}
+  setBusy(button,true,"Menyimpan…");try{await api({action:"changePassword",token:session.token,currentPassword:$("currentPassword").value,newPassword:$("newPassword").value});session.mustChange=false;sessionStorage.setItem(SESSION_KEY,JSON.stringify(session));message($("passwordMessage"),"Kata laluan berjaya disimpan.","success");setTimeout(async()=>{$("changePasswordDialog").close();await openWorkspace()},650)}catch(error){message($("passwordMessage"),error.message)}finally{setBusy(button,false)}
 }
-
 async function openWorkspace(){
-  $("loginCard").hidden=true;$("teacherWorkspace").hidden=false;
-  const user=session.user;$("workspaceName").textContent=user.name||"Guru SK Ranggu";$("workspaceIdentity").textContent=`${user.id} • ${user.house||"Pentadbir"}`;$("workspaceInitials").textContent=initials(user.name);$("workspaceRole").textContent=user.role||"Guru";
+  $("loginCard").hidden=true;$("teacherWorkspace").hidden=false;const user=session.user;$("workspaceName").textContent=user.name||"Guru SK Ranggu";$("workspaceIdentity").textContent=`${user.id} • ${user.house?`Rumah ${user.house}`:"Pentadbir"}`;$("workspaceInitials").textContent=initials(user.name);$("workspaceRole").textContent=user.role||"Guru";
+  if(isAdmin()){$("adminHouseField").hidden=false;document.querySelectorAll("[data-admin-only]").forEach(x=>x.hidden=false)}else{$("workspaceHouseSelect").value=user.house}
   await loadWorkspace();$("teacherWorkspace").scrollIntoView({behavior:"smooth",block:"start"});
 }
-
 async function loadWorkspace(){
-  const year=$("workspaceYear").value;
-  try{workspaceData=await api({action:"teacherData",token:session.token,year,house:session.user.house||""});renderWorkspace()}
-  catch(error){if(/sesi/i.test(error.message)){sessionStorage.removeItem(SESSION_KEY);location.reload();return}$("pupilRows").innerHTML=`<div class="secure-empty">${safe(error.message)}</div>`}
+  const house=currentHouse();try{workspaceData=await api({action:"teacherData",token:session.token,year:currentYear(),house});renderWorkspace()}catch(error){if(/sesi/i.test(error.message)){sessionStorage.removeItem(SESSION_KEY);location.reload();return}$("pupilRows").innerHTML=`<div class="secure-empty">${safe(error.message)}</div>`}
 }
-
 function renderWorkspace(){
-  const house=workspaceData.house||session.user.house||"Pentadbir",profile=workspaceData.profile||{},color=HOUSE_COLORS[house]||"#0b4da2";
-  $("workspaceHouse").style.setProperty("--house",color);$("houseTitle").textContent=house?`Rumah ${house}`:"Paparan Pentadbir";$("houseMotto").textContent=profile.motto||"Maklumat rasmi rumah sukan";
-  $("workspacePupilCount").textContent=(workspaceData.pupils||[]).length;$("workspaceEntryCount").textContent=(workspaceData.entries||[]).length;
-  renderPupils();renderEntries();
-  const items=[["Nama rumah",house?`Rumah ${house}`:"Semua rumah"],["Moto",profile.motto],["Slogan",profile.slogan],["Ketua rumah",profile.captain],["Pemegang sepanduk",profile.bannerBearer],["Pemegang bendera",profile.flagBearer]];
-  $("profileDetails").innerHTML=items.map(([label,value])=>`<article><small>${safe(label)}</small><b>${safe(value||"Belum diisi")}</b></article>`).join("");
+  const house=workspaceData.house||currentHouse(),profile=workspaceData.profile||{},color=HOUSE_COLORS[house]||"#0b4da2";$("workspaceHouse").style.setProperty("--house",color);$("houseTitle").textContent=house?`Rumah ${house}`:"Paparan Pentadbir";$("houseMotto").textContent=profile.motto||"Maklumat rasmi rumah sukan";$("workspacePupilCount").textContent=(workspaceData.pupils||[]).length;$("workspaceEntryCount").textContent=(workspaceData.entries||[]).length;
+  renderPupils();renderEntries();renderProfile();$("bannerUrl").value=workspaceData.settings?.bannerUrl||"";
 }
-
 function renderPupils(){
-  const query=$("pupilSearch").value.trim().toLowerCase();const rows=(workspaceData?.pupils||[]).filter(row=>!query||`${row.name} ${row.class}`.toLowerCase().includes(query));
-  $("pupilRows").innerHTML=rows.length?`<div class="secure-row secure-head"><span>ID</span><span>Nama murid</span><span>Kelas</span><span>Jantina</span></div>${rows.map(row=>`<div class="secure-row"><span>${safe(row.id||"—")}</span><b>${safe(row.name)}</b><span>${safe(row.class||"—")}</span><span>${safe(row.gender||"—")}</span></div>`).join("")}`:'<div class="secure-empty">Tiada rekod murid dijumpai.</div>';
+  const query=$("pupilSearch").value.trim().toLowerCase(),rows=(workspaceData?.pupils||[]).filter(row=>!query||`${row.name} ${row.class}`.toLowerCase().includes(query));
+  $("pupilRows").innerHTML=rows.length?`<div class="secure-row pupil-row secure-head"><span>ID</span><span>Nama murid</span><span>Kelas</span><span>Jantina</span><span>Tindakan</span></div>${rows.map(row=>`<div class="secure-row pupil-row"><span>${safe(row.id||"—")}</span><b>${safe(row.name)}</b><span>${safe(row.class||"—")}</span><span>${safe(row.gender||"—")}</span><button class="row-action" data-edit-pupil="${safe(row.id)}">Edit</button></div>`).join("")}`:'<div class="secure-empty">Tiada rekod murid dijumpai.</div>';
+  document.querySelectorAll("[data-edit-pupil]").forEach(button=>button.onclick=()=>openPupil(button.dataset.editPupil));
 }
-function renderEntries(){const rows=workspaceData?.entries||[];$("entryRows").innerHTML=rows.length?`<div class="secure-row entry secure-head"><span>Nama murid</span><span>Acara</span><span>Kategori</span><span>Status</span></div>${rows.map(row=>`<div class="secure-row entry"><b>${safe(row.name)}</b><span>${safe(row.event)}</span><span>${safe(row.category||"—")}</span><span>${safe(row.status||"Aktif")}</span></div>`).join("")}`:'<div class="secure-empty">Belum ada penyertaan direkodkan untuk tahun ini.</div>'}
-
+function renderEntries(){
+  const rows=workspaceData?.entries||[];$("entryRows").innerHTML=rows.length?`<div class="secure-row entry manage-entry secure-head"><span>Nama murid</span><span>Acara</span><span>Kategori</span><span>Jenis</span><span>Tindakan</span></div>${rows.map(row=>`<div class="secure-row entry manage-entry"><b>${safe(row.name)}</b><span>${safe(row.event)}</span><span>${safe(row.category||"—")}</span><span>${safe(row.type||"—")}</span><button class="row-action danger" data-delete-entry="${safe(row.id)}">Padam</button></div>`).join("")}`:'<div class="secure-empty">Belum ada penyertaan direkodkan untuk tahun ini.</div>';
+  document.querySelectorAll("[data-delete-entry]").forEach(button=>button.onclick=()=>deleteEntry(button.dataset.deleteEntry));
+}
+function renderProfile(){
+  const house=workspaceData.house||currentHouse(),profile=workspaceData.profile||{},items=[["Nama rumah",house?`Rumah ${house}`:"Semua rumah"],["Moto",profile.motto],["Slogan",profile.slogan],["Ketua rumah",profile.captain],["Pemegang sepanduk",profile.bannerBearer],["Pemegang bendera",profile.flagBearer]];$("profileDetails").innerHTML=items.map(([label,value])=>`<article><small>${safe(label)}</small><b>${safe(value||"Belum diisi")}</b></article>`).join("");
+}
+function openPupil(id=""){
+  const row=(workspaceData?.pupils||[]).find(x=>x.id===id)||{};$("pupilDialogTitle").textContent=id?"Edit murid":"Tambah murid";$("pupilId").value=row.id||"";$("pupilName").value=row.name||"";$("pupilClass").value=row.class||"";$("pupilGender").value=normalizeGender(row.gender);clearMessage($("pupilMessage"));$("pupilDialog").showModal();
+}
+function normalizeGender(value){const text=String(value||"").toUpperCase();return/^(L|LELAKI|M|MALE)$/.test(text)?"Lelaki":/^(P|PEREMPUAN|F|FEMALE)$/.test(text)?"Perempuan":""}
+function pupilYear(value){const text=String(value||"").toUpperCase();if(/PRA/.test(text))return 0;const match=text.match(/(?:TAHUN\s*)?([1-6])/);return match?Number(match[1]):-1}
+function eligibleEvents(pupil){
+  const year=pupilYear(pupil.class),gender=normalizeGender(pupil.gender);return(workspaceData?.events||[]).filter(event=>{const allowed=(String(event.cohort||"").match(/[1-6]/g)||[]).map(Number),cohort=/PRA/i.test(event.cohort||"")?year===0:allowed.includes(year);return cohort&&(!normalizeGender(event.gender)||normalizeGender(event.gender)===gender)});
+}
+function openEntry(){
+  const pupils=workspaceData?.pupils||[];$("entryPupil").innerHTML='<option value="">Pilih murid</option>'+pupils.map(row=>`<option value="${safe(row.id)}">${safe(row.name)} • ${safe(row.class)}</option>`).join("");$("entryEvent").innerHTML='<option value="">Pilih murid dahulu</option>';clearMessage($("entryMessage"));$("entryDialog").showModal();
+}
+function updateEligibleEvents(){
+  const pupil=(workspaceData?.pupils||[]).find(row=>row.id===$("entryPupil").value),events=pupil?eligibleEvents(pupil):[];$("entryEvent").innerHTML='<option value="">Pilih acara</option>'+events.map(event=>`<option value="${safe(event.id)}">${safe(event.name)} • ${safe(event.cohort)} • ${safe(event.type)}</option>`).join("");$("entryEligibility").textContent=pupil?`${events.length} acara sepadan untuk ${pupil.name}. Sistem akan menyemak had dan kuota sekali lagi sebelum menyimpan.`:"Pilih murid untuk memaparkan acara yang sepadan dengan kategori dan jantina.";
+}
+async function savePupil(event){event.preventDefault();const button=event.submitter;clearMessage($("pupilMessage"));setBusy(button,true,"Menyimpan…");try{await api({action:"savePupil",token:session.token,year:currentYear(),house:currentHouse(),id:$("pupilId").value,name:$("pupilName").value,class:$("pupilClass").value,gender:$("pupilGender").value});message($("pupilMessage"),"Maklumat murid berjaya disimpan.","success");await loadWorkspace();setTimeout(()=>$("pupilDialog").close(),450)}catch(error){message($("pupilMessage"),error.message)}finally{setBusy(button,false)}}
+async function saveEntry(event){event.preventDefault();const button=event.submitter;clearMessage($("entryMessage"));setBusy(button,true,"Menyemak syarat…");try{const result=await api({action:"saveEntry",token:session.token,year:currentYear(),house:currentHouse(),pupilId:$("entryPupil").value,eventId:$("entryEvent").value});message($("entryMessage"),result.message,"success");await loadWorkspace();setTimeout(()=>$("entryDialog").close(),500)}catch(error){message($("entryMessage"),error.message)}finally{setBusy(button,false)}}
+async function deleteEntry(id){if(!confirm("Padam penyertaan ini?"))return;try{await api({action:"deleteEntry",token:session.token,id});await loadWorkspace()}catch(error){alert(error.message)}}
+function openProfile(){const p=workspaceData?.profile||{};$("profileMotto").value=p.motto||"";$("profileSlogan").value=p.slogan||"";$("profileCaptain").value=p.captain||"";$("profileBannerBearer").value=p.bannerBearer||"";$("profileFlagBearer").value=p.flagBearer||"";clearMessage($("profileMessage"));$("profileDialog").showModal()}
+async function saveProfile(event){event.preventDefault();const button=event.submitter;clearMessage($("profileMessage"));setBusy(button,true,"Menyimpan…");try{const result=await api({action:"saveHouseProfile",token:session.token,year:currentYear(),house:currentHouse(),motto:$("profileMotto").value,slogan:$("profileSlogan").value,captain:$("profileCaptain").value,bannerBearer:$("profileBannerBearer").value,flagBearer:$("profileFlagBearer").value});message($("profileMessage"),result.message,"success");await loadWorkspace();setTimeout(()=>$("profileDialog").close(),450)}catch(error){message($("profileMessage"),error.message)}finally{setBusy(button,false)}}
+async function loadAdminUsers(){if(!isAdmin())return;try{const result=await api({action:"adminUsers",token:session.token});adminUsers=result.users||[];renderUsers()}catch(error){$("userRows").innerHTML=`<div class="secure-empty">${safe(error.message)}</div>`}}
+function maskIc(ic){const x=String(ic||"");return x.length===12?`${x.slice(0,2)}••••••${x.slice(-4)}`:"—"}
+function renderUsers(){$("userRows").innerHTML=adminUsers.length?`<div class="secure-row user-row secure-head"><span>ID</span><span>Nama guru</span><span>Rumah / peranan</span><span>MyKad</span><span>Status</span></div>${adminUsers.map(user=>`<button class="secure-row user-row user-row-button" data-edit-user="${safe(user.id)}"><span>${safe(user.id)}</span><b>${safe(user.name)}</b><span>${safe(user.house?`Rumah ${user.house}`:user.role)}</span><span>${maskIc(user.ic)}</span><em>${user.active?(user.mustChange?"Perlu tukar kata laluan":"Aktif"):"Tidak aktif"}</em></button>`).join("")}`:'<div class="secure-empty">Belum ada akaun guru.</div>';document.querySelectorAll("[data-edit-user]").forEach(button=>button.onclick=()=>openUser(button.dataset.editUser))}
+function openUser(id=""){const user=adminUsers.find(x=>x.id===id)||{};$("userId").value=user.id||"";$("userId").readOnly=Boolean(id);$("userIc").value=user.ic||"";$("userName").value=user.name||"";$("userHouse").value=user.house||"";$("userRole").value=user.role||"Guru Rumah";$("userActive").value=user.active===false?"TIDAK":"YA";$("resetUserPassword").hidden=!id;$("resetUserPassword").dataset.id=id;clearMessage($("userMessage"));$("userDialog").showModal()}
+async function saveUser(event){event.preventDefault();const button=event.submitter;clearMessage($("userMessage"));setBusy(button,true,"Menyimpan…");try{const result=await api({action:"saveUser",token:session.token,id:$("userId").value,ic:$("userIc").value,name:$("userName").value,house:$("userHouse").value,role:$("userRole").value,active:$("userActive").value});message($("userMessage"),result.message,"success");await loadAdminUsers();setTimeout(()=>$("userDialog").close(),450)}catch(error){message($("userMessage"),error.message)}finally{setBusy(button,false)}}
+async function resetUser(){const id=$("resetUserPassword").dataset.id;if(!id||!confirm("Tetapkan semula kata laluan guru ini kepada kata laluan sementara?"))return;try{const result=await api({action:"resetPassword",token:session.token,id});message($("userMessage"),result.message||"Kata laluan berjaya ditetapkan semula.","success");await loadAdminUsers()}catch(error){message($("userMessage"),error.message)}}
+async function saveSettings(event){event.preventDefault();const button=event.submitter;clearMessage($("settingsMessage"));setBusy(button,true,"Menyimpan…");try{const result=await api({action:"saveSettings",token:session.token,bannerUrl:$("bannerUrl").value});message($("settingsMessage"),result.message,"success");workspaceData.settings={bannerUrl:$("bannerUrl").value}}catch(error){message($("settingsMessage"),error.message)}finally{setBusy(button,false)}}
 async function logout(){try{if(session?.token)await api({action:"logout",token:session.token})}catch{}sessionStorage.removeItem(SESSION_KEY);location.reload()}
-function switchTab(button){document.querySelectorAll("[data-workspace-tab]").forEach(x=>x.classList.toggle("active",x===button));["pupils","entries","profile"].forEach(name=>$(name+"Panel").hidden=name!==button.dataset.workspaceTab)}
+function switchTab(button){document.querySelectorAll("[data-workspace-tab]").forEach(x=>x.classList.toggle("active",x===button));["pupils","entries","profile","rules","users","settings"].forEach(name=>$(name+"Panel").hidden=name!==button.dataset.workspaceTab);if(button.dataset.workspaceTab==="users")loadAdminUsers()}
 
-$("loginForm").addEventListener("submit",login);$("teacherIc").addEventListener("input",()=>{$("teacherIc").value=$("teacherIc").value.replace(/[^0-9-]/g,"");$("teacherPreview").hidden=true});$("teacherIc").addEventListener("blur",previewTeacher);$("changePasswordForm").addEventListener("submit",changePassword);$("logoutButton").addEventListener("click",logout);$("workspaceYear").addEventListener("change",loadWorkspace);$("pupilSearch").addEventListener("input",renderPupils);$("forgotButton").addEventListener("click",()=>$("adminHelpDialog").showModal());
+$("loginForm").addEventListener("submit",login);$("teacherIc").addEventListener("input",()=>{$("teacherIc").value=$("teacherIc").value.replace(/[^0-9-]/g,"");$("teacherPreview").hidden=true});$("teacherIc").addEventListener("blur",previewTeacher);$("changePasswordForm").addEventListener("submit",changePassword);$("logoutButton").addEventListener("click",logout);$("workspaceYear").addEventListener("change",loadWorkspace);$("workspaceHouseSelect").addEventListener("change",loadWorkspace);$("pupilSearch").addEventListener("input",renderPupils);$("forgotButton").addEventListener("click",()=>$("adminHelpDialog").showModal());
+$("addPupilButton").addEventListener("click",()=>openPupil());$("addEntryButton").addEventListener("click",openEntry);$("editProfileButton").addEventListener("click",openProfile);$("addUserButton").addEventListener("click",()=>openUser());$("entryPupil").addEventListener("change",updateEligibleEvents);$("pupilForm").addEventListener("submit",savePupil);$("entryForm").addEventListener("submit",saveEntry);$("profileForm").addEventListener("submit",saveProfile);$("userForm").addEventListener("submit",saveUser);$("resetUserPassword").addEventListener("click",resetUser);$("settingsForm").addEventListener("submit",saveSettings);
 document.querySelectorAll("[data-workspace-tab]").forEach(button=>button.addEventListener("click",()=>switchTab(button)));document.querySelectorAll("[data-close-dialog]").forEach(button=>button.addEventListener("click",()=>button.closest("dialog").close()));document.querySelectorAll("[data-toggle-password]").forEach(button=>button.addEventListener("click",()=>{const input=$(button.dataset.togglePassword);input.type=input.type==="password"?"text":"password";button.textContent=input.type==="password"?"Lihat":"Sorok"}));
-
 try{session=JSON.parse(sessionStorage.getItem(SESSION_KEY)||"null")}catch{session=null}if(session?.token&&session?.user){if(session.mustChange)$("changePasswordDialog").showModal();else openWorkspace()}
