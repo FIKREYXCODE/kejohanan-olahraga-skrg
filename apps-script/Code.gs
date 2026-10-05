@@ -398,7 +398,12 @@ function judgeAccessRows_() {
 }
 
 function judgeCode_() {
-  return "PG26-" + Utilities.getUuid().replace(/-/g, "").slice(0, 4).toUpperCase() + "-" + Utilities.getUuid().replace(/-/g, "").slice(0, 4).toUpperCase();
+  const used = new Set(judgeAccessRows_().map(row => row.code));
+  for (let attempt = 0; attempt < 100; attempt++) {
+    const code = String(Math.floor(1000 + Math.random() * 9000));
+    if (!used.has(code)) return code;
+  }
+  throw new Error("Kod empat angka tidak dapat dijana. Cuba sekali lagi.");
 }
 
 function judgeLogin_(body) {
@@ -974,7 +979,10 @@ function saveJudgeAccess_(body) {
   if (!name || !scope) throw new Error("Nama pengadil dan skop acara wajib diisi.");
   const context = judgeAccessContext_();
   const existing = judgeAccessRows_().find(row => row.id === id);
-  const code = (!existing || String(body.reset || "").toUpperCase() === "YA") ? judgeCode_() : existing.code;
+  const requestedCode = String(body.code || "").replace(/\D/g, "");
+  if (requestedCode && !/^\d{4}$/.test(requestedCode)) throw new Error("Kod akses pengadil mesti empat angka.");
+  if (requestedCode && judgeAccessRows_().some(row => row.id !== id && row.code === requestedCode)) throw new Error("Kod empat angka ini sudah digunakan oleh pengadil lain.");
+  const code = requestedCode || ((!existing || String(body.reset || "").toUpperCase() === "YA") ? judgeCode_() : existing.code);
   writeRecord_(context, existing && existing.row, { "ID Pengadil": id, "Nama Pengadil": name, "Peranan": role, "Skop Acara": scope, "Kod Akses": code, "Aktif": active, "Kemaskini Terakhir": new Date() });
   audit_(session, existing ? "KEMAS KINI AKSES PENGADIL" : "TAMBAH AKSES PENGADIL", id, name + " • " + scope);
   return { ok: true, id, code, message: existing ? "Akses pengadil berjaya dikemas kini." : "Kod akses pengadil berjaya dijana." };
