@@ -408,15 +408,25 @@ function judgeCode_() {
 
 function judgeLogin_(body) {
   const code = String(body.code || "").trim().toUpperCase();
+  const identityType = String(body.identityType || "").trim().toUpperCase();
   if (!code) throw new Error("Masukkan kod akses pengadil.");
+  if (!["WARGA", "ASING"].includes(identityType)) throw new Error("Pilih sama ada Warga Sekolah atau Petugas Asing.");
   enforceRateLimit_("judge-" + code);
   const judge = judgeAccessRows_().find(row => row.active && secureEqual_(row.code.toUpperCase(), code));
   if (!judge) { recordFailedAttempt_("judge-" + code); return { error: true, message: "Kod akses pengadil tidak sah atau telah dinyahaktifkan." }; }
+  let actor = { id: "ASING", name: "PETUGAS ASING", house: "", schoolRole: "Petugas Luar" };
+  if (identityType === "WARGA") {
+    const ic = normalizeIc_(body.ic);
+    if (ic.length !== 12) throw new Error("Masukkan nombor kad pengenalan 12 digit warga sekolah.");
+    const staff = users_().users.find(item => item.active && item.ic === ic);
+    if (!staff) throw new Error("Nombor kad pengenalan tidak dijumpai dalam senarai guru atau AKP aktif.");
+    actor = { id: staff.id, name: staff.name, house: staff.house || "", schoolRole: staff.role || "Warga Sekolah" };
+  }
   clearRateLimit_("judge-" + code);
-  const user = { id: judge.id, name: judge.name, house: "", role: judge.role, isJudge: true, judgeScope: judge.scope };
+  const user = { id: actor.id, name: actor.name, house: actor.house, role: judge.role, schoolRole: actor.schoolRole, identityType, judgeLabel: judge.name, judgeAccessId: judge.id, isJudge: true, judgeScope: judge.scope };
   const token = createSession_(user, false, false);
-  audit_(user, "LOG MASUK PENGADIL", judge.scope, "Portal Pengadil");
-  return { ok: true, token, user: { ...publicUser_(user, false), isJudge: true, judgeScope: judge.scope } };
+  audit_(user, "LOG MASUK PENGADIL", judge.scope, judge.name + " • " + actor.schoolRole + " • " + identityType);
+  return { ok: true, token, user: publicUser_(user, false) };
 }
 
 function eventAllowedForJudge_(session, event) {
@@ -1022,7 +1032,7 @@ function logout_(body) {
 
 function publicUser_(user, isSystemAdmin) {
   const role = isSystemAdmin ? "Admin Sistem" : (/^admin/i.test(String(user.role || "")) ? "Guru Rumah" : user.role);
-  return { id: user.id, name: user.name, house: user.house, role, isSystemAdmin: Boolean(isSystemAdmin), isJudge: Boolean(user.isJudge), judgeScope: String(user.judgeScope || "") };
+  return { id: user.id, name: user.name, house: user.house, role, schoolRole: String(user.schoolRole || ""), identityType: String(user.identityType || ""), judgeLabel: String(user.judgeLabel || ""), judgeAccessId: String(user.judgeAccessId || ""), isSystemAdmin: Boolean(isSystemAdmin), isJudge: Boolean(user.isJudge), judgeScope: String(user.judgeScope || "") };
 }
 
 function createSession_(user, mustChange, isSystemAdmin) {
