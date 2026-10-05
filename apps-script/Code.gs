@@ -385,6 +385,7 @@ function teacherData_(body) {
   const entries = rowsFrom("Penyertaan").filter(row => String(row["Tahun"] || "") === year && (isAdmin ? (!requestedHouse || row["Rumah"] === requestedHouse) : row["Rumah"] === session.house));
   const eventRows = rowsFrom("Acara").filter(row => String(row["Tahun"] || "") === year && row["ID Acara"]);
   const eventById = Object.fromEntries(eventRows.map(row => [String(row["ID Acara"]), row]));
+  const houseUsers = users_().users.filter(user => user.house === requestedHouse);
   return {
     ok: true,
     user: session,
@@ -398,9 +399,24 @@ function teacherData_(body) {
       const event = eventById[String(row["Acara"] || "")] || {};
       return { id: row["ID Penyertaan"] || "", pupilId: row["ID Murid"] || "", name: row["Nama Murid"] || "", eventId: row["Acara"] || "", event: event["Nama Acara"] || row["Acara"] || "", category: event["Kumpulan Tahun"] || row["Kategori"] || "", type: event["Jenis Acara"] || "", status: row["Status"] || "Aktif" };
     }),
+    users: houseUsers.map(user => ({
+      id: user.id,
+      name: user.name,
+      house: user.house,
+      role: user.role,
+      active: user.active,
+      mustChange: user.mustChange,
+      maskedIc: maskIc_(user.ic),
+      ic: isAdmin ? user.ic : ""
+    })),
     events: eventRows.map(row => ({ id: row["ID Acara"] || "", name: row["Nama Acara"] || "", discipline: row["Kategori"] || "", stage: row["Peringkat"] || "", categoryCode: row["Kod Kategori"] || "", cohort: row["Kumpulan Tahun"] || "", gender: row["Jantina"] || "", type: row["Jenis Acara"] || "", note: row["Catatan"] || "" })),
     rules: { individualPerPupil: 2, groupPerPupil: 1, individualPerHouseEvent: 2, relayRunnersPerHouseEvent: 4 }
   };
+}
+
+function maskIc_(value) {
+  const ic = normalizeIc_(value);
+  return ic.length === 12 ? ic.slice(0, 2) + "••••••" + ic.slice(-4) : "—";
 }
 
 function dataSheet_(name, requiredHeaders) {
