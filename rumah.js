@@ -41,7 +41,9 @@ async function start(){
     document.getElementById("profileYear").textContent=year;
     document.getElementById("profileOfficial").textContent=officialName;
     document.getElementById("profileHouse").textContent=`Rumah ${houseName} • Sekolah Kebangsaan Ranggu`;
-    document.getElementById("profileLogoText").textContent={Biru:"B",Kuning:"K",Ungu:"U",Merah:"M"}[houseName];
+    const profileLogo=document.getElementById("profileTempLogo");
+    if(h.logo){profileLogo.classList.add("has-house-logo");profileLogo.innerHTML=`<img src="${safe(h.logo)}" alt="Logo Rumah ${safe(houseName)}">`}
+    else{profileLogo.classList.remove("has-house-logo");profileLogo.innerHTML=`<span id="profileLogoText">${{Biru:"B",Kuning:"K",Ungu:"U",Merah:"M"}[houseName]}</span><small>LAMBANG RUMAH</small>`}
 
     const teachers=(h.teacher||"").split(";").map(x=>x.trim()).filter(Boolean);
     document.getElementById("teacherCount").textContent=`${teachers.length} guru`;

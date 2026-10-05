@@ -31,6 +31,7 @@ function doPost(e) {
     if (action === "saveEntry") return jsonResponse(saveEntry_(body));
     if (action === "deleteEntry") return jsonResponse(deleteEntry_(body));
     if (action === "saveHouseProfile") return jsonResponse(saveHouseProfile_(body));
+    if (action === "saveHouseLogo") return jsonResponse(saveHouseLogo_(body));
     if (action === "saveResult") return jsonResponse(saveResult_(body));
     if (action === "deleteResult") return jsonResponse(deleteResult_(body));
     if (action === "saveAthletePhoto") return jsonResponse(saveAthletePhoto_(body));
@@ -77,6 +78,7 @@ function emptyHouse(officialName) {
     captain: "",
     bannerBearer: "",
     flagBearer: "",
+    logo: "",
     memberCount: 0,
     participantCount: 0
   };
@@ -122,7 +124,8 @@ function buildPublicData() {
       slogan: row["Slogan"] || "",
       captain: row["Ketua Rumah"] || "",
       bannerBearer: row["Pemegang Sepanduk"] || "",
-      flagBearer: row["Pemegang Bendera"] || ""
+      flagBearer: row["Pemegang Bendera"] || "",
+      logo: row["Logo Rumah"] || ""
     };
   });
 
@@ -762,6 +765,22 @@ function saveHouseProfile_(body) {
   writeRecord_(context, existing && existing.__row, { "Tahun": year, "Rumah": house, "Moto": String(body.motto || "").trim(), "Slogan": String(body.slogan || "").trim(), "Ketua Rumah": String(body.captain || "").trim(), "Pemegang Sepanduk": String(body.bannerBearer || "").trim(), "Pemegang Bendera": String(body.flagBearer || "").trim() });
   audit_(session, "KEMAS KINI RUMAH", house, "Profil Rumah " + house + " tahun " + year);
   return { ok: true, message: "Maklumat rumah sukan berjaya disimpan." };
+}
+
+function saveHouseLogo_(body) {
+  const session = requireSession_(body.token);
+  if (session.mustChange) throw new Error("Tukar kata laluan sementara sebelum mengubah data.");
+  const year = String(body.year || "2026").trim();
+  const house = authorizeHouse_(session, body.house || session.house);
+  const logo = String(body.logo || "");
+  if (logo && !/^data:image\/(jpeg|png|webp);base64,/i.test(logo)) throw new Error("Pilih fail logo JPG, PNG atau WebP yang sah.");
+  if (logo.length > 48000) throw new Error("Saiz logo masih terlalu besar. Pilih gambar lain.");
+  const rows = rowsFrom("Rumah");
+  const existing = rows.find(row => String(row["Tahun"] || "") === year && String(row["Rumah"] || "") === house);
+  const context = dataSheet_("Rumah", ["Tahun", "Rumah", "Guru Rumah", "Moto", "Slogan", "Ketua Rumah", "Pemegang Sepanduk", "Pemegang Bendera", "Logo Rumah"]);
+  writeRecord_(context, existing && existing.__row, { "Tahun": year, "Rumah": house, "Logo Rumah": logo });
+  audit_(session, logo ? "MUAT NAIK LOGO RUMAH" : "BUANG LOGO RUMAH", house, "Logo Rumah " + house + " tahun " + year);
+  return { ok: true, message: logo ? "Logo Rumah " + house + " berjaya disimpan." : "Logo Rumah " + house + " berjaya dibuang." };
 }
 
 function adminUsers_(body) {
