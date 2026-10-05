@@ -16,11 +16,19 @@ async function api(payload){
 function message(target,text,type="error"){target.textContent=text;target.className=`form-message ${type}`}
 function clearMessage(target){target.textContent="";target.className="form-message"}
 function initials(name){return String(name||"Guru").split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase()}
+function normalizedIc(){return $("teacherIc").value.replace(/\D/g,"")}
+
+async function previewTeacher(){
+  const ic=normalizedIc(),preview=$("teacherPreview");preview.hidden=true;clearMessage($("loginMessage"));
+  if(ic.length!==12)return;
+  try{const result=await api({action:"lookupTeacher",ic});$("teacherPreviewName").textContent=result.name;$("teacherPreviewHouse").textContent=result.house?`Rumah ${result.house}`:"Pentadbir";preview.hidden=false}
+  catch(error){message($("loginMessage"),error.message)}
+}
 
 async function login(event){
   event.preventDefault();const button=event.submitter;clearMessage($("loginMessage"));button.disabled=true;button.innerHTML="Menyemak…";
   try{
-    const result=await api({action:"login",id:$("teacherId").value.trim(),password:$("teacherPassword").value});
+    const result=await api({action:"login",ic:normalizedIc(),password:$("teacherPassword").value});
     session={token:result.token,user:result.user,mustChange:Boolean(result.mustChange)};sessionStorage.setItem(SESSION_KEY,JSON.stringify(session));
     if(result.mustChange){$("currentPassword").value=$("teacherPassword").value;$("changePasswordDialog").showModal();return}
     await openWorkspace();
@@ -67,7 +75,7 @@ function renderEntries(){const rows=workspaceData?.entries||[];$("entryRows").in
 async function logout(){try{if(session?.token)await api({action:"logout",token:session.token})}catch{}sessionStorage.removeItem(SESSION_KEY);location.reload()}
 function switchTab(button){document.querySelectorAll("[data-workspace-tab]").forEach(x=>x.classList.toggle("active",x===button));["pupils","entries","profile"].forEach(name=>$(name+"Panel").hidden=name!==button.dataset.workspaceTab)}
 
-$("loginForm").addEventListener("submit",login);$("changePasswordForm").addEventListener("submit",changePassword);$("logoutButton").addEventListener("click",logout);$("workspaceYear").addEventListener("change",loadWorkspace);$("pupilSearch").addEventListener("input",renderPupils);$("forgotButton").addEventListener("click",()=>$("adminHelpDialog").showModal());
+$("loginForm").addEventListener("submit",login);$("teacherIc").addEventListener("input",()=>{$("teacherIc").value=$("teacherIc").value.replace(/[^0-9-]/g,"");$("teacherPreview").hidden=true});$("teacherIc").addEventListener("blur",previewTeacher);$("changePasswordForm").addEventListener("submit",changePassword);$("logoutButton").addEventListener("click",logout);$("workspaceYear").addEventListener("change",loadWorkspace);$("pupilSearch").addEventListener("input",renderPupils);$("forgotButton").addEventListener("click",()=>$("adminHelpDialog").showModal());
 document.querySelectorAll("[data-workspace-tab]").forEach(button=>button.addEventListener("click",()=>switchTab(button)));document.querySelectorAll("[data-close-dialog]").forEach(button=>button.addEventListener("click",()=>button.closest("dialog").close()));document.querySelectorAll("[data-toggle-password]").forEach(button=>button.addEventListener("click",()=>{const input=$(button.dataset.togglePassword);input.type=input.type==="password"?"text":"password";button.textContent=input.type==="password"?"Lihat":"Sorok"}));
 
 try{session=JSON.parse(sessionStorage.getItem(SESSION_KEY)||"null")}catch{session=null}if(session?.token&&session?.user){if(session.mustChange)$("changePasswordDialog").showModal();else openWorkspace()}

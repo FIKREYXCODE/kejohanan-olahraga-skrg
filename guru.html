@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="Portal guru rumah sukan Sekolah Kebangsaan Ranggu">
   <title>Portal Guru | SK Ranggu</title>
-  <link rel="stylesheet" href="portal.css?v=20261005auth1">
-  <link rel="stylesheet" href="guru.css?v=20261005auth1">
+  <link rel="stylesheet" href="portal.css?v=20261005ic1">
+  <link rel="stylesheet" href="guru.css?v=20261005ic1">
 </head>
 <body class="teacher-auth-page">
   <div class="credit-strip">Dibangunkan oleh <b>Cikgu Mohammad Fikrey bin Abdul Gapar</b></div>
@@ -23,7 +23,7 @@
     <section class="auth-intro">
       <span class="hero-pill">🔐 AKSES TERKAWAL • 2026</span>
       <h1>Satu pasukan.<br><em>Satu ruang kerja.</em></h1>
-      <p>Setiap guru menggunakan ID Guru sendiri. Selepas log masuk, cikgu hanya boleh melihat dan mengurus data rumah sukan yang telah ditetapkan.</p>
+      <p>Setiap guru menggunakan nombor kad pengenalan sendiri. Selepas log masuk, cikgu hanya boleh melihat dan mengurus data rumah sukan yang telah ditetapkan.</p>
       <div class="auth-feature-grid">
         <article><b>01</b><span><strong>Data segerak</strong><small>Perubahan tersimpan di Google Sheet dan boleh dilihat oleh guru lain.</small></span></article>
         <article><b>02</b><span><strong>Akses ikut rumah</strong><small>Biru, Kuning, Ungu atau Merah—tanpa bercampur data.</small></span></article>
@@ -32,9 +32,10 @@
     </section>
 
     <section class="auth-card" id="loginCard">
-      <div class="auth-card-heading"><span>PORTAL RASMI GURU</span><h2>Log masuk</h2><p>Gunakan ID Guru yang diberikan oleh pentadbir.</p></div>
+      <div class="auth-card-heading"><span>PORTAL RASMI GURU</span><h2>Log masuk</h2><p>Masukkan nombor kad pengenalan yang didaftarkan oleh pentadbir.</p></div>
       <form id="loginForm" autocomplete="on">
-        <label><span>ID Guru</span><input id="teacherId" name="username" autocomplete="username" placeholder="Contoh: U26-B-01" required></label>
+        <label><span>Nombor Kad Pengenalan</span><input id="teacherIc" name="username" autocomplete="username" inputmode="numeric" placeholder="Contoh: 901212125678" maxlength="14" required></label>
+        <div class="teacher-preview" id="teacherPreview" hidden><small>AKAUN DIJUMPAI</small><b id="teacherPreviewName">Nama guru</b><span id="teacherPreviewHouse">Rumah sukan</span></div>
         <label><span>Kata laluan</span><div class="password-field"><input id="teacherPassword" name="password" type="password" autocomplete="current-password" placeholder="Masukkan kata laluan" required><button type="button" data-toggle-password="teacherPassword" aria-label="Tunjukkan kata laluan">Lihat</button></div></label>
         <p class="temporary-note"><b>Log masuk kali pertama?</b> Gunakan kata laluan sementara yang diberikan oleh pentadbir. Sistem akan meminta cikgu mencipta kata laluan sendiri.</p>
         <div class="form-message" id="loginMessage" role="status"></div>
@@ -45,7 +46,7 @@
 
     <section class="teacher-workspace" id="teacherWorkspace" hidden>
       <header class="workspace-head">
-        <div><span class="workspace-avatar" id="workspaceInitials">GR</span><p><small>SELAMAT DATANG</small><b id="workspaceName">Nama Guru</b><em id="workspaceIdentity">ID Guru</em></p></div>
+        <div><span class="workspace-avatar" id="workspaceInitials">GR</span><p><small>SELAMAT DATANG</small><b id="workspaceName">Nama Guru</b><em id="workspaceIdentity">Rumah sukan</em></p></div>
         <div><span class="session-pill">● SESI AKTIF</span><button id="logoutButton" type="button">Log keluar</button></div>
       </header>
       <div class="workspace-house" id="workspaceHouse">
@@ -84,10 +85,10 @@
   <dialog id="adminHelpDialog" class="auth-dialog">
     <button class="dialog-close" type="button" data-close-dialog>×</button>
     <span class="kicker blue">BANTUAN LOG MASUK</span><h2>Reset oleh pentadbir</h2>
-    <p>Maklumkan ID Guru kepada Cikgu Mohammad Fikrey bin Abdul Gapar. Pentadbir boleh menetapkan akaun kembali kepada kata laluan sementara rasmi.</p>
+    <p>Maklumkan nama dan nombor kad pengenalan kepada Cikgu Mohammad Fikrey bin Abdul Gapar. Pentadbir boleh menetapkan akaun kembali kepada kata laluan sementara rasmi.</p>
   </dialog>
 
   <footer class="site-footer"><div><img src="assets/skrg.jpeg" alt="Logo SK Ranggu"><img src="assets/kpm.png" alt="Logo KPM"></div><p><b>SEKOLAH KEBANGSAAN RANGGU TAWAU</b><span>Peti Surat 842, 91008 Tawau, Sabah, Malaysia</span></p><p><small>Dibangunkan oleh</small><b>Cikgu Mohammad Fikrey bin Abdul Gapar</b></p></footer>
-  <script src="guru-auth.js?v=20261005auth1"></script>
+  <script src="guru-auth.js?v=20261005ic1"></script>
 </body>
 </html>

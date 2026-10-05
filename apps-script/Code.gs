@@ -4,7 +4,7 @@ const AUTH_SHEET = "Pengguna";
 const AUDIT_SHEET = "Log Aktiviti";
 const SESSION_HOURS = 8;
 const HASH_ROUNDS = 2500;
-const AUTH_BASE_HEADERS = ["ID Guru", "Nama Guru", "Rumah", "Peranan", "Aktif"];
+const AUTH_BASE_HEADERS = ["ID Guru", "Nama Guru", "Rumah", "Peranan", "Aktif", "No. Kad Pengenalan"];
 const AUTH_STORAGE_HEADERS = ["Hash Kata Laluan", "Garam", "Wajib Tukar", "Kemaskini Terakhir"];
 
 function doGet(e) {
@@ -22,6 +22,7 @@ function doPost(e) {
     const body = parseBody_(e);
     const action = String(body.action || "");
     if (action === "login") return jsonResponse(login_(body));
+    if (action === "lookupTeacher") return jsonResponse(lookupTeacher_(body));
     if (action === "changePassword") return jsonResponse(changePassword_(body));
     if (action === "logout") return jsonResponse(logout_(body));
     if (action === "teacherData") return jsonResponse(teacherData_(body));
@@ -206,6 +207,7 @@ function authSheet_() {
   const existing = sheet.getRange(1, 1, 1, width).getDisplayValues()[0].map(String);
   const normalized = existing.filter(Boolean);
   if (!normalized.length) AUTH_BASE_HEADERS.forEach(header => normalized.push(header));
+  if (!normalized.includes("No. Kad Pengenalan")) normalized.push("No. Kad Pengenalan");
   AUTH_STORAGE_HEADERS.forEach(header => { if (!normalized.includes(header)) normalized.push(header); });
   sheet.getRange(1, 1, 1, normalized.length).setValues([normalized]);
   return { sheet, headers: normalized };
@@ -225,6 +227,7 @@ function users_() {
   const values = sheet.getRange(2, 1, sheet.getLastRow() - 1, headers.length).getDisplayValues();
   const index = {
     id: headerIndex_(headers, ["ID Guru", "ID Pengguna", "ID"]),
+    ic: headerIndex_(headers, ["No. Kad Pengenalan", "No Kad Pengenalan", "Kad Pengenalan"]),
     name: headerIndex_(headers, ["Nama Guru", "Nama Pengguna", "Nama"]),
     house: headerIndex_(headers, ["Rumah", "Rumah Sukan"]),
     role: headerIndex_(headers, ["Peranan", "Role"]),
@@ -238,6 +241,7 @@ function users_() {
     row: i + 2,
     raw: row,
     id: index.id >= 0 ? String(row[index.id] || "").trim() : "",
+    ic: index.ic >= 0 ? normalizeIc_(row[index.ic]) : "",
     name: index.name >= 0 ? String(row[index.name] || "").trim() : "",
     house: index.house >= 0 ? String(row[index.house] || "").trim() : "",
     role: index.role >= 0 ? String(row[index.role] || "Guru").trim() : "Guru",
@@ -257,13 +261,13 @@ function updateAuth_(context, user, values) {
 }
 
 function login_(body) {
-  const id = String(body.id || "").trim().toUpperCase();
+  const ic = normalizeIc_(body.ic);
   const password = String(body.password || "");
-  if (!id || !password) throw new Error("Masukkan ID Guru dan kata laluan.");
-  enforceRateLimit_(id);
+  if (ic.length !== 12 || !password) throw new Error("Masukkan nombor kad pengenalan 12 digit dan kata laluan.");
+  enforceRateLimit_(ic);
   const context = users_();
-  const user = context.users.find(item => item.id.toUpperCase() === id);
-  if (!user || !user.active) return failedLogin_(id);
+  const user = context.users.find(item => item.ic === ic);
+  if (!user || !user.active) return failedLogin_(ic);
   let valid = false;
   let mustChange = user.mustChange;
   if (!user.hash || !user.salt) {
@@ -272,11 +276,22 @@ function login_(body) {
   } else {
     valid = secureEqual_(user.hash, passwordHash_(password, user.salt));
   }
-  if (!valid) return failedLogin_(id);
-  clearRateLimit_(id);
+  if (!valid) return failedLogin_(ic);
+  clearRateLimit_(ic);
   const token = createSession_(user, mustChange);
   audit_(user, "LOG MASUK", "Portal Guru", "Log masuk berjaya");
   return { ok: true, token, mustChange, user: publicUser_(user) };
+}
+
+function normalizeIc_(value) { return String(value || "").replace(/\D/g, ""); }
+
+function lookupTeacher_(body) {
+  const ic = normalizeIc_(body.ic);
+  if (ic.length !== 12) throw new Error("Masukkan nombor kad pengenalan 12 digit.");
+  enforceRateLimit_(ic);
+  const user = users_().users.find(item => item.ic === ic && item.active);
+  if (!user) return failedLogin_(ic);
+  return { ok: true, name: user.name, house: user.house };
 }
 
 function changePassword_(body) {
@@ -303,9 +318,10 @@ function resetPassword_(body) {
   const session = requireSession_(body.token);
   if (!/^admin/i.test(session.role)) throw new Error("Hanya admin boleh menetapkan semula kata laluan.");
   const targetId = String(body.id || "").trim().toUpperCase();
+  const targetIc = normalizeIc_(body.ic);
   const context = users_();
-  const target = context.users.find(item => item.id.toUpperCase() === targetId);
-  if (!target) throw new Error("ID Guru tidak dijumpai.");
+  const target = context.users.find(item => targetIc ? item.ic === targetIc : item.id.toUpperCase() === targetId);
+  if (!target) throw new Error("Akaun guru tidak dijumpai.");
   updateAuth_(context, target, { hash: "", salt: "", mustChange: "YA", updated: new Date() });
   audit_(session, "RESET KATA LALUAN", target.id, "Ditetapkan semula kepada kata laluan sementara");
   return { ok: true };
@@ -399,7 +415,7 @@ function secureEqual_(a, b) {
 
 function failedLogin_(id) {
   recordFailedAttempt_(id);
-  return { error: true, message: "ID Guru atau kata laluan tidak tepat." };
+  return { error: true, message: "Nombor kad pengenalan atau kata laluan tidak tepat." };
 }
 
 function rateKey_(id) { return "rate_" + digest_(id).slice(0, 24); }
