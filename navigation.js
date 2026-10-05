@@ -4,6 +4,7 @@
     ["pingat.html","🏆 Papan Markah",["pingat.html"]],
     ["kalendar.html","📅 Kalendar",["kalendar.html"]],
     ["saringan.html","🏁 Saringan",["saringan.html"]],
+    ["pengadil.html","⏱ Pengadil",["pengadil.html"]],
     ["rumah-sukan.html","🛡 Rumah Sukan",["rumah-sukan.html","rumah.html","murid.html"]],
     ["aturcara.html","⏱ Atur Cara",["aturcara.html"]],
     ["penyertaan.html","🏃 Penyertaan",["penyertaan.html"]],
@@ -11,8 +12,7 @@
     ["jawatankuasa.html","👥 Jawatankuasa",["jawatankuasa.html"]],
     ["organisasi-sekolah.html","🏛 Organisasi Sekolah",["organisasi-sekolah.html"]],
     ["cetak.html","🖨 Cetakan",["cetak.html"]],
-    ["guru.html","🔐 Guru",["guru.html"]],
-    ["pengadil.html","⏱ Pengadil",["pengadil.html"]]
+    ["guru.html","🔐 Guru",["guru.html"]]
   ];
   const page=location.pathname.split("/").pop()||"index.html",header=document.querySelector("header.site-bar,header.topbar");
   if(!header||document.body.classList.contains("teacher-auth-page"))return;
@@ -21,6 +21,7 @@
   const selectedYear=new URLSearchParams(location.search).get("tahun")||"2026";
   nav.innerHTML=items.map(([href,label,matches])=>{const active=matches.includes(page);const url=new URL(href,location.href);if(!["guru.html","pengadil.html"].includes(href))url.searchParams.set("tahun",selectedYear);const loginClass=["guru.html","pengadil.html"].includes(href);return`<a${active?' class="active" aria-current="page"':loginClass?' class="nav-login"':""} href="${url.pathname.split("/").pop()}${url.search}">${label}</a>`}).join("");
   let shell=document.querySelector(".global-nav-shell");if(!shell){shell=document.createElement("div");shell.className="global-nav-shell";header.insertAdjacentElement("afterend",shell)}shell.append(nav);
+  if(page!=="pengadil.html"&&!document.querySelector(".mobile-judge-shortcut")){const shortcut=document.createElement("a");shortcut.className="mobile-judge-shortcut";shortcut.href="pengadil.html";shortcut.setAttribute("aria-label","Buka Portal Pengadil");shortcut.innerHTML="<span>⏱</span><b>Pengadil</b>";document.body.append(shortcut)}
   const renderTicker=settings=>{
     const text=String(settings?.tickerText||"").trim();
     if(!settings?.tickerActive||!text||document.querySelector(".news-ticker"))return;

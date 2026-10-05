@@ -13,13 +13,13 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/png" href="assets/pwa/favicon-64.png">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/pwa/apple-touch-icon.png">
-  <link rel="stylesheet" href="portal.css?v=20261005judge1">
+  <link rel="stylesheet" href="portal.css?v=20261005judge3">
 </head>
 <body data-page="portal" class="dashboard-page">
   <div class="credit-strip"><span>SEKOLAH KEBANGSAAN RANGGU • TAWAU, SABAH</span><span>Dibangunkan oleh <b>Cikgu Mohammad Fikrey bin Abdul Gapar</b></span></div>
   <header class="site-bar dashboard-bar">
     <a class="school-brand" href="index.html"><img class="logo-kpm" src="assets/kpm.png" alt="Logo KPM"><img class="logo-school" src="assets/skrg.jpeg" alt="Logo SK Ranggu"><span><b>SK RANGGU SPORTSYNC</b><small>Sistem Kejohanan Olahraga Tahunan</small></span></a>
-    <div class="bar-tools"><button class="sync-button" type="button">↻ Segarkan</button><span class="active-pill">● DATA LANGSUNG</span><label>Tahun <select id="yearSelect"></select></label><button class="install-button" id="pwaInstallButton" type="button">📲 Pasang KOT 26</button><a class="teacher-login" href="guru.html">🔐 Portal Guru</a><button class="admin-link" data-admin>Admin Sistem</button></div>
+    <div class="bar-tools"><button class="sync-button" type="button">↻ Segarkan</button><span class="active-pill">● DATA LANGSUNG</span><label>Tahun <select id="yearSelect"></select></label><button class="install-button" id="pwaInstallButton" type="button">📲 Pasang KOT 26</button><a class="teacher-login" href="guru.html">🔐 Portal Guru</a><a class="judge-header-access" href="pengadil.html">⏱ Portal Pengadil</a><button class="admin-link" data-admin>Admin Sistem</button></div>
   </header>
   <main class="dashboard-main">
     <section class="dashboard-hero compact-hero">
@@ -27,6 +27,7 @@
         <span class="hero-pill">🏆 KEJOHANAN TAHUNAN SK RANGGU</span>
         <h1>Sukan Wadah Perpaduan<br>&amp; Kecemerlangan</h1>
         <p>Pusat sehenti rasmi untuk rumah sukan, pendaftaran atlet, jadual acara, keputusan dan pungutan pingat.</p>
+        <div class="hero-access-actions"><a class="hero-judge-access" href="pengadil.html"><span>⏱</span><b>PORTAL PENGADIL<small>Masukkan masa dan ukuran acara</small></b><strong>Buka →</strong></a><a class="hero-teacher-access" href="guru.html"><span>🔐</span><b>PORTAL GURU<small>Pendaftaran peserta rumah sukan</small></b></a></div>
         <div class="house-pills" aria-label="Empat rumah sukan"><a href="rumah.html?rumah=Merah&tahun=2026" style="--house:#df3f47"><i></i>Rumah Merah</a><a href="rumah.html?rumah=Ungu&tahun=2026" style="--house:#6d36d8"><i></i>Rumah Ungu</a><a href="rumah.html?rumah=Biru&tahun=2026" style="--house:#246bfd"><i></i>Rumah Biru</a><a href="rumah.html?rumah=Kuning&tahun=2026" style="--house:#e5ad00"><i></i>Rumah Kuning</a></div>
       </div>
       <div class="hero-year"><small>EDISI</small><b id="heroYear">2026</b></div>
@@ -43,6 +44,6 @@
   <footer class="site-footer compact-footer"><p><b>SEKOLAH KEBANGSAAN RANGGU TAWAU</b><span>Peti Surat 842, 91008 Tawau, Sabah, Malaysia</span></p><p><small>Dibangunkan oleh</small><b>Cikgu Mohammad Fikrey bin Abdul Gapar</b></p></footer>
   <dialog id="adminDialog"><button class="dialog-close" aria-label="Tutup">×</button><span class="kicker blue">AKSES PENGURUSAN</span><h2>Admin Sistem</h2><p>Akses khas Admin Sistem diasingkan sepenuhnya daripada akaun guru biasa. Masuk melalui Portal Guru dan pilih “Masuk sebagai Admin Sistem”.</p><div class="dialog-actions"><a class="button" href="guru.html">Buka Portal Akses →</a></div></dialog>
   <dialog id="pwaDialog" class="pwa-dialog"><button class="dialog-close" type="button" aria-label="Tutup">×</button><img src="assets/pwa/maskable-192.png" alt="Ikon aplikasi KOT 26"><span class="kicker blue">APLIKASI KOT 26</span><h2>Letakkan pada Home Screen</h2><p id="pwaInstallMessage">Buka menu perkongsian pelayar dan pilih arahan tambah ke skrin utama.</p><div class="pwa-steps"><section><b>iPhone / iPad</b><span>Safari → Kongsi <strong>□↑</strong> → Add to Home Screen</span></section><section><b>Android</b><span>Chrome → menu <strong>⋮</strong> → Install app</span></section></div><button class="button" id="pwaNativeInstall" type="button" hidden>Pasang sekarang</button></dialog>
-  <script src="common.js?v=20261005system1"></script>
+  <script src="common.js?v=20261005judge3"></script>
 </body>
 </html>
