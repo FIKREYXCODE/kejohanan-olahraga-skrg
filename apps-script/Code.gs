@@ -106,7 +106,7 @@ function buildPublicData() {
   const pupilById = Object.fromEntries(pupils.map(row => [String(row["ID Murid"] || "").trim(), row]));
   const events = rowsFrom("Acara");
   const eventById = Object.fromEntries(events.map(row => [String(row["ID Acara"] || "").trim(), row]));
-  const entries = rowsFrom("Penyertaan");
+  const entries = rowsFrom("Penyertaan").filter(row => !/batal/i.test(String(row["Status"] || "")));
   const schedules = rowsFrom("Atur Cara");
   ["2026", "2027", "2028", "2029", "2030"].forEach(year => ensureYear(output, year));
 
@@ -398,7 +398,7 @@ function teacherData_(body) {
   const publicData = buildPublicData();
   const yearData = publicData.years[year] || { houses: {} };
   const pupils = rowsFrom("Murid").filter(row => String(row["Tahun"] || "") === year && (isAdmin ? (!requestedHouse || row["Rumah"] === requestedHouse) : row["Rumah"] === session.house));
-  const entries = rowsFrom("Penyertaan").filter(row => String(row["Tahun"] || "") === year && (isAdmin ? (!requestedHouse || row["Rumah"] === requestedHouse) : row["Rumah"] === session.house));
+  const entries = rowsFrom("Penyertaan").filter(row => String(row["Tahun"] || "") === year && !/batal/i.test(String(row["Status"] || "")) && (isAdmin ? (!requestedHouse || row["Rumah"] === requestedHouse) : row["Rumah"] === session.house));
   const eventRows = rowsFrom("Acara").filter(row => String(row["Tahun"] || "") === year && row["ID Acara"]);
   const eventById = Object.fromEntries(eventRows.map(row => [String(row["ID Acara"]), row]));
   const houseUsers = users_().users.filter(user => user.house === requestedHouse);
@@ -633,13 +633,23 @@ function saveEntry_(body) {
 function deleteEntry_(body) {
   const session = requireSession_(body.token);
   if (session.mustChange) throw new Error("Tukar kata laluan sementara sebelum mengubah data.");
+  requireAdmin_(session);
   const id = String(body.id || "").trim();
   const entry = rowsFrom("Penyertaan").find(row => String(row["ID Penyertaan"] || "") === id);
   if (!entry) throw new Error("Rekod penyertaan tidak dijumpai.");
-  authorizeHouse_(session, entry["Rumah"]);
-  spreadsheet_().getSheetByName("Penyertaan").deleteRow(entry.__row);
-  audit_(session, "PADAM PENYERTAAN", id, String(entry["Nama Murid"] || entry["ID Murid"] || ""));
-  return { ok: true, message: "Penyertaan telah dipadam." };
+  if (/batal/i.test(String(entry["Status"] || ""))) throw new Error("Penyertaan ini sudah dibatalkan.");
+  const hasResult = rowsFrom("Keputusan").some(row =>
+    String(row["Tahun"] || "") === String(entry["Tahun"] || "") &&
+    String(row["Acara"] || "") === String(entry["Acara"] || "") &&
+    (String(row["ID Murid"] || "") === String(entry["ID Murid"] || "") ||
+      (!row["ID Murid"] && String(row["Rumah"] || "") === String(entry["Rumah"] || "")))
+  );
+  if (hasResult) throw new Error("Penyertaan tidak boleh dibatalkan kerana keputusan rasmi sudah direkodkan. Padam keputusan tersebut dahulu.");
+  const context = dataSheet_("Penyertaan", ["ID Penyertaan", "Tahun", "Acara", "Kategori", "ID Murid", "Nama Murid", "Rumah", "Status", "Catatan"]);
+  const detail = "Dibatalkan oleh " + (session.name || session.id || "Admin") + " pada " + Utilities.formatDate(new Date(), Session.getScriptTimeZone() || "Asia/Kuching", "dd/MM/yyyy HH:mm");
+  writeRecord_(context, entry.__row, { "Status": "Dibatalkan", "Catatan": detail });
+  audit_(session, "BATAL PENYERTAAN", id, String(entry["Nama Murid"] || entry["ID Murid"] || "") + " • " + String(entry["Acara"] || "") + " • Rumah " + String(entry["Rumah"] || ""));
+  return { ok: true, message: "Penyertaan atlet ini telah dibatalkan. Kuota acara kini tersedia semula." };
 }
 
 function resultMode_(event) {
