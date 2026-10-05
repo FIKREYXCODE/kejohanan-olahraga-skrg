@@ -59,10 +59,10 @@ async function loadWorkspace(){
 
 function renderWorkspace(){
   const house=workspaceData.house||session.user.house||"Pentadbir",profile=workspaceData.profile||{},color=HOUSE_COLORS[house]||"#0b4da2";
-  $("workspaceHouse").style.setProperty("--house",color);$("houseTitle").textContent=house?`Rumah ${house}`:"Paparan Pentadbir";$("houseMotto").textContent=[profile.officialName,profile.motto].filter(Boolean).join(" • ")||"Maklumat rasmi rumah sukan";
+  $("workspaceHouse").style.setProperty("--house",color);$("houseTitle").textContent=house?`Rumah ${house}`:"Paparan Pentadbir";$("houseMotto").textContent=profile.motto||"Maklumat rasmi rumah sukan";
   $("workspacePupilCount").textContent=(workspaceData.pupils||[]).length;$("workspaceEntryCount").textContent=(workspaceData.entries||[]).length;
   renderPupils();renderEntries();
-  const items=[["Nama rasmi",profile.officialName],["Moto",profile.motto],["Slogan",profile.slogan],["Ketua rumah",profile.captain],["Pemegang sepanduk",profile.bannerBearer],["Pemegang bendera",profile.flagBearer]];
+  const items=[["Nama rumah",house?`Rumah ${house}`:"Semua rumah"],["Moto",profile.motto],["Slogan",profile.slogan],["Ketua rumah",profile.captain],["Pemegang sepanduk",profile.bannerBearer],["Pemegang bendera",profile.flagBearer]];
   $("profileDetails").innerHTML=items.map(([label,value])=>`<article><small>${safe(label)}</small><b>${safe(value||"Belum diisi")}</b></article>`).join("");
 }
 

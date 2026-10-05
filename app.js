@@ -22,7 +22,7 @@ let database={years:{}},year="2026",filter="Semua";
 const $=id=>document.getElementById(id);
 const safe=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const textOrEmpty=value=>value?safe(value):'<span class="not-set">Belum diisi</span>';
-const officialNameFor=(name,value)=>name==="Ungu"?"Tunku Abdul Rahman":String(value||("Rumah "+name)).replace(/\s*\([^)]*\)\s*$/,"").trim();
+const officialNameFor=name=>`Rumah ${name}`;
 
 async function start(){
   try{database=await loadDatabase();}
@@ -59,7 +59,7 @@ function renderHouseCards(){
     const url=`rumah.html?rumah=${encodeURIComponent(name)}&tahun=${encodeURIComponent(year)}`;
     return `<a class="house-card house-card-${index+1}" href="${url}" style="--house:${HOUSE_META[name].color}">
       <div class="house-card-top"><span class="house-number">0${index+1}</span><i aria-hidden="true"></i><span>RUMAH ${safe(name).toUpperCase()}</span></div>
-      <div class="house-card-body"><small>NAMA RASMI PASUKAN</small><h3>${safe(official)}</h3><div class="house-card-meta"><span><b>${teachers.length}</b> guru</span><span><small>Ketua guru</small><b>${safe(coordinator)}</b></span></div></div>
+      <div class="house-card-body"><small>PASUKAN RASMI</small><h3>${safe(official)}</h3><div class="house-card-meta"><span><b>${teachers.length}</b> guru</span><span><small>Ketua guru</small><b>${safe(coordinator)}</b></span></div></div>
       <div class="house-card-link"><span>Lihat profil lengkap</span><b>→</b></div>
     </a>`;
   }).join("");

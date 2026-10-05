@@ -83,7 +83,8 @@ function ensureYear(data, year) {
 
 function parseTeacherBlock(value) {
   const lines = String(value || "").split(/\r?\n/).map(x => x.trim()).filter(Boolean);
-  const officialName = lines.shift() || "";
+  const firstLine = lines.shift() || "";
+  const officialName = /^Rumah\s+/i.test(firstLine) ? firstLine : "";
   const teachers = lines.map(x => x.replace(/^\d+\.\s*/, "")).filter(Boolean);
   return { officialName, teacher: teachers.join("; ") };
 }

@@ -27,10 +27,10 @@ Website awam hanya memaparkan sesuatu rekod jadual selepas Hari Kejohanan, Tarik
 
 Empat rumah sukan SK Ranggu ialah:
 
-- Biru — Tun Hussein Onn
-- Kuning — Tun Abdul Razak
-- Ungu — Tunku Abdul Rahman
-- Merah — Tun Mahathir
+- Rumah Biru
+- Rumah Kuning
+- Rumah Ungu
+- Rumah Merah
 
 ## Data tahun
 

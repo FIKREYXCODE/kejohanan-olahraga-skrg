@@ -1,12 +1,39 @@
 <!doctype html>
-<html lang="ms"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Portal Sistem Kejohanan Olahraga Tahunan Sekolah Kebangsaan Ranggu"><title>Portal Olahraga SK Ranggu</title><link rel="stylesheet" href="portal.css?v=20261004dashboard2"></head>
-<body data-page="portal">
-<div class="credit-strip">Dibangunkan oleh <b>Cikgu Mohammad Fikrey bin Abdul Gapar</b></div>
-<header class="site-bar dashboard-bar"><a class="school-brand" href="index.html"><img src="assets/skrg.jpeg" alt="Logo SK Ranggu"><img class="kpm-small" src="assets/kpm.png" alt="Logo KPM"><span><b>SK RANGGU SPORTSYNC</b><small>Kejohanan Sukan Olahraga Tahunan • Tawau, Sabah</small></span></a><div class="bar-tools"><button class="sync-button" type="button">↻ Segarkan Data</button><span class="active-pill">● DATA LANGSUNG</span><label>Tahun <select id="yearSelect"></select></label><a class="teacher-login" href="guru.html">🔐 Portal Guru</a><button class="admin-link" data-admin>💾 Admin</button></div></header>
-<main class="dashboard-main"><section class="dashboard-hero"><div class="hero-overlay"><span class="hero-pill">🏆 KEJOHANAN TAHUNAN SK RANGGU • TAWAU, SABAH</span><h1>Sukan Wadah Perpaduan<br>&amp; Kecemerlangan</h1><p>Sistem rasmi pengurusan pendaftaran atlet, penjadualan atur cara pertandingan dan portal khas empat rumah sukan.</p><div class="house-pills"><a href="rumah.html?rumah=Merah&tahun=2026" style="--house:#df3f47"><i></i>Rumah Merah <span>(Tun Mahathir)</span></a><a href="rumah.html?rumah=Ungu&tahun=2026" style="--house:#5b3fd0"><i></i>Rumah Ungu <span>(Tunku Abdul Rahman)</span></a><a href="rumah.html?rumah=Biru&tahun=2026" style="--house:#246bfd"><i></i>Rumah Biru <span>(Tun Hussein Onn)</span></a><a href="rumah.html?rumah=Kuning&tahun=2026" style="--house:#e5ad00"><i></i>Rumah Kuning <span>(Tun Abdul Razak)</span></a></div></div><div class="hero-year"><small>EDISI</small><b id="heroYear">2026</b></div></section>
-<nav class="dashboard-nav"><a class="active" href="pingat.html">📊 Papan Markah &amp; Kedudukan</a><a href="rumah-sukan.html">🛡 Portal Khas Rumah Sukan</a><a href="aturcara.html">⏱ Atur Cara &amp; Jadual Acara</a><a href="penyertaan.html">🥇 Penyertaan Atlet</a><a href="acara.html">🏃 Senarai Acara</a><a href="murid.html">👥 Murid</a><a class="nav-login" href="guru.html">🔐 Log Masuk Guru</a></nav>
-<section class="dashboard-content"><div class="summary-grid dashboard-stats"><div><i>🏃</i><p><b id="memberCount">0</b><span>Jumlah Murid Berdaftar</span></p></div><div><i>🏅</i><p><b id="resultCount">0</b><span>Keputusan Direkodkan</span></p></div><div><i>📝</i><p><b id="participantCount">0</b><span>Penyertaan Atlet Berdaftar</span></p></div><div><i>👑</i><p><b id="leadingHouse">Belum ada</b><span>Mendahului Pungutan Pingat</span></p></div></div>
-<div class="dashboard-panels"><section class="dashboard-panel"><div class="panel-title"><div><h2>🏆 Carta Kedudukan &amp; Pungutan Pingat Semasa</h2><p>Kiraan automatik daripada keputusan rasmi yang disahkan.</p></div><a href="pingat.html">Lihat penuh →</a></div><div class="mini-medals" id="homeMedals"></div></section><section class="dashboard-panel"><div class="panel-title"><div><h2>🌟 Anugerah Khas Atlet</h2><p>Olahragawan dan olahragawati semasa.</p></div></div><div id="homeAwards" class="home-awards"></div></section></div>
-<div class="quick-menu"><div class="section-title"><div><span class="kicker blue">PAPARAN BERASINGAN</span><h2>Pengurusan sistem</h2></div><p>Setiap menu membuka halaman sendiri.</p></div><div class="portal-grid compact"><a class="portal-card" href="rumah-sukan.html"><i>RS</i><b>Rumah Sukan</b><span>Logo, guru, ahli dan kawad kaki.</span><strong>BUKA →</strong></a><a class="portal-card" href="murid.html"><i>M</i><b>Senarai Murid</b><span>Nama, kelas, tahap dan rumah.</span><strong>BUKA →</strong></a><a class="portal-card" href="jawatankuasa.html"><i>JK</i><b>Jawatankuasa</b><span>Carta organisasi dan tugasan.</span><strong>BUKA →</strong></a><a class="portal-card teacher-card-link" href="guru.html"><i>G</i><b>Portal Guru</b><span>Log masuk dan urus rumah masing-masing.</span><strong>LOG MASUK →</strong></a><button class="portal-card admin-card" data-admin><i>ADM</i><b>Admin AppSheet</b><span>Akses penuh pentadbir sistem.</span><strong>BUKA ↗</strong></button></div></div></section></main>
-<footer class="site-footer"><div><img src="assets/skrg.jpeg" alt="Logo SK Ranggu"><img src="assets/kpm.png" alt="Logo KPM"></div><p><b>SEKOLAH KEBANGSAAN RANGGU TAWAU</b><span>Peti Surat 842, 91008 Tawau, Sabah, Malaysia</span></p><p><small>Dibangunkan oleh</small><b>Cikgu Mohammad Fikrey bin Abdul Gapar</b></p></footer>
-<dialog id="adminDialog"><button class="dialog-close" aria-label="Tutup">×</button><span class="kicker blue">AKSES PENGURUSAN APPSHEET</span><h2>Isi maklumat kejohanan</h2><p>Semua perubahan melalui AppSheet disimpan dalam Google Sheet dan dipaparkan semula pada website. Gunakan akaun Google yang telah didaftarkan oleh pentadbir.</p><div class="dialog-actions"><a class="button secondary" href="guru.html">Portal Guru</a><a class="button" href="https://www.appsheet.com/start/dd6cf0f7-86b7-44e6-bfbe-f3a94314ef51?platform=desktop" target="_blank" rel="noopener">Buka AppSheet ↗</a></div></dialog><script src="common.js?v=20261005auth1"></script></body></html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Portal Sistem Kejohanan Olahraga Tahunan Sekolah Kebangsaan Ranggu">
+  <title>Portal Olahraga SK Ranggu</title>
+  <link rel="stylesheet" href="portal.css?v=20261005dashboard3">
+</head>
+<body data-page="portal" class="dashboard-page">
+  <div class="credit-strip"><span>SEKOLAH KEBANGSAAN RANGGU • TAWAU, SABAH</span><span>Dibangunkan oleh <b>Cikgu Mohammad Fikrey bin Abdul Gapar</b></span></div>
+  <header class="site-bar dashboard-bar">
+    <a class="school-brand" href="index.html"><img src="assets/skrg.jpeg" alt="Logo SK Ranggu"><img class="kpm-small" src="assets/kpm.png" alt="Logo KPM"><span><b>SK RANGGU SPORTSYNC</b><small>Sistem Kejohanan Olahraga Tahunan</small></span></a>
+    <div class="bar-tools"><button class="sync-button" type="button">↻ Segarkan</button><span class="active-pill">● DATA LANGSUNG</span><label>Tahun <select id="yearSelect"></select></label><a class="teacher-login" href="guru.html">🔐 Portal Guru</a><button class="admin-link" data-admin>Admin</button></div>
+  </header>
+  <main class="dashboard-main">
+    <section class="dashboard-hero compact-hero">
+      <div class="hero-overlay">
+        <span class="hero-pill">🏆 KEJOHANAN TAHUNAN SK RANGGU</span>
+        <h1>Sukan Wadah Perpaduan<br>&amp; Kecemerlangan</h1>
+        <p>Pusat sehenti rasmi untuk rumah sukan, pendaftaran atlet, jadual acara, keputusan dan pungutan pingat.</p>
+        <div class="house-pills" aria-label="Empat rumah sukan"><a href="rumah.html?rumah=Merah&tahun=2026" style="--house:#df3f47"><i></i>Rumah Merah</a><a href="rumah.html?rumah=Ungu&tahun=2026" style="--house:#6d36d8"><i></i>Rumah Ungu</a><a href="rumah.html?rumah=Biru&tahun=2026" style="--house:#246bfd"><i></i>Rumah Biru</a><a href="rumah.html?rumah=Kuning&tahun=2026" style="--house:#e5ad00"><i></i>Rumah Kuning</a></div>
+      </div>
+      <div class="hero-year"><small>EDISI</small><b id="heroYear">2026</b></div>
+    </section>
+    <nav class="dashboard-nav" aria-label="Menu utama kejohanan"><a class="active" href="index.html">📊 Dashboard</a><a href="pingat.html">🏆 Papan Markah</a><a href="rumah-sukan.html">🛡 Rumah Sukan</a><a href="aturcara.html">⏱ Atur Cara</a><a href="penyertaan.html">🏃 Penyertaan</a><a href="acara.html">🎽 Acara</a><a href="jawatankuasa.html">👥 Organisasi</a><a class="nav-login" href="guru.html">🔐 Log Masuk</a></nav>
+    <section class="dashboard-content">
+      <div class="summary-grid dashboard-stats"><div><i>🏃</i><p><b id="memberCount">0</b><span>Murid Berdaftar</span></p></div><div><i>🏅</i><p><b id="resultCount">0</b><span>Keputusan Rasmi</span></p></div><div><i>📝</i><p><b id="participantCount">0</b><span>Penyertaan Atlet</span></p></div><div><i>👑</i><p><b id="leadingHouse">Belum ada</b><span>Rumah Mendahului</span></p></div></div>
+      <div class="dashboard-panels">
+        <section class="dashboard-panel"><div class="panel-title"><div><h2>🏆 Kedudukan &amp; Pingat Semasa</h2><p>Dijana automatik daripada keputusan rasmi.</p></div><a href="pingat.html">Paparan penuh →</a></div><div class="mini-medals" id="homeMedals"></div></section>
+        <section class="dashboard-panel"><div class="panel-title"><div><h2>🌟 Atlet Terbaik Semasa</h2><p>Olahragawan dan olahragawati berdasarkan pingat.</p></div><a href="pingat.html">Lihat analisis →</a></div><div id="homeAwards" class="home-awards"></div></section>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer compact-footer"><p><b>SEKOLAH KEBANGSAAN RANGGU TAWAU</b><span>Peti Surat 842, 91008 Tawau, Sabah, Malaysia</span></p><p><small>Dibangunkan oleh</small><b>Cikgu Mohammad Fikrey bin Abdul Gapar</b></p></footer>
+  <dialog id="adminDialog"><button class="dialog-close" aria-label="Tutup">×</button><span class="kicker blue">AKSES PENGURUSAN</span><h2>Urus data kejohanan</h2><p>Gunakan Portal Guru untuk data rumah masing-masing atau AppSheet bagi akses pentadbir penuh.</p><div class="dialog-actions"><a class="button secondary" href="guru.html">Portal Guru</a><a class="button" href="https://www.appsheet.com/start/dd6cf0f7-86b7-44e6-bfbe-f3a94314ef51?platform=desktop" target="_blank" rel="noopener">Buka AppSheet ↗</a></div></dialog>
+  <script src="common.js?v=20261005dashboard3"></script>
+</body>
+</html>
