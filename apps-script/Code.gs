@@ -74,7 +74,7 @@ function emptyHouse(officialName) {
 function ensureYear(data, year) {
   year = String(year || "2026").trim();
   if (!data.years[year]) {
-    data.years[year] = { houses: {}, schedule: [], results: [], committee: [] };
+    data.years[year] = { houses: {}, events: [], schedule: [], results: [], committee: [] };
     HOUSE_ORDER.forEach(name => data.years[year].houses[name] = emptyHouse(""));
   }
   return data.years[year];
@@ -118,6 +118,22 @@ function buildPublicData() {
     if (yearData.houses[house]) yearData.houses[house].memberCount++;
   });
 
+  events.forEach(row => {
+    if (!row["ID Acara"] || !row["Nama Acara"]) return;
+    const yearData = ensureYear(output, row["Tahun"]);
+    yearData.events.push({
+      id: row["ID Acara"] || "",
+      name: row["Nama Acara"] || "",
+      discipline: row["Kategori"] || "",
+      stage: row["Peringkat"] || "",
+      categoryCode: row["Kod Kategori"] || "",
+      cohort: row["Kumpulan Tahun"] || "",
+      gender: row["Jantina"] || "",
+      entryType: row["Jenis Acara"] || "",
+      note: row["Catatan"] || ""
+    });
+  });
+
   rowsFrom("Penyertaan").forEach(row => {
     const yearData = ensureYear(output, row["Tahun"]);
     const house = String(row["Rumah"] || "").trim();
@@ -151,6 +167,11 @@ function buildPublicData() {
       eventId,
       event: eventInfo["Nama Acara"] || row["Acara"] || "",
       category: eventInfo["Kategori"] || row["Kategori"] || "",
+      stage: eventInfo["Peringkat"] || "",
+      categoryCode: eventInfo["Kod Kategori"] || "",
+      cohort: eventInfo["Kumpulan Tahun"] || "",
+      eventGender: eventInfo["Jantina"] || "",
+      entryType: eventInfo["Jenis Acara"] || "",
       place: Number(row["Kedudukan"]) || 0,
       athleteId,
       athlete: row["Nama Murid"] || pupilInfo["Nama Murid"] || "",
