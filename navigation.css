@@ -1,0 +1,5 @@
+.global-nav-shell{position:sticky;top:0;z-index:80;padding:8px 4vw;background:rgba(244,247,251,.96);border-bottom:1px solid #dce4ee;backdrop-filter:blur(14px);box-shadow:0 7px 24px rgba(8,35,75,.07)}
+.global-nav-shell .dashboard-nav{width:min(1760px,100%);margin:0 auto;padding:6px;display:flex;gap:5px;overflow-x:auto;border:1px solid #dce4ee;border-radius:14px;background:#fff;box-sizing:border-box}
+.global-nav-shell .dashboard-nav a{flex:1;min-width:max-content;padding:11px 13px;border-radius:10px;color:#61718a;font:900 10px Arial,Helvetica,sans-serif;text-align:center;text-decoration:none}
+.global-nav-shell .dashboard-nav a:hover,.global-nav-shell .dashboard-nav a[aria-current="page"]{background:#246bfd;color:#fff;box-shadow:0 5px 12px rgba(36,107,253,.22)}
+@media(max-width:700px){.global-nav-shell{padding:7px 10px}.global-nav-shell .dashboard-nav{scroll-snap-type:x proximity}.global-nav-shell .dashboard-nav a{scroll-snap-align:center;padding:10px 12px}.global-nav-shell .dashboard-nav a[aria-current="page"]{position:sticky;left:0;right:0;z-index:2}}

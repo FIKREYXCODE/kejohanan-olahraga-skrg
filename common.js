@@ -122,5 +122,6 @@ function renderMedals(d){
   if($("eventStatistics")){const groups=new Map();(d.results||[]).forEach(row=>{const key=row.eventId||row.event;if(!groups.has(key))groups.set(key,{event:row.event,category:row.cohort||row.category||"",gender:row.eventGender||resultGender(row),rows:[]});groups.get(key).rows.push(row)});$("eventStatistics").innerHTML=groups.size?[...groups.values()].sort((a,b)=>String(a.event).localeCompare(String(b.event))).map(group=>{const winner=group.rows.find(row=>Number(row.place)===1)||group.rows.slice().sort((a,b)=>Number(a.place)-Number(b.place))[0]||{};return `<article><div><small>${safe(group.category)} • ${safe(group.gender)}</small><b>${safe(group.event)}</b><span>${group.rows.length} catatan rasmi</span></div><strong>🏆 ${safe(winner.athlete||`Pasukan Rumah ${winner.house||"—"}`)}</strong><em>${safe(winner.mark||"Belum lengkap")}</em></article>`}).join(""):'<div class="secure-empty">Belum ada statistik keputusan untuk dipaparkan.</div>'}
 }
 setupPWAInstall();
+import("./navigation.js?v=20261005nav1").catch(()=>{});
 if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 start().catch(()=>document.body.insertAdjacentHTML("afterbegin",'<div class="notice">Data tidak dapat dibaca. Sila muat semula halaman.</div>'));
