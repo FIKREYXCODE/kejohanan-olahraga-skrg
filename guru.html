@@ -4,9 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="Portal guru rumah sukan Sekolah Kebangsaan Ranggu">
+  <meta name="theme-color" content="#062e69">
   <title>Portal Guru | SK Ranggu</title>
-  <link rel="stylesheet" href="portal.css?v=20261005stats1">
-  <link rel="stylesheet" href="guru.css?v=20261005stats1">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="portal.css?v=20261005power4">
+  <link rel="stylesheet" href="guru.css?v=20261005power4">
 </head>
 <body class="teacher-auth-page">
   <div class="credit-strip">Dibangunkan oleh <b>Cikgu Mohammad Fikrey bin Abdul Gapar</b></div>
@@ -66,6 +68,7 @@
         <button type="button" data-workspace-tab="profile">Maklumat Rumah</button>
         <button type="button" data-workspace-tab="rules">Syarat Penyertaan</button>
         <button type="button" data-workspace-tab="users">Guru Rumah</button>
+        <button type="button" data-workspace-tab="audit" data-admin-only hidden>Log Audit</button>
         <button type="button" data-workspace-tab="settings" data-admin-only hidden>Tetapan Sistem</button>
       </nav>
       <section class="workspace-panel" id="pupilsPanel"><div class="panel-toolbar"><div><small>PANGKALAN AHLI</small><h3>Senarai murid rumah sukan</h3></div><div class="panel-actions"><input id="pupilSearch" type="search" placeholder="Cari nama atau kelas…"><button class="workspace-action" id="addPupilButton" type="button">+ Tambah murid</button></div></div><div class="secure-table" id="pupilRows"></div></section>
@@ -80,6 +83,7 @@
       <section class="workspace-panel" id="profilePanel" hidden><div class="panel-toolbar"><div><small>IDENTITI PASUKAN</small><h3>Maklumat rumah sukan</h3></div><button class="workspace-action" id="editProfileButton" type="button">Edit maklumat</button></div><div class="profile-secure-grid" id="profileDetails"></div></section>
       <section class="workspace-panel" id="rulesPanel" hidden><div class="rules-board"><article><b>01</b><h3>Had murid</h3><p>Setiap murid boleh menyertai maksimum dua acara individu dan satu acara berkumpulan.</p></article><article><b>02</b><h3>Kuota rumah</h3><p>Setiap rumah boleh mendaftarkan dua peserta bagi satu acara individu dan empat pelari bagi satu acara relay.</p></article><article><b>03</b><h3>Kelayakan automatik</h3><p>Sistem menyemak jantina serta kategori Prasekolah, Tahun 1, Tahun 2 &amp; 3, Tahun 4 &amp; 5 dan Tahun 6.</p></article><article><b>04</b><h3>Pendaftaran ditolak</h3><p>Nama bertindih, kuota penuh atau kategori tidak sepadan akan ditolak sebelum data disimpan.</p></article></div></section>
       <section class="workspace-panel" id="usersPanel" hidden><div class="panel-toolbar"><div><small>AKSES MENGIKUT RUMAH</small><h3 id="houseUsersTitle">Guru rumah sukan</h3><p class="panel-note">Guru hanya dapat melihat rakan guru dalam rumah sendiri. Nombor MyKad dipaparkan secara terselindung.</p></div><button class="workspace-action" id="addUserButton" type="button" data-admin-action hidden>+ Daftar guru</button></div><div class="secure-table" id="userRows"></div></section>
+      <section class="workspace-panel" id="auditPanel" hidden><div class="panel-toolbar"><div><small>JEJAK PERUBAHAN PENTADBIR</small><h3>Log audit dan sejarah aktiviti</h3><p class="panel-note">Merekod siapa yang log masuk, mendaftar peserta, mengubah murid, keputusan, rumah sukan dan tetapan sistem.</p></div><div class="panel-actions"><input id="auditSearch" type="search" placeholder="Cari guru, tindakan atau butiran…"><select id="auditHouse"><option value="">Semua rumah</option><option>Biru</option><option>Kuning</option><option>Ungu</option><option>Merah</option></select><button class="workspace-action" id="auditExport" type="button">Eksport CSV</button></div></div><div class="audit-summary" id="auditSummary">Memuat log aktiviti…</div><div class="secure-table" id="auditRows"></div></section>
       <section class="workspace-panel" id="settingsPanel" hidden><div class="panel-toolbar"><div><small>PENTADBIR</small><h3>Tetapan paparan sistem</h3></div></div><form class="settings-form" id="settingsForm"><label><span>Pautan gambar banner</span><input id="bannerUrl" type="url" placeholder="https://..."><small>Gunakan pautan gambar HTTPS. Jika dikosongkan, tema biru rasmi akan digunakan.</small></label><button class="workspace-action" type="submit">Simpan tetapan</button><div class="form-message" id="settingsMessage" role="status"></div></form><a class="committee-shortcut" href="jawatankuasa.html"><b>Carta organisasi &amp; jawatankuasa</b><span>Lihat jawatan, nama, gambar dan bidang tugas yang diurus melalui AppSheet.</span></a></section>
       </section>
   </main>
@@ -120,6 +124,6 @@
     <section class="footer-details"><div><small>HUBUNGI</small><b>011-6574 9440</b><span>xba3037@gmail.com</span></div><div><small>PORTAL RASMI</small><b>jpnsabah.moe.gov.my</b><span>Kod Sekolah: XBA3037</span></div><div><small>TARIKH &amp; MASA</small><time id="footerClock">Memuat waktu…</time><span>Asia/Kuching</span></div></section>
     <section class="footer-credit"><span>Dibangunkan oleh</span><b>Cikgu Mohammad Fikrey bin Abdul Gapar</b><small>Sistem Kejohanan Olahraga Tahunan</small></section>
   </footer>
-  <script src="guru-auth.js?v=20261005stats1"></script>
+  <script src="guru-auth.js?v=20261005power4"></script>
 </body>
 </html>

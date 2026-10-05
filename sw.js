@@ -1,0 +1,9 @@
+const CACHE_NAME="skrg-sportssync-20261005-power4";
+const CORE=["./","./index.html","./portal.css","./common.js","./guru.html","./guru.css","./guru-auth.js","./jawatankuasa.html","./organisasi-sekolah.html","./organisasi-sekolah.js","./manifest.webmanifest","./assets/kpm.png","./assets/skrg.jpeg","./assets/icon-192.jpg","./assets/icon-512.jpg","./assets/organisasi/pentadbiran-2026.jpg","./assets/organisasi/kurikulum-2026.jpg","./assets/organisasi/hem-2026.jpg","./assets/organisasi/kokurikulum-2026.jpg","./assets/pentadbir/yunus-bin-patarai.png","./assets/pentadbir/rahmatiah-bt-mohd-juda.png","./assets/pentadbir/warnah-bt-sira.png","./assets/pentadbir/komala-bt-joseph.png","./assets/pentadbir/emran-bin-selamat.png","./assets/pentadbir/rosidian-bin-idris.png"];
+self.addEventListener("install",event=>event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())));
+self.addEventListener("activate",event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE_NAME).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
+self.addEventListener("fetch",event=>{
+  if(event.request.method!=="GET"||/script\.google\.com/.test(event.request.url))return;
+  const request=event.request;
+  event.respondWith(fetch(request).then(response=>{if(response&&response.ok&&new URL(request.url).origin===self.location.origin)caches.open(CACHE_NAME).then(cache=>cache.put(request,response.clone()));return response}).catch(()=>caches.match(request).then(cached=>cached||(request.mode==="navigate"?caches.match("./index.html"):Promise.reject()))));
+});

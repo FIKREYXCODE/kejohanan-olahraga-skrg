@@ -433,8 +433,22 @@ function teacherData_(body) {
     judgeEntries: allEntries.map(row => ({ id: row["ID Penyertaan"] || "", pupilId: row["ID Murid"] || "", name: row["Nama Murid"] || "", house: row["Rumah"] || "", eventId: row["Acara"] || "" })),
     officialResults: allResults,
     awardLeaders: awardLeaders_(allResults),
+    auditLogs: isAdmin ? auditRows_(250) : [],
     rules: { individualPerPupil: 2, groupPerPupil: 1, individualPerHouseEvent: 2, relayRunnersPerHouseEvent: 4 }
   };
+}
+
+function auditRows_(limit) {
+  const rows = rowsFrom(AUDIT_SHEET).slice(-Math.max(1, Number(limit) || 250)).reverse();
+  return rows.map(row => ({
+    date: row["Tarikh Masa"] || "",
+    teacherId: row["ID Guru"] || "",
+    teacher: row["Nama Guru"] || "",
+    house: row["Rumah"] || "",
+    action: row["Tindakan"] || "",
+    target: row["Sasaran"] || "",
+    detail: row["Butiran"] || ""
+  }));
 }
 
 function canJudge_(session) {
