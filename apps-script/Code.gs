@@ -410,11 +410,11 @@ function judgeLogin_(body) {
   const code = String(body.code || "").trim().toUpperCase();
   const identityType = String(body.identityType || "").trim().toUpperCase();
   if (!code) throw new Error("Masukkan kod akses pengadil.");
-  if (!["WARGA", "ASING"].includes(identityType)) throw new Error("Pilih sama ada Warga Sekolah atau Petugas Asing.");
+  if (!["WARGA", "AWAM"].includes(identityType)) throw new Error("Pilih sama ada Warga Sekolah atau Petugas Awam.");
   enforceRateLimit_("judge-" + code);
   const judge = judgeAccessRows_().find(row => row.active && secureEqual_(row.code.toUpperCase(), code));
   if (!judge) { recordFailedAttempt_("judge-" + code); return { error: true, message: "Kod akses pengadil tidak sah atau telah dinyahaktifkan." }; }
-  let actor = { id: "ASING", name: "PETUGAS ASING", house: "", schoolRole: "Petugas Luar" };
+  let actor = { id: "AWAM", name: "PETUGAS AWAM", house: "", schoolRole: "Petugas Awam" };
   if (identityType === "WARGA") {
     const ic = normalizeIc_(body.ic);
     if (ic.length !== 12) throw new Error("Masukkan nombor kad pengenalan 12 digit warga sekolah.");
