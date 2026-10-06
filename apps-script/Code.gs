@@ -533,12 +533,17 @@ function teacherData_(body) {
   const publicData = buildPublicData();
   const yearData = publicData.years[year] || { houses: {} };
   const pupils = rowsFrom("Murid").filter(row => String(row["Tahun"] || "") === year && (isAdmin ? (!requestedHouse || row["Rumah"] === requestedHouse) : row["Rumah"] === session.house));
-  const entries = rowsFrom("Penyertaan").filter(row => String(row["Tahun"] || "") === year && !/batal/i.test(String(row["Status"] || "")) && (isAdmin ? (!requestedHouse || row["Rumah"] === requestedHouse) : row["Rumah"] === session.house));
   const eventRows = rowsFrom("Acara").filter(row => String(row["Tahun"] || "") === year && row["ID Acara"]);
   const eventById = Object.fromEntries(eventRows.map(row => [String(row["ID Acara"]), row]));
+  const activeEntries = rowsFrom("Penyertaan").filter(row => String(row["Tahun"] || "") === year && !/batal/i.test(String(row["Status"] || "")));
+  const entries = activeEntries.filter(row => isAdmin ? (!requestedHouse || row["Rumah"] === requestedHouse) : row["Rumah"] === session.house);
+  const visiblePendingEntries = (isAdmin ? activeEntries : entries).filter(row => {
+    const eventId = String(row["Acara"] || "").trim();
+    return !eventId || !eventById[eventId] || /perlu|draf|pending/i.test(String(row["Status"] || ""));
+  });
   const houseUsers = users_().users.filter(user => user.house === requestedHouse);
   const canJudge = canJudge_(session);
-  const allEntries = canJudge ? rowsFrom("Penyertaan").filter(row => String(row["Tahun"] || "") === year && !/batal/i.test(String(row["Status"] || ""))) : [];
+  const allEntries = canJudge ? activeEntries : [];
   const allResults = canJudge ? resultRows_(year, eventById) : [];
   return {
     ok: true,
@@ -552,8 +557,10 @@ function teacherData_(body) {
     pupils: pupils.map(row => ({ id: row["ID Murid"] || "", name: row["Nama Murid"] || "", class: row["Kelas"] || row["Tahun/Kelas"] || "", gender: row["Jantina"] || "", house: row["Rumah"] || "" })),
     entries: entries.map(row => {
       const event = eventById[String(row["Acara"] || "")] || {};
-      return { id: row["ID Penyertaan"] || "", pupilId: row["ID Murid"] || "", name: row["Nama Murid"] || "", eventId: row["Acara"] || "", event: event["Nama Acara"] || row["Acara"] || "", category: event["Kumpulan Tahun"] || row["Kategori"] || "", type: event["Jenis Acara"] || "", status: row["Status"] || "Aktif" };
+      const status = row["Status"] || "Aktif", eventId = String(row["Acara"] || "").trim();
+      return { id: row["ID Penyertaan"] || "", pupilId: row["ID Murid"] || "", name: row["Nama Murid"] || "", house: row["Rumah"] || "", eventId, event: event["Nama Acara"] || row["Acara"] || "", category: event["Kumpulan Tahun"] || row["Kategori"] || "", type: event["Jenis Acara"] || "", status, isIncomplete: !eventId || !event["ID Acara"] || /perlu|draf|pending/i.test(String(status)) };
     }),
+    incompleteEntries: visiblePendingEntries.map(row => ({ id: row["ID Penyertaan"] || "", pupilId: row["ID Murid"] || "", name: row["Nama Murid"] || "", house: row["Rumah"] || "", eventId: row["Acara"] || "", status: row["Status"] || "Perlu dilengkapkan" })),
     users: houseUsers.map(user => ({
       id: user.id,
       name: user.name,
@@ -752,22 +759,31 @@ function saveEntry_(body) {
   if (eventGender && pupilGender !== eventGender) throw new Error("Jantina murid tidak sepadan dengan kategori acara.");
   if (!cohortAllows_(event["Kumpulan Tahun"], pupil["Kelas"] || pupil["Tahun/Kelas"])) throw new Error("Kelas/tahun murid tidak layak untuk kategori acara ini.");
   const type = eventKind_(event["Jenis Acara"] || event["Nama Acara"]);
-  const entries = rowsFrom("Penyertaan").filter(row => String(row["Tahun"] || "") === year && !/batal/i.test(String(row["Status"] || "")));
-  if (entries.some(row => String(row["ID Murid"] || "") === pupilId && String(row["Acara"] || "") === eventId)) throw new Error("Murid ini sudah didaftarkan dalam acara yang sama.");
-  const pupilEntries = entries.filter(row => String(row["ID Murid"] || "") === pupilId);
-  const eventMap = Object.fromEntries(rowsFrom("Acara").map(row => [String(row["ID Acara"] || ""), row]));
-  const individualCount = pupilEntries.filter(row => eventKind_((eventMap[String(row["Acara"] || "")] || {})["Jenis Acara"] || row["Acara"]) === "Individu").length;
-  const groupCount = pupilEntries.filter(row => eventKind_((eventMap[String(row["Acara"] || "")] || {})["Jenis Acara"] || row["Acara"]) === "Berkumpulan").length;
-  if (type === "Individu" && individualCount >= 2) throw new Error("Pendaftaran ditolak: murid sudah mencapai maksimum 2 acara individu.");
-  if (type === "Berkumpulan" && groupCount >= 1) throw new Error("Pendaftaran ditolak: murid sudah menyertai 1 acara berkumpulan.");
-  const sameHouseEvent = entries.filter(row => String(row["Rumah"] || "") === house && String(row["Acara"] || "") === eventId);
-  const quota = type === "Individu" ? 2 : 4;
-  if (sameHouseEvent.length >= quota) throw new Error(type === "Individu" ? "Pendaftaran ditolak: kuota 2 peserta rumah bagi acara individu sudah penuh." : "Pendaftaran ditolak: satu pasukan relay (4 pelari) bagi rumah ini sudah lengkap.");
-  const id = nextId_("P" + year.slice(-2));
-  const context = dataSheet_("Penyertaan", ["ID Penyertaan", "Tahun", "Acara", "Kategori", "ID Murid", "Nama Murid", "Rumah", "Status", "Catatan"]);
-  writeRecord_(context, null, { "ID Penyertaan": id, "Tahun": year, "Acara": eventId, "Kategori": event["Kumpulan Tahun"] || "", "ID Murid": pupilId, "Nama Murid": pupil["Nama Murid"] || "", "Rumah": house, "Status": "Aktif", "Catatan": "Didaftar melalui Portal Guru" });
-  audit_(session, "DAFTAR PENYERTAAN", id, (pupil["Nama Murid"] || pupilId) + " • " + (event["Nama Acara"] || eventId));
-  return { ok: true, id, message: "Penyertaan berjaya didaftarkan." };
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const eventMap = Object.fromEntries(rowsFrom("Acara").map(row => [String(row["ID Acara"] || ""), row]));
+    const entries = rowsFrom("Penyertaan").filter(row => {
+      const registeredEvent = String(row["Acara"] || "").trim(), status = String(row["Status"] || "");
+      return String(row["Tahun"] || "") === year && !/batal|perlu|draf|pending/i.test(status) && Boolean(registeredEvent && eventMap[registeredEvent]);
+    });
+    if (entries.some(row => String(row["ID Murid"] || "") === pupilId && String(row["Acara"] || "") === eventId)) throw new Error("Pendaftaran ditolak: murid ini sudah didaftarkan dalam acara yang sama.");
+    const pupilEntries = entries.filter(row => String(row["ID Murid"] || "") === pupilId);
+    const individualCount = pupilEntries.filter(row => eventKind_((eventMap[String(row["Acara"] || "")] || {})["Jenis Acara"] || row["Acara"]) === "Individu").length;
+    const groupCount = pupilEntries.filter(row => eventKind_((eventMap[String(row["Acara"] || "")] || {})["Jenis Acara"] || row["Acara"]) === "Berkumpulan").length;
+    if (type === "Individu" && individualCount >= 2) throw new Error("Pendaftaran ditolak: murid sudah mencapai maksimum 2 acara individu.");
+    if (type === "Berkumpulan" && groupCount >= 1) throw new Error("Pendaftaran ditolak: murid sudah menyertai 1 acara berkumpulan.");
+    const sameHouseEvent = entries.filter(row => String(row["Rumah"] || "") === house && String(row["Acara"] || "") === eventId);
+    const quota = type === "Individu" ? 2 : 4;
+    if (sameHouseEvent.length >= quota) throw new Error(type === "Individu" ? "Pendaftaran ditolak: kuota 2 peserta rumah bagi acara individu sudah penuh." : "Pendaftaran ditolak: satu pasukan relay (4 pelari) bagi rumah ini sudah lengkap.");
+    const id = nextId_("P" + year.slice(-2));
+    const context = dataSheet_("Penyertaan", ["ID Penyertaan", "Tahun", "Acara", "Kategori", "ID Murid", "Nama Murid", "Rumah", "Status", "Catatan"]);
+    writeRecord_(context, null, { "ID Penyertaan": id, "Tahun": year, "Acara": eventId, "Kategori": event["Kumpulan Tahun"] || "", "ID Murid": pupilId, "Nama Murid": pupil["Nama Murid"] || "", "Rumah": house, "Status": "Aktif", "Catatan": "Didaftar melalui Portal Guru" });
+    audit_(session, "DAFTAR PENYERTAAN", id, (pupil["Nama Murid"] || pupilId) + " • " + (event["Nama Acara"] || eventId));
+    return { ok: true, id, message: "Penyertaan berjaya didaftarkan." };
+  } finally {
+    lock.releaseLock();
+  }
 }
 
 function deleteEntry_(body) {
