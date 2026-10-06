@@ -90,7 +90,8 @@ function emptyHouse(officialName) {
     marchingImage: "",
     participantImage: "",
     memberCount: 0,
-    participantCount: 0
+    participantCount: 0,
+    pendingParticipantCount: 0
   };
 }
 
@@ -167,7 +168,13 @@ function buildPublicData() {
   entries.forEach(row => {
     const yearData = ensureYear(output, row["Tahun"]);
     const house = String(row["Rumah"] || "").trim();
-    if (yearData.houses[house]) yearData.houses[house].participantCount++;
+    const eventId = String(row["Acara"] || "").trim();
+    const status = String(row["Status"] || "").trim();
+    const complete = Boolean(eventId && eventById[eventId]) && !/perlu|draf|pending/i.test(status);
+    if (yearData.houses[house]) {
+      if (complete) yearData.houses[house].participantCount++;
+      else yearData.houses[house].pendingParticipantCount++;
+    }
   });
 
   schedules.forEach(row => {

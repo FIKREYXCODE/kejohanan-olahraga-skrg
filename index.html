@@ -13,7 +13,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/png" href="assets/pwa/favicon-64.png">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/pwa/apple-touch-icon.png">
-  <link rel="stylesheet" href="portal.css?v=20261005judge3">
+  <link rel="stylesheet" href="portal.css?v=20261006visibility1">
 </head>
 <body data-page="portal" class="dashboard-page">
   <div class="credit-strip"><span>SEKOLAH KEBANGSAAN RANGGU • TAWAU, SABAH</span><span>Dibangunkan oleh <b>Cikgu Mohammad Fikrey bin Abdul Gapar</b></span></div>
@@ -32,9 +32,9 @@
       </div>
       <div class="hero-year"><small>EDISI</small><b id="heroYear">2026</b></div>
     </section>
-    <nav class="dashboard-nav" aria-label="Menu utama kejohanan"><a class="active" href="index.html">📊 Dashboard</a><a href="pingat.html">🏆 Papan Markah</a><a href="kalendar.html">📅 Kalendar</a><a href="saringan.html">🏁 Saringan</a><a href="rumah-sukan.html">🛡 Rumah Sukan</a><a href="aturcara.html">⏱ Atur Cara</a><a href="penyertaan.html">🏃 Penyertaan</a><a href="acara.html">🎽 Acara</a><a href="jawatankuasa.html">👥 Jawatankuasa</a><a href="organisasi-sekolah.html">🏛 Organisasi Sekolah</a><a href="cetak.html">🖨 Cetakan</a><a class="nav-login" href="guru.html">🔐 Guru</a><a class="nav-login" href="pengadil.html">⏱ Pengadil</a></nav>
+    <nav class="dashboard-nav" aria-label="Menu utama kejohanan"><a class="active" href="index.html">📊 Dashboard</a><a href="pingat.html">🏆 Papan Markah</a><a href="kalendar.html">📅 Kalendar</a><a href="saringan.html">🏁 Carta Perlawanan</a><a href="rumah-sukan.html">🛡 Rumah Sukan</a><a href="aturcara.html">⏱ Atur Cara</a><a href="penyertaan.html">🏃 Penyertaan</a><a href="acara.html">🎽 Acara</a><a href="jawatankuasa.html">👥 Jawatankuasa</a><a href="organisasi-sekolah.html">🏛 Organisasi Sekolah</a><a href="cetak.html">🖨 Cetakan</a><a class="nav-login" href="guru.html">🔐 Guru</a><a class="nav-login" href="pengadil.html">⏱ Pengadil</a></nav>
     <section class="dashboard-content">
-      <div class="summary-grid dashboard-stats"><div><i>🏃</i><p><b id="memberCount">0</b><span>Murid Berdaftar</span></p></div><div><i>🏅</i><p><b id="resultCount">0</b><span>Keputusan Rasmi</span></p></div><div><i>📝</i><p><b id="participantCount">0</b><span>Penyertaan Atlet</span></p></div><div><i>👑</i><p><b id="leadingHouse">Belum ada</b><span>Rumah Mendahului</span></p></div></div>
+      <div class="summary-grid dashboard-stats"><div><i>🏃</i><p><b id="memberCount">0</b><span>Murid Berdaftar</span></p></div><div><i>🏅</i><p><b id="resultCount">0</b><span>Keputusan Rasmi</span></p></div><a class="dashboard-stat-link" href="penyertaan.html?tahun=2026"><i>📝</i><p><b id="participantCount">0</b><span>Penyertaan Lengkap</span><small id="participantPending">Klik untuk lihat ringkasan</small></p></a><a class="dashboard-stat-link match-link" href="saringan.html?tahun=2026"><i>🏁</i><p><b>Carta</b><span>Perlawanan &amp; Lorong</span><small>Buka paparan acara →</small></p></a></div>
       <div class="dashboard-panels">
         <section class="dashboard-panel"><div class="panel-title"><div><h2>🏆 Kedudukan &amp; Pingat Semasa</h2><p>Dijana automatik daripada keputusan rasmi.</p></div><a href="pingat.html">Paparan penuh →</a></div><div class="mini-medals" id="homeMedals"></div></section>
         <section class="dashboard-panel"><div class="panel-title"><div><h2>🌟 Atlet Terbaik Semasa</h2><p>Olahragawan dan olahragawati berdasarkan pingat.</p></div><a href="pingat.html">Lihat analisis →</a></div><div id="homeAwards" class="home-awards"></div></section>
@@ -44,6 +44,6 @@
   <footer class="site-footer compact-footer"><p><b>SEKOLAH KEBANGSAAN RANGGU TAWAU</b><span>Peti Surat 842, 91008 Tawau, Sabah, Malaysia</span></p><p><small>Dibangunkan oleh</small><b>Cikgu Mohammad Fikrey bin Abdul Gapar</b></p></footer>
   <dialog id="adminDialog"><button class="dialog-close" aria-label="Tutup">×</button><span class="kicker blue">AKSES PENGURUSAN</span><h2>Admin Sistem</h2><p>Akses khas Admin Sistem diasingkan sepenuhnya daripada akaun guru biasa. Masuk melalui Portal Guru dan pilih “Masuk sebagai Admin Sistem”.</p><div class="dialog-actions"><a class="button" href="guru.html">Buka Portal Akses →</a></div></dialog>
   <dialog id="pwaDialog" class="pwa-dialog"><button class="dialog-close" type="button" aria-label="Tutup">×</button><img src="assets/pwa/maskable-192.png" alt="Ikon aplikasi KOT 26"><span class="kicker blue">APLIKASI KOT 26</span><h2>Letakkan pada Home Screen</h2><p id="pwaInstallMessage">Buka menu perkongsian pelayar dan pilih arahan tambah ke skrin utama.</p><div class="pwa-steps"><section><b>iPhone / iPad</b><span>Safari → Kongsi <strong>□↑</strong> → Add to Home Screen</span></section><section><b>Android</b><span>Chrome → menu <strong>⋮</strong> → Install app</span></section></div><button class="button" id="pwaNativeInstall" type="button" hidden>Pasang sekarang</button></dialog>
-  <script src="common.js?v=20261005judge3"></script>
+  <script src="common.js?v=20261006visibility1"></script>
 </body>
 </html>

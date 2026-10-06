@@ -3,7 +3,7 @@
     ["index.html","📊 Dashboard",["","index.html"]],
     ["pingat.html","🏆 Papan Markah",["pingat.html"]],
     ["kalendar.html","📅 Kalendar",["kalendar.html"]],
-    ["saringan.html","🏁 Saringan",["saringan.html"]],
+    ["saringan.html","🏁 Carta Perlawanan",["saringan.html"]],
     ["pengadil.html","⏱ Pengadil",["pengadil.html"]],
     ["rumah-sukan.html","🛡 Rumah Sukan",["rumah-sukan.html","rumah.html","murid.html"]],
     ["aturcara.html","⏱ Atur Cara",["aturcara.html"]],
