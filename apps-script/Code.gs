@@ -371,7 +371,10 @@ function adminLogin_(body) {
   enforceRateLimit_("admin-system");
   const configured = PropertiesService.getScriptProperties().getProperty("ADMIN_ACCESS_CODE");
   if (!configured) throw new Error("Kod akses Admin Sistem belum ditetapkan.");
-  if (!secureEqual_(digest_(code), digest_(configured))) return failedLogin_("admin-system");
+  if (!secureEqual_(digest_(code), digest_(configured))) {
+    recordFailedAttempt_("admin-system");
+    return { error: true, message: "Kod akses Admin Sistem tidak tepat." };
+  }
   clearRateLimit_("admin-system");
   const user = { id: "SYS-ADMIN", name: "Admin Sistem", house: "", role: "Admin Sistem" };
   const token = createSession_(user, false, true);
