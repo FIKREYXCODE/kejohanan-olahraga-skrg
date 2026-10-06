@@ -765,6 +765,11 @@ function deleteEntry_(body) {
   if (session.mustChange) throw new Error("Tukar kata laluan sementara sebelum mengubah data.");
   requireAdmin_(session);
   const id = String(body.id || "").trim();
+  const reason = String(body.reason || "").trim();
+  const note = String(body.note || "").trim().slice(0, 250);
+  const allowedReasons = ["Pertukaran peserta", "Kesilapan pendaftaran", "Peserta menarik diri", "Tidak hadir / tidak sihat", "Tidak memenuhi syarat", "Permintaan rumah sukan", "Lain-lain"];
+  if (!allowedReasons.includes(reason)) throw new Error("Pilih sebab pembatalan yang sah.");
+  if (reason === "Lain-lain" && !note) throw new Error("Nyatakan catatan bagi sebab Lain-lain.");
   const entry = rowsFrom("Penyertaan").find(row => String(row["ID Penyertaan"] || "") === id);
   if (!entry) throw new Error("Rekod penyertaan tidak dijumpai.");
   if (/batal/i.test(String(entry["Status"] || ""))) throw new Error("Penyertaan ini sudah dibatalkan.");
@@ -775,10 +780,12 @@ function deleteEntry_(body) {
       (!row["ID Murid"] && String(row["Rumah"] || "") === String(entry["Rumah"] || "")))
   );
   if (hasResult) throw new Error("Penyertaan tidak boleh dibatalkan kerana keputusan rasmi sudah direkodkan. Padam keputusan tersebut dahulu.");
-  const context = dataSheet_("Penyertaan", ["ID Penyertaan", "Tahun", "Acara", "Kategori", "ID Murid", "Nama Murid", "Rumah", "Status", "Catatan"]);
-  const detail = "Dibatalkan oleh " + (session.name || session.id || "Admin Sistem") + " pada " + Utilities.formatDate(new Date(), Session.getScriptTimeZone() || "Asia/Kuching", "dd/MM/yyyy HH:mm");
-  writeRecord_(context, entry.__row, { "Status": "Dibatalkan", "Catatan": detail });
-  audit_(session, "BATAL PENYERTAAN", id, String(entry["Nama Murid"] || entry["ID Murid"] || "") + " • " + String(entry["Acara"] || "") + " • Rumah " + String(entry["Rumah"] || ""));
+  const context = dataSheet_("Penyertaan", ["ID Penyertaan", "Tahun", "Acara", "Kategori", "ID Murid", "Nama Murid", "Rumah", "Status", "Catatan", "Sebab Pembatalan", "Dibatalkan Oleh", "Tarikh Pembatalan"]);
+  const cancelledAt = new Date();
+  const cancelledBy = session.name || session.id || "Admin Sistem";
+  const detail = reason + (note ? " — " + note : "");
+  writeRecord_(context, entry.__row, { "Status": "Dibatalkan", "Catatan": detail, "Sebab Pembatalan": reason, "Dibatalkan Oleh": cancelledBy, "Tarikh Pembatalan": cancelledAt });
+  audit_(session, "BATAL PENYERTAAN", id, String(entry["Nama Murid"] || entry["ID Murid"] || "") + " • " + String(entry["Acara"] || "") + " • Rumah " + String(entry["Rumah"] || "") + " • Sebab: " + detail);
   return { ok: true, message: "Penyertaan atlet ini telah dibatalkan. Kuota acara kini tersedia semula." };
 }
 
