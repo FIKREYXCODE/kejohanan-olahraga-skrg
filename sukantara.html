@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Modul Rasmi Sukan Tara 2026 Sekolah Kebangsaan Ranggu">
+  <title>Sukan Tara 2026 | SK Ranggu</title>
+  <link rel="stylesheet" href="portal.css?v=20261006visibility1">
+  <style>
+    .st-container { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem; }
+    .st-hero { background: linear-gradient(135deg, #062e69 0%, #1e40af 100%); color: white; border-radius: 16px; padding: 1.75rem; margin-bottom: 1.5rem; box-shadow: 0 8px 24px rgba(6,46,105,0.15); }
+    .st-hero h1 { margin: 0.5rem 0 0.25rem; font-size: 1.8rem; font-weight: 900; }
+    .st-hero p { margin: 0; opacity: 0.9; font-size: 0.95rem; }
+    .st-badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; }
+    
+    .st-nav-pills { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.75rem; flex-wrap: wrap; }
+    .st-nav-btn { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; color: #334155; }
+    .st-nav-btn.active { background: #2563eb; color: white; border-color: #2563eb; box-shadow: 0 4px 12px rgba(37,99,235,0.25); }
+    
+    .st-card { background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.25rem; margin-bottom: 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .st-card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
+    .st-card-title { font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0; }
+    .st-card-meta { font-size: 0.82rem; color: #64748b; font-weight: 600; }
+    
+    .st-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+    .st-station-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem; }
+    .st-station-title { font-weight: 800; color: #1e3a8a; font-size: 0.9rem; margin-bottom: 0.5rem; }
+    
+    .house-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 6px; font-weight: 700; font-size: 0.78rem; margin: 2px 0; }
+    .house-badge.b { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+    .house-badge.m { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+    .house-badge.i { background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; }
+    .house-badge.k { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+
+    .poster-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
+    .poster-item { background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .poster-item img { width: 100%; height: auto; border-radius: 10px; display: block; border: 1px solid #cbd5e1; }
+    .poster-item h3 { font-size: 1rem; font-weight: 800; color: #0f172a; margin: 0.75rem 0 0.25rem; }
+    .poster-item p { font-size: 0.8rem; color: #64748b; margin: 0 0 0.75rem; }
+    .poster-btn { display: inline-block; width: 100%; text-align: center; background: #0284c7; color: white; padding: 8px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; text-decoration: none; box-sizing: border-box; }
+    .poster-btn:hover { background: #0369a1; }
+  </style>
+</head>
+<body data-page="sukantara">
+  <div class="credit-strip"><span>SEKOLAH KEBANGSAAN RANGGU • TAWAU, SABAH</span><span>Dibangunkan oleh <b>Cikgu Mohammad Fikrey bin Abdul Gapar</b></span></div>
+  <header class="site-bar">
+    <a class="school-brand" href="index.html">
+      <img class="logo-kpm" src="assets/kpm.png" alt="Logo KPM">
+      <img class="logo-school" src="assets/skrg.jpeg" alt="Logo SK Ranggu">
+      <span><b>SK RANGGU SPORTSYNC</b><small>Sukan Tara Tahun 2026</small></span>
+    </a>
+    <div class="bar-tools">
+      <button class="sync-button" type="button" onclick="location.reload()">↻ Segarkan</button>
+      <label>Tahun <select id="yearSelect"><option value="2026" selected>2026</option></select></label>
+      <a class="teacher-login" href="guru.html">🔐 Portal Guru</a>
+    </div>
+  </header>
+
+  <nav class="dashboard-nav" aria-label="Menu utama kejohanan">
+    <a href="index.html">📊 Dashboard</a>
+    <a class="active" href="sukantara.html">🏃 Sukan Tara</a>
+    <a href="pingat.html">🏆 Papan Markah</a>
+    <a href="kalendar.html">📅 Kalendar</a>
+    <a href="saringan.html">🏁 Carta Perlawanan</a>
+    <a href="rumah-sukan.html">🛡 Rumah Sukan</a>
+    <a href="aturcara.html">⏱ Atur Cara</a>
+    <a href="penyertaan.html">🏃 Penyertaan</a>
+    <a href="acara.html">🎽 Acara</a>
+    <a href="cetak.html">🖨 Cetakan</a>
+  </nav>
+
+  <main class="st-container">
+    <section class="st-hero">
+      <span class="st-badge">🏃 TAKWIM &amp; PUTARAN STESEN</span>
+      <h1>Sukan Tara Tahun 2026</h1>
+      <p>Jadual latihan rasmi (13–14 Okt) &amp; Hari Pertandingan Sukan Tara (15–16 Okt 2026) SK Ranggu.</p>
+    </section>
+
+    <!-- Sub-Nav Buttons -->
+    <div class="st-nav-pills">
+      <button class="st-nav-btn active" id="btnRasmi" onclick="showST('rasmi')">🏆 Acara Rasmi (15 &amp; 16 Okt)</button>
+      <button class="st-nav-btn" id="btnLatihan" onclick="showST('latihan')">⏱️ Jadual Latihan (13 &amp; 14 Okt)</button>
+      <button class="st-nav-btn" id="btnPoster" onclick="showST('poster')">🖼️ Galeri Poster Rasmi</button>
+    </div>
+
+    <!-- 1. ACARA RASMI SECTION -->
+    <section id="sectionRasmi">
+      <!-- Khamis 15 Okt -->
+      <div class="st-card">
+        <div class="st-card-header">
+          <div>
+            <h2 class="st-card-title">📅 Hari 1: Khamis (15 Oktober 2026)</h2>
+            <div class="st-card-meta">Tahap 2 (07.00 - 09.05 PG) • Tahap 1 (03.30 - 05.00 PTG)</div>
+          </div>
+          <span class="st-badge" style="background:#dcfce7; color:#15803d; border:1px solid #bbf7d0;">Acara Rasmi</span>
+        </div>
+
+        <h3 style="font-size:0.95rem; font-weight:800; color:#1e40af; margin-bottom:0.5rem;">Sidang Pagi (Tahap 2: Tahun 4, 5 &amp; 6)</h3>
+        <div class="st-grid" style="margin-bottom:1.25rem;">
+          <div class="st-station-box">
+            <div class="st-station-title">📍 Lompat Jauh Berdiri</div>
+            <div>07.00 - 08.00: <span class="house-badge b">Rumah Biru (B)</span></div>
+            <div>08.05 - 09.05: <span class="house-badge k">Rumah Kuning (K)</span></div>
+          </div>
+          <div class="st-station-box">
+            <div class="st-station-title">📍 Acara 70 Meter</div>
+            <div>07.00 - 08.00: <span class="house-badge m">Rumah Merah (M)</span></div>
+            <div>08.05 - 09.05: <span class="house-badge b">Rumah Biru (B)</span></div>
+          </div>
+          <div class="st-station-box">
+            <div class="st-station-title">📍 Lompat Tinggi</div>
+            <div>07.00 - 08.00: <span class="house-badge i">Rumah Ungu (I)</span></div>
+            <div>08.05 - 09.05: <span class="house-badge m">Rumah Merah (M)</span></div>
+          </div>
+          <div class="st-station-box">
+            <div class="st-station-title">📍 Lontar Peluru</div>
+            <div>07.00 - 08.00: <span class="house-badge k">Rumah Kuning (K)</span></div>
+            <div>08.05 - 09.05: <span class="house-badge i">Rumah Ungu (I)</span></div>
+          </div>
+        </div>
+
+        <h3 style="font-size:0.95rem; font-weight:800; color:#1e40af; margin-bottom:0.5rem;">Sidang Petang (Tahap 1: Tahun 1, 2 &amp; 3)</h3>
+        <div class="st-grid">
+          <div class="st-station-box">
+            <div class="st-station-title">📍 Lompat Jauh Berdiri (03.30 - 05.00 PTG)</div>
+            <div><span class="house-badge b">Rumah Biru (B)</span> &amp; <span class="house-badge i">Rumah Ungu (I)</span></div>
+          </div>
+          <div class="st-station-box">
+            <div class="st-station-title">📍 Acara 50 Meter (03.30 - 05.00 PTG)</div>
+            <div><span class="house-badge m">Rumah Merah (M)</span> &amp; <span class="house-badge k">Rumah Kuning (K)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Jumaat 16 Okt -->
+      <div class="st-card">
+        <div class="st-card-header">
+          <div>
+            <h2 class="st-card-title">📅 Hari 2: Jumaat (16 Oktober 2026)</h2>
+            <div class="st-card-meta">Tahap 2 (07.00 - 09.05 PG) • Tahap 1 (03.30 - 05.00 PTG)</div>
+          </div>
+          <span class="st-badge" style="background:#dcfce7; color:#15803d; border:1px solid #bbf7d0;">Acara Rasmi</span>
+        </div>
+
+        <h3 style="font-size:0.95rem; font-weight:800; color:#1e40af; margin-bottom:0.5rem;">Sidang Pagi (Tahap 2: Tahun 4, 5 &amp; 6)</h3>
+        <div class="st-grid" style="margin-bottom:1.25rem;">
+          <div class="st-station-box">
+            <div class="st-station-title">📍 Lompat Jauh Berdiri</div>
+            <div>07.00 - 08.00: <span class="house-badge i">Rumah Ungu (I)</span></div>
+            <div>08.05 - 09.05: <span class="house-badge m">Rumah Merah (M)</span></div>
+          </div>
+          <div class="st-station-box">
+            <div class="st-station-title">📍 Acara 70 Meter</div>
+            <div>07.00 - 08.00: <span class="house-badge k">Rumah Kuning (K)</span></div>
+            <div>08.05 - 09.05: <span class="house-badge i">Rumah Ungu (I)</span></div>
+          </div>
+          <div class="st-station-box">
+            <div class="st-station-title">📍 Lompat Tinggi</div>
+            <div>07.00 - 08.00: <span class="house-badge b">Rumah Biru (B)</span></div>
+            <div>08.05 - 09.05: <span class="house-badge k">Rumah Kuning (K)</span></div>
+          </div>
+          <div class="st-station-box">
+            <div class="st-station-title">📍 Lontar Peluru</div>
+            <div>07.00 - 08.00: <span class="house-badge m">Rumah Merah (M)</span></div>
+            <div>08.05 - 09.05: <span class="house-badge b">Rumah Biru (B)</span></div>
+          </div>
+        </div>
+
+        <h3 style="font-size:0.95rem; font-weight:800; color:#1e40af; margin-bottom:0.5rem;">Sidang Petang (Tahap 1: Tahun 1, 2 &amp; 3)</h3>
+        <div class="st-grid">
+          <div class="st-station-box">
+            <div class="st-station-title">📍 Lompat Jauh Berdiri (03.30 - 05.00 PTG)</div>
+            <div><span class="house-badge m">Rumah Merah (M)</span> &amp; <span class="house-badge k">Rumah Kuning (K)</span></div>
+          </div>
+          <div class="st-station-box">
+            <div class="st-station-title">📍 Acara 50 Meter (03.30 - 05.00 PTG)</div>
+            <div><span class="house-badge b">Rumah Biru (B)</span> &amp; <span class="house-badge i">Rumah Ungu (I)</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. JADUAL LATIHAN SECTION -->
+    <section id="sectionLatihan" style="display:none;">
+      <!-- Selasa 13 Okt -->
+      <div class="st-card">
+        <div class="st-card-header">
+          <div>
+            <h2 class="st-card-title">📅 Latihan 1: Selasa (13 Oktober 2026)</h2>
+            <div class="st-card-meta">Tahap 2 (06.50 - 08.55 PG) • Tahap 1 (03.10 - 05.15 PTG)</div>
+          </div>
+          <span class="st-badge" style="background:#e0e7ff; color:#3730a3; border:1px solid #c7d2fe;">Latihan</span>
+        </div>
+
+        <h3 style="font-size:0.95rem; font-weight:800; color:#1e40af; margin-bottom:0.5rem;">Sidang Pagi (Tahap 2)</h3>
+        <div class="st-grid" style="margin-bottom:1.25rem;">
+          <div class="st-station-box">
+            <div class="st-station-title">📍 Lompat Jauh Berdiri</div>
+            <div>06.50 - 07.50: <span class="house-badge b">Rumah Biru (B)</span></div>
+            <div>07.55 - 08.55: <span class="house-badge m">Rumah Merah (M)</span></div>
+          </div>
+          <div class="st-station-box">
+            <div class="st-station-title">📍 Acara 70 Meter</div>
+            <div>06.50 - 07.50: <span class="house-badge m">Rumah Merah (M)</span></div>
+            <div>07.55 - 08.55: <span class="house-badge b">Rumah Biru (B)</span></div>
+          </div>
+          <div class="st-station-box">
+            <div class="st-station-title">📍 Lompat Tinggi</div>
+            <div>06.50 - 07.50: <span class="house-badge i">Rumah Ungu (I)</span></div>
+            <div>07.55 - 08.55: <span class="house-badge k">Rumah Kuning (K)</span></div>
+          </div>
+          <div class="st-station-box">
+            <div class="st-station-title">📍 Lontar Peluru</div>
+            <div>06.50 - 07.50: <span class="house-badge k">Rumah Kuning (K)</span></div>
+            <div>07.55 - 08.55: <span class="house-badge i">Rumah Ungu (I)</span></div>
+          </div>
+        </div>
+
+        <h3 style="font-size:0.95rem; font-weight:800; color:#1e40af; margin-bottom:0.5rem;">Sidang Petang (Tahap 1)</h3>
+        <div class="st-grid">
+          <div class="st-station-box">
+            <div class="st-station-title">📍 Lompat Jauh Berdiri</div>
+            <div>03.10 - 04.10: <span class="house-badge b">Rumah Biru</span> &amp; <span class="house-badge i">Rumah Ungu</span></div>
+            <div>04.15 - 05.15: <span class="house-badge m">Rumah Merah</span> &amp; <span class="house-badge k">Rumah Kuning</span></div>
+          </div>
+          <div class="st-station-box">
+            <div class="st-station-title">📍 Acara 50 Meter</div>
+            <div>03.10 - 04.10: <span class="house-badge m">Rumah Merah</span> &amp; <span class="house-badge k">Rumah Kuning</span></div>
+            <div>04.15 - 05.15: <span class="house-badge b">Rumah Biru</span> &amp; <span class="house-badge i">Rumah Ungu</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rabu 14 Okt -->
+      <div class="st-card">
+        <div class="st-card-header">
+          <div>
+            <h2 class="st-card-title">📅 Latihan 2: Rabu (14 Oktober 2026)</h2>
+            <div class="st-card-meta">Tahap 2 (06.50 - 08.55 PG) • Tahap 1 (03.10 - 05.15 PTG)</div>
+          </div>
+          <span class="st-badge" style="background:#e0e7ff; color:#3730a3; border:1px solid #c7d2fe;">Latihan</span>
+        </div>
+
+        <h3 style="font-size:0.95rem; font-weight:800; color:#1e40af; margin-bottom:0.5rem;">Sidang Pagi (Tahap 2)</h3>
+        <div class="st-grid" style="margin-bottom:1.25rem;">
+          <div class="st-station-box">
+            <div class="st-station-title">📍 Lompat Jauh Berdiri</div>
+            <div>06.50 - 07.50: <span class="house-badge i">Rumah Ungu (I)</span></div>
+            <div>07.55 - 08.55: <span class="house-badge k">Rumah Kuning (K)</span></div>
+          </div>
+          <div class="st-station-box">
+            <div class="st-station-title">📍 Acara 70 Meter</div>
+            <div>06.50 - 07.50: <span class="house-badge k">Rumah Kuning (K)</span></div>
+            <div>07.55 - 08.55: <span class="house-badge i">Rumah Ungu (I)</span></div>
+          </div>
+          <div class="st-station-box">
+            <div class="st-station-title">📍 Lompat Tinggi</div>
+            <div>06.50 - 07.50: <span class="house-badge b">Rumah Biru (B)</span></div>
+            <div>07.55 - 08.55: <span class="house-badge m">Rumah Merah (M)</span></div>
+          </div>
+          <div class="st-station-box">
+            <div class="st-station-title">📍 Lontar Peluru</div>
+            <div>06.50 - 07.50: <span class="house-badge m">Rumah Merah (M)</span></div>
+            <div>07.55 - 08.55: <span class="house-badge b">Rumah Biru (B)</span></div>
+          </div>
+        </div>
+
+        <h3 style="font-size:0.95rem; font-weight:800; color:#1e40af; margin-bottom:0.5rem;">Sidang Petang (Tahap 1)</h3>
+        <div class="st-grid">
+          <div class="st-station-box">
+            <div class="st-station-title">📍 Lompat Jauh Berdiri</div>
+            <div>03.10 - 04.10: <span class="house-badge m">Rumah Merah</span> &amp; <span class="house-badge k">Rumah Kuning</span></div>
+            <div>04.15 - 05.15: <span class="house-badge b">Rumah Biru</span> &amp; <span class="house-badge i">Rumah Ungu</span></div>
+          </div>
+          <div class="st-station-box">
+            <div class="st-station-title">📍 Acara 50 Meter</div>
+            <div>03.10 - 04.10: <span class="house-badge b">Rumah Biru</span> &amp; <span class="house-badge i">Rumah Ungu</span></div>
+            <div>04.15 - 05.15: <span class="house-badge m">Rumah Merah</span> &amp; <span class="house-badge k">Rumah Kuning</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. GALERI POSTER SECTION -->
+    <section id="sectionPoster" style="display:none;">
+      <div class="poster-grid">
+        <div class="poster-item">
+          <img src="assets/poster_acara_sukan_tara_2026.jpg" alt="Poster Acara Sukan Tara Tahun 2026">
+          <h3>Poster Acara Sukan Tara 2026</h3>
+          <p>Khamis &amp; Jumaat (15 &amp; 16 Oktober 2026)</p>
+          <a class="poster-btn" href="assets/poster_acara_sukan_tara_2026.jpg" target="_blank">🔍 Buka Saiz Penuh</a>
+        </div>
+        <div class="poster-item">
+          <img src="assets/poster_jadual_latihan_sukan_tara_2026.jpg" alt="Poster Jadual Latihan Sukan Tara Tahun 2026">
+          <h3>Poster Jadual Latihan 2026</h3>
+          <p>Selasa &amp; Rabu (13 &amp; 14 Oktober 2026)</p>
+          <a class="poster-btn" href="assets/poster_jadual_latihan_sukan_tara_2026.jpg" target="_blank">🔍 Buka Saiz Penuh</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer compact-footer">
+    <p><b>SEKOLAH KEBANGSAAN RANGGU TAWAU</b><span>Peti Surat 842, 91008 Tawau, Sabah, Malaysia</span></p>
+    <p><small>Dibangunkan oleh</small><b>Cikgu Mohammad Fikrey bin Abdul Gapar</b></p>
+  </footer>
+
+  <script>
+    function showST(tab) {
+      document.getElementById('sectionRasmi').style.display = tab === 'rasmi' ? 'block' : 'none';
+      document.getElementById('sectionLatihan').style.display = tab === 'latihan' ? 'block' : 'none';
+      document.getElementById('sectionPoster').style.display = tab === 'poster' ? 'block' : 'none';
+
+      document.getElementById('btnRasmi').className = 'st-nav-btn' + (tab === 'rasmi' ? ' active' : '');
+      document.getElementById('btnLatihan').className = 'st-nav-btn' + (tab === 'latihan' ? ' active' : '');
+      document.getElementById('btnPoster').className = 'st-nav-btn' + (tab === 'poster' ? ' active' : '');
+    }
+  </script>
+</body>
+</html>

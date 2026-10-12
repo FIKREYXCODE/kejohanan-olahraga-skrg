@@ -51,7 +51,148 @@
           "marchingTeam": []
         }
       },
-      "schedule": [],
+      "schedule": [
+        {
+          "championshipDay": "Latihan Sukan Tara (Hari 1)",
+          "weekday": "Selasa",
+          "date": "13.10.2026",
+          "time": "06.50 PG - 07.50 PG",
+          "event": "Latihan Sukan Tara Tahap 2 (Stesen 1: B: L.Jauh | M: 70m | I: L.Tinggi | K: L.Peluru)",
+          "category": "Tahap 2 (Tahun 4, 5, 6)",
+          "venue": "Padang SK Ranggu",
+          "status": "Disahkan"
+        },
+        {
+          "championshipDay": "Latihan Sukan Tara (Hari 1)",
+          "weekday": "Selasa",
+          "date": "13.10.2026",
+          "time": "07.55 PG - 08.55 PG",
+          "event": "Latihan Sukan Tara Tahap 2 (Stesen 2: M: L.Jauh | B: 70m | K: L.Tinggi | I: L.Peluru)",
+          "category": "Tahap 2 (Tahun 4, 5, 6)",
+          "venue": "Padang SK Ranggu",
+          "status": "Disahkan"
+        },
+        {
+          "championshipDay": "Latihan Sukan Tara (Hari 1)",
+          "weekday": "Selasa",
+          "date": "13.10.2026",
+          "time": "03.10 PTG - 04.10 PTG",
+          "event": "Latihan Sukan Tara Tahap 1 (Sesi 1: B & I: L.Jauh Berdiri | M & K: 50 Meter)",
+          "category": "Tahap 1 (Tahun 1, 2, 3)",
+          "venue": "Padang SK Ranggu",
+          "status": "Disahkan"
+        },
+        {
+          "championshipDay": "Latihan Sukan Tara (Hari 1)",
+          "weekday": "Selasa",
+          "date": "13.10.2026",
+          "time": "04.15 PTG - 05.15 PTG",
+          "event": "Latihan Sukan Tara Tahap 1 (Sesi 2: M & K: L.Jauh Berdiri | B & I: 50 Meter)",
+          "category": "Tahap 1 (Tahun 1, 2, 3)",
+          "venue": "Padang SK Ranggu",
+          "status": "Disahkan"
+        },
+        {
+          "championshipDay": "Latihan Sukan Tara (Hari 2)",
+          "weekday": "Rabu",
+          "date": "14.10.2026",
+          "time": "06.50 PG - 07.50 PG",
+          "event": "Latihan Sukan Tara Tahap 2 (Stesen 1: I: L.Jauh | K: 70m | B: L.Tinggi | M: L.Peluru)",
+          "category": "Tahap 2 (Tahun 4, 5, 6)",
+          "venue": "Padang SK Ranggu",
+          "status": "Disahkan"
+        },
+        {
+          "championshipDay": "Latihan Sukan Tara (Hari 2)",
+          "weekday": "Rabu",
+          "date": "14.10.2026",
+          "time": "07.55 PG - 08.55 PG",
+          "event": "Latihan Sukan Tara Tahap 2 (Stesen 2: K: L.Jauh | I: 70m | M: L.Tinggi | B: L.Peluru)",
+          "category": "Tahap 2 (Tahun 4, 5, 6)",
+          "venue": "Padang SK Ranggu",
+          "status": "Disahkan"
+        },
+        {
+          "championshipDay": "Latihan Sukan Tara (Hari 2)",
+          "weekday": "Rabu",
+          "date": "14.10.2026",
+          "time": "03.10 PTG - 04.10 PTG",
+          "event": "Latihan Sukan Tara Tahap 1 (Sesi 1: M & K: L.Jauh Berdiri | B & I: 50 Meter)",
+          "category": "Tahap 1 (Tahun 1, 2, 3)",
+          "venue": "Padang SK Ranggu",
+          "status": "Disahkan"
+        },
+        {
+          "championshipDay": "Latihan Sukan Tara (Hari 2)",
+          "weekday": "Rabu",
+          "date": "14.10.2026",
+          "time": "04.15 PTG - 05.15 PTG",
+          "event": "Latihan Sukan Tara Tahap 1 (Sesi 2: B & I: L.Jauh Berdiri | M & K: 50 Meter)",
+          "category": "Tahap 1 (Tahun 1, 2, 3)",
+          "venue": "Padang SK Ranggu",
+          "status": "Disahkan"
+        },
+        {
+          "championshipDay": "Acara Rasmi Sukan Tara (Hari 1)",
+          "weekday": "Khamis",
+          "date": "15.10.2026",
+          "time": "07.00 PG - 08.00 PG",
+          "event": "Acara Rasmi Sukan Tara Tahap 2 (Stesen 1: B: L.Jauh | M: 70m | I: L.Tinggi | K: L.Peluru)",
+          "category": "Tahap 2 (Tahun 4, 5, 6)",
+          "venue": "Padang SK Ranggu",
+          "status": "Rasmi"
+        },
+        {
+          "championshipDay": "Acara Rasmi Sukan Tara (Hari 1)",
+          "weekday": "Khamis",
+          "date": "15.10.2026",
+          "time": "08.05 PG - 09.05 PG",
+          "event": "Acara Rasmi Sukan Tara Tahap 2 (Stesen 2: K: L.Jauh | B: 70m | M: L.Tinggi | I: L.Peluru)",
+          "category": "Tahap 2 (Tahun 4, 5, 6)",
+          "venue": "Padang SK Ranggu",
+          "status": "Rasmi"
+        },
+        {
+          "championshipDay": "Acara Rasmi Sukan Tara (Hari 1)",
+          "weekday": "Khamis",
+          "date": "15.10.2026",
+          "time": "03.30 PTG - 05.00 PTG",
+          "event": "Acara Rasmi Sukan Tara Tahap 1 (B & I: L.Jauh Berdiri | M & K: 50 Meter)",
+          "category": "Tahap 1 (Tahun 1, 2, 3)",
+          "venue": "Padang SK Ranggu",
+          "status": "Rasmi"
+        },
+        {
+          "championshipDay": "Acara Rasmi Sukan Tara (Hari 2)",
+          "weekday": "Jumaat",
+          "date": "16.10.2026",
+          "time": "07.00 PG - 08.00 PG",
+          "event": "Acara Rasmi Sukan Tara Tahap 2 (Stesen 1: I: L.Jauh | K: 70m | B: L.Tinggi | M: L.Peluru)",
+          "category": "Tahap 2 (Tahun 4, 5, 6)",
+          "venue": "Padang SK Ranggu",
+          "status": "Rasmi"
+        },
+        {
+          "championshipDay": "Acara Rasmi Sukan Tara (Hari 2)",
+          "weekday": "Jumaat",
+          "date": "16.10.2026",
+          "time": "08.05 PG - 09.05 PG",
+          "event": "Acara Rasmi Sukan Tara Tahap 2 (Stesen 2: M: L.Jauh | I: 70m | K: L.Tinggi | B: L.Peluru)",
+          "category": "Tahap 2 (Tahun 4, 5, 6)",
+          "venue": "Padang SK Ranggu",
+          "status": "Rasmi"
+        },
+        {
+          "championshipDay": "Acara Rasmi Sukan Tara (Hari 2)",
+          "weekday": "Jumaat",
+          "date": "16.10.2026",
+          "time": "03.30 PTG - 05.00 PTG",
+          "event": "Acara Rasmi Sukan Tara Tahap 1 (M & K: L.Jauh Berdiri | B & I: 50 Meter)",
+          "category": "Tahap 1 (Tahun 1, 2, 3)",
+          "venue": "Padang SK Ranggu",
+          "status": "Rasmi"
+        }
+      ],
       "results": []
     },
     "2027": {
